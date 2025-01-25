@@ -1,0 +1,21 @@
+name: Restrict PR to Main
+
+on:
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  block_unauthorized_prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if author is allowed to merge to main
+        env:
+          ALLOWED_USER: ${{ secrets.ALLOWED_USER }}
+          PR_AUTHOR: ${{ github.actor }}
+        run: |
+          echo "PR opened by: $PR_AUTHOR"
+          if [ "$PR_AUTHOR" != "$ALLOWED_USER" ]; then
+            echo "You are not allow to create PRs to the main branch!"
+            exit 1
+          fi

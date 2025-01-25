@@ -1,0 +1,68 @@
+name: Build Frontend Project
+
+on:
+    push:
+        paths:
+            - client/**
+        branches:
+            - main
+            - dev
+            - feature/*
+    pull_request:
+        paths:
+            - client/**
+
+jobs:
+    build:
+        name: Build frontend project
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [22.12.0]
+
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Cache node modules
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-modules-${{ hashFiles('frontend/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-modules-
+
+            - name: Install root dependencies and set up Husky
+              run: |
+                  npm ci
+                  npx husky install
+                  chmod +x .husky/*
+
+            - name: Install frontend dependencies
+              working-directory: ./client
+              run: npm ci
+
+            - name: Show directory structure in frontend
+              run: ls -R ./client
+
+            - name: Check tsconfig.json in frontend
+              run: cat ./client/tsconfig.json
+
+            - name: Show current working directory
+              run: pwd
+
+            - name: Check Node.js version
+              run: node -v
+
+            - name: Clean Next.js build cache
+              run: rm -rf ./client/.next
+
+            - name: Build with Next.js
+              working-directory: ./client
+              run: npm run build
