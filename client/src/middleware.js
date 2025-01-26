@@ -8,6 +8,7 @@ export async function middleware(req) {
 
     if (token && isLoginPage) {
         console.log('Redirecting from login page');
+
         return NextResponse.redirect(new URL('/', req.url));
     }
 
