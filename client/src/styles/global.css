@@ -114,6 +114,31 @@
 }
 
 @layer components {
+    .spinner {
+        margin: 3.2rem auto 1.6rem;
+        width: 60px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 8px solid theme('colors.primary.900');
+        border-right-color: theme('colors.primary.200');
+        animation: rotate 1s infinite linear;
+    }
+
+    .spinner-mini {
+        margin: 0;
+        width: 20px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 2px solid theme('colors.primary.200');
+        border-right-color: transparent;
+        animation: rotate 1s infinite linear;
+    }
+
+    @keyframes rotate {
+        to {
+            transform: rotate(1turn);
+        }
+    }
 }
 
 @layer base {
@@ -123,4 +148,29 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-2px);
+    }
+    40% {
+        transform: translateX(2px);
+    }
+    60% {
+        transform: translateX(-2px);
+    }
+    80% {
+        transform: translateX(2px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
 }
