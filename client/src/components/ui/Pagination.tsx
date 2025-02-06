@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -19,23 +18,13 @@ function Pagination({ className, ...props }: PaginationProps) {
         />
     );
 }
-Pagination.propTypes = {
-    className: PropTypes.string,
-};
 Pagination.displayName = 'Pagination';
 
 const PaginationContent = React.forwardRef<HTMLUListElement, React.ComponentProps<'ul'>>(
     ({ className, ...props }, ref) => (
-        <ul
-            ref={ref}
-            className={cn('flex flex-row items-center gap-1', className)}
-            {...props}
-        />
+        <ul ref={ref} className={cn('flex flex-row items-center gap-1', className)} {...props} />
     )
 );
-PaginationContent.propTypes = {
-    className: PropTypes.string,
-};
 PaginationContent.displayName = 'PaginationContent';
 
 const PaginationItem = React.forwardRef<HTMLLIElement, React.ComponentProps<'li'>>(
@@ -43,26 +32,16 @@ const PaginationItem = React.forwardRef<HTMLLIElement, React.ComponentProps<'li'
         <li ref={ref} className={cn('', className)} {...props} />
     )
 );
-PaginationItem.propTypes = {
-    className: PropTypes.string,
-};
 PaginationItem.displayName = 'PaginationItem';
 
 type PaginationLinkProps = {
   className?: string;
   isActive?: boolean;
-} & Pick<ButtonProps, 'size'> &
-  React.ComponentProps<'a'>;
+} & Pick<ButtonProps, 'size'> & React.ComponentProps<'button'>;
 
-function PaginationLink({
-    className,
-    isActive,
-    size = 'icon',
-    children,
-    ...props
-}: PaginationLinkProps) {
+function PaginationLink({ className, isActive, size = 'icon', children, ...props }: PaginationLinkProps) {
     return (
-        <a
+        <button
             aria-current={isActive ? 'page' : undefined}
             className={cn(
                 buttonVariants({
@@ -74,20 +53,12 @@ function PaginationLink({
             {...props}
         >
             {children}
-        </a>
+        </button>
     );
 }
-PaginationLink.propTypes = {
-    className: PropTypes.string,
-    isActive: PropTypes.bool,
-    size: PropTypes.string,
-};
 PaginationLink.displayName = 'PaginationLink';
 
-function PaginationPrevious({
-    className,
-    ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+function PaginationPrevious({ className, ...props }: React.ComponentProps<'button'>) {
     return (
         <PaginationLink
             aria-label="Go to previous page"
@@ -100,15 +71,9 @@ function PaginationPrevious({
         </PaginationLink>
     );
 }
-PaginationPrevious.propTypes = {
-    className: PropTypes.string,
-};
 PaginationPrevious.displayName = 'PaginationPrevious';
 
-function PaginationNext({
-    className,
-    ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+function PaginationNext({ className, ...props }: React.ComponentProps<'button'>) {
     return (
         <PaginationLink
             aria-label="Go to next page"
@@ -121,29 +86,16 @@ function PaginationNext({
         </PaginationLink>
     );
 }
-PaginationNext.propTypes = {
-    className: PropTypes.string,
-};
 PaginationNext.displayName = 'PaginationNext';
 
-function PaginationEllipsis({
-    className,
-    ...props
-}: React.ComponentProps<'span'>) {
+function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'>) {
     return (
-        <span
-            aria-hidden="true"
-            className={cn('flex h-9 w-9 items-center justify-center', className)}
-            {...props}
-        >
+        <span aria-hidden="true" className={cn('flex h-9 w-9 items-center justify-center', className)} {...props}>
             <MoreHorizontal className="h-4 w-4" />
             <span className="sr-only">More pages</span>
         </span>
     );
 }
-PaginationEllipsis.propTypes = {
-    className: PropTypes.string,
-};
 PaginationEllipsis.displayName = 'PaginationEllipsis';
 
 export {
