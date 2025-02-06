@@ -12,7 +12,7 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from '@/components/ui/DropdownMenu';
-import { User } from '@/types/User.model';
+import { User } from '@/types/User';
 import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 
