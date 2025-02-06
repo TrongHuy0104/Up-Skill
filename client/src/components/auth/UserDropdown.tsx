@@ -1,7 +1,14 @@
+'use client';
+
 import Image from 'next/image';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { IoIosLogOut } from 'react-icons/io';
 import { LuSquareUserRound } from 'react-icons/lu';
+import { redirect } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
+import { useState } from 'react';
+import Link from 'next/link';
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,12 +22,25 @@ import {
 import { User } from '@/types/User';
 import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
+import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
 
 interface UserDropdownProps {
     user: User;
 }
 
 export function UserDropdown({ user }: UserDropdownProps) {
+    const [logout, setLogout] = useState(false);
+    const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
+    const { data: session } = useSession();
+
+    const logoutHandler = async () => {
+        if (session) {
+            await signOut();
+        }
+        setLogout(true);
+        redirect('/');
+    };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -41,12 +61,14 @@ export function UserDropdown({ user }: UserDropdownProps) {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        Profile
-                        <DropdownMenuShortcut>
-                            <LuSquareUserRound className="text-xl" />
-                        </DropdownMenuShortcut>
-                    </DropdownMenuItem>
+                    <Link href="/profile">
+                        <DropdownMenuItem>
+                            Profile
+                            <DropdownMenuShortcut>
+                                <LuSquareUserRound className="text-xl" />
+                            </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem>
                         Settings
                         <DropdownMenuShortcut>
@@ -57,7 +79,11 @@ export function UserDropdown({ user }: UserDropdownProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                     <form action={signOutAction} className="w-full">
-                        <button type="submit" className="flex w-full items-center justify-between text-left">
+                        <button
+                            type="submit"
+                            onClick={logoutHandler}
+                            className="flex w-full items-center justify-between text-left"
+                        >
                             Log out
                             <DropdownMenuShortcut>
                                 <IoIosLogOut className="text-xl" />
