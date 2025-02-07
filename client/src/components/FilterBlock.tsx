@@ -32,7 +32,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
     return (
         <div className="tf-sidebar-course bg-primary-50 border-b last:border-0 last:pb-0 last:mb-0 rounded-lg mb-8">
             <div
-                className="flex justify-between items-center cursor-pointer h-10 mb-4"
+                className="flex justify-between items-center cursor-pointer h-10 mb-5"
                 onClick={toggleOpen}
                 role="button"
                 tabIndex={0}
