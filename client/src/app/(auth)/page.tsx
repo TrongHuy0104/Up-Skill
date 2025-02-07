@@ -8,7 +8,7 @@ const breadcrumbsData1 = [
 
 const breadcrumbsData2 = [
     { href: 'index.html', text: 'Home' },
-    { text: 'Development' },
+    { href: '#', text: 'Development' },
     { href: '#', text: 'Web Development' },
 ];
 
@@ -17,7 +17,7 @@ export default function Page() {
         <div>
             {/* Shop cart banner */}
             <Banner title="Shop Cart" breadcrumbs={breadcrumbsData1} contentAlignment="center">
-                <h6 className="text-gray-600">
+                <h6 className="text-primary-800">
                     Products that help beginner designers become true unicorns.
                 </h6>
             </Banner>
