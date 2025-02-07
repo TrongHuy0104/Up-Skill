@@ -47,24 +47,25 @@ export default function Page() {
             <Banner
                 title="Welcome, Ali Tufan"
                 breadcrumbs={[
+                    { href: 'index.html', text: 'Home' },
+                    { href: '#', text: 'Pages' },
+                    { href: '#', text: 'Instructor' },
                 ]}
                 contentAlignment="left"
-                backgroundColor="bg-green-100"
+                background="https://creativelayers.net/themes/upskill-html/images/page-title/inner-page.png" // Hình nền
                 button={
                     <a className="tf-btn style-secondary" href="instructor-add-course.html">
                         Create a New Course <i className="icon-arrow-top-right"></i>
                     </a>
                 }
             >
-                {/* Author Avatar */}
+                {/* Children content */}
                 <div className="author-item">
                     <div className="author-item-img">
-                        <img src="	https://creativelayers.net/themes/upskill-html/images/avatar/review-1.png" alt="Author" className="w-20 h-20 rounded-full" />
+                        <img src="https://creativelayers.net/themes/upskill-html/images/page-title/inner-page.png" alt="Author" className="w-20 h-20 rounded-full" />
                     </div>
                 </div>
-
-                {/* Entry Meta */}
-                <ul className="entry-meta flex mt-4 mb-4">
+                <ul className="flex entry-meta mt-4 mb-4">
                     <li>
                         <div className="ratings flex items-center gap-2">
                             <div className="number">4.9</div>
