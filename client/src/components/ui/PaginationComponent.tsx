@@ -44,19 +44,23 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
             {/* Previous Button */}
             <PaginationPrevious
                 onClick={() => handlePageChange(currentPage - 1)}
-                className={currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}
+                className={`flex items-center justify-center px-6 mr-4 rounded-full ${
+                    currentPage === 1
+                        ? 'bg-primary-100 text-primary-800 cursor-not-allowed'
+                        : 'border hover:bg-accent-100 hover:text-primary-800 hover:border-primary-800'
+                }`}
                 aria-disabled={currentPage === 1}
             >
-                &lt; Prev
+                &lt;
             </PaginationPrevious>
 
             {/* Page Numbers */}
-            <PaginationContent>
+            <PaginationContent className="flex items-center space-x-2">
                 {createPageNumbers().map((page, index) => {
                     if (page === '...') {
                         return (
                             <PaginationEllipsis key={`ellipsis-${index}`}>
-                                <span className="px-4 py-2" aria-hidden="true">...</span>
+                                <span className="text-primary-800" aria-hidden="true">...</span>
                             </PaginationEllipsis>
                         );
                     }
@@ -64,7 +68,11 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
                     return (
                         <PaginationItem key={`page-${page}`}>
                             <PaginationLink
-                                isActive={page === currentPage}
+                                className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                                    page === currentPage
+                                        ? 'bg-primary-800 text-primary-50 hover:bg-primary-800 hover:text-primary-50'
+                                        : 'text-primary-800 hover:bg-primary-100'
+                                }`}
                                 onClick={() => handlePageChange(page as number)}
                             >
                                 {page}
@@ -77,10 +85,14 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
             {/* Next Button */}
             <PaginationNext
                 onClick={() => handlePageChange(currentPage + 1)}
-                className={currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}
+                className={`flex items-center justify-center px-6 ml-4 rounded-full ${
+                    currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'border hover:bg-accent-100 hover:text-primary-800 hover:border-primary-800'
+                }`}
                 aria-disabled={currentPage === totalPages}
             >
-                Next &gt;
+                &gt;
             </PaginationNext>
         </Pagination>
     );

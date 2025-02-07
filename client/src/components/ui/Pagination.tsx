@@ -48,7 +48,7 @@ function PaginationLink({ className, isActive, size = 'icon', children, ...props
                     variant: isActive ? 'outline' : 'ghost',
                     size,
                 }),
-                isActive ? 'bg-primary text-white' : '',
+                isActive ? 'bg-primary-800 text-white rounded-full' : '',
                 className
             )}
             {...props}
@@ -67,7 +67,7 @@ function PaginationPrevious({ className, ...props }: React.ComponentProps<'butto
             className={cn('gap-1', className)}
             {...props}
         >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4"/>
         </PaginationLink>
     );
 }
@@ -81,7 +81,7 @@ function PaginationNext({ className, ...props }: React.ComponentProps<'button'>)
             className={cn('gap-1', className)}
             {...props}
         >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4"/>
         </PaginationLink>
     );
 }
