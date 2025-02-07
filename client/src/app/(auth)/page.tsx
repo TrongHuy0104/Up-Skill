@@ -8,7 +8,7 @@ const breadcrumbsData1 = [
 
 const breadcrumbsData2 = [
     { href: 'index.html', text: 'Home' },
-    { href: '#', text: 'Development' },
+    { text: 'Development' },
     { href: '#', text: 'Web Development' },
 ];
 

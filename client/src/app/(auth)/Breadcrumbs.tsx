@@ -21,24 +21,19 @@ export default function Breadcrumbs({ breadcrumbs, alignment = 'center' }: Bread
     const justifyClass = getJustifyClass(alignment);
 
     return (
-        <ul className={`breadcrumbs flex items-center ${justifyClass} gap-4 mb-8 text-gray-600`}>
+        <ul className={`breadcrumbs text-sm flex items-center ${justifyClass} gap-3 mb-8 text-131836`}>
             {breadcrumbs.map((item, index) => (
                 <li key={item.text || item.href || index.toString()} className="flex items-center">
                     {index === 0 ? (
-                        <a href={item.href || '#'} className="flex items-center text-gray-800 hover:text-orange-500">
-                            <IoHomeOutline className="mr-2" /> {/* Icon home */}
-                            {item.text}
+                        <a href={item.href || '#'} className="flex items-center text-131836 hover:text-orange-500 transition-all duration-300 ease-in-out">
+                            <IoHomeOutline className="mb-0.5 w-5" /> {/* Icon home */}
                         </a>
                     ) : (
                         <>
-                            <IoIosArrowForward className="mx-1 text-gray-500" /> 
-                            {item.href ? (
-                                <a href={item.href} className="flex items-center text-gray-800 hover:text-orange-500">
+                            <IoIosArrowForward className="mr-4 w-3 mx-1 text-gray-700" /> 
+                                <a href={item.href} className="flex text-131836 hover:text-orange-500 transition-all duration-300 ease-in-out">
                                     {item.text}
                                 </a>
-                            ) : (
-                                <span>{item.text}</span>
-                            )}
                         </>
                     )}
                 </li>

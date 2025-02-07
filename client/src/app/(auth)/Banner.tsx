@@ -34,14 +34,14 @@
     const alignmentClass = getAlignmentClass(contentAlignment);
 
     return (
-      <div className={`page-title py-16 ${backgroundColor}`}>
-        <div className="tf-container mx-auto px-4 max-w-screen-xl">
+      <div className={`page-title ${backgroundColor}`}>
+        <div className="tf-container mx-auto py-16 max-w-screen-xl">
           {/* Flex container để căn chỉnh children và button */}
           <div className={`flex ${buttonPosition === 'left' ? 'flex-row-reverse' : 'flex-row'} justify-between items-center`}>
             {/* Children content */}
             <div className={`flex-1 ${alignmentClass}`}>
               <Breadcrumbs breadcrumbs={breadcrumbs} alignment={contentAlignment} />
-              <h2 className="font-serif text-4xl mb-2">{title}</h2>
+              <h2 className="font-serif text-[42px]">{title}</h2>
               {children}
             </div>
 
