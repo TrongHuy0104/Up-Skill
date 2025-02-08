@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 import Search from '@/components/Search';
@@ -11,20 +11,21 @@ import Category from '@/components/Category';
 import { UserDropdown } from '@/components/auth/UserDropdown';
 
 import AuthDialog from '@/components/auth/AuthDialog';
-import { useSocialAuthMutation } from '@/lib/redux/features/auth/authApi';
-import { useToast } from '@/hooks/use-toast';
-import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
-import Spinner from './ui/Spinner';
+import { useLogoutQuery, useSocialAuthMutation } from '@/lib/redux/features/auth/authApi';
+import { AuthBtnsSkeleton } from './ui/Skeleton';
 
 export default function Header() {
-    const { user } = useSelector((state: any) => state.auth);
-    const { data } = useSession();
-    const { toast } = useToast();
-    const [socialAuth, { isSuccess }] = useSocialAuthMutation();
-    const { isLoading } = useLoadUserQuery({});
+    const { user, isLoggingOut } = useSelector((state: any) => state.auth);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [logout, setLogout] = useState(false);
+    const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
+    const { data, status } = useSession();
+    const [socialAuth] = useSocialAuthMutation();
+    // const { isLoading } = useLoadUserQuery({});
 
     useEffect(() => {
-        if (!user) {
+        if (!user && !isLoggingOut) {
             if (data) {
                 socialAuth({
                     email: data?.user?.email,
@@ -32,17 +33,9 @@ export default function Header() {
                     avatar: data?.user?.image
                 });
             }
-            if (isSuccess) {
-                toast({
-                    variant: 'success',
-                    title: 'Login Successfully'
-                });
-            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, user]);
-
-    if (isLoading) return <Spinner />;
 
     return (
         <header className="sticky left-0 right-0 z-50 border-b border-primary-100">
@@ -54,7 +47,9 @@ export default function Header() {
                         <Search />
                     </div>
                     <div className="gap-[10px] flex items-center">
-                        {user ? (
+                        {status === 'loading' ? (
+                            <AuthBtnsSkeleton />
+                        ) : user ? (
                             <>
                                 {/* Cart */}
                                 <Link href="#!" className="mr-[10px]">

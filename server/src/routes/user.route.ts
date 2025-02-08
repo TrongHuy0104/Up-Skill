@@ -25,7 +25,7 @@ router.post('/activate-user', activateUser);
 
 router.post('/login', loginUser);
 
-router.delete('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
+router.get('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
 
 router.get('/refresh', updateAccessToken);
 
