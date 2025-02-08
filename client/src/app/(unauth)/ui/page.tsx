@@ -1,12 +1,9 @@
-import FilterCoursesBlock from '../../../components/FilterCoursesList';
-
-function FiltersSidebar() {
+const Page = () => {
     return (
         <div>
-            {/* Filter Courses Block */}
-            <FilterCoursesBlock />
+            page
         </div>
     );
-}
+};
 
-export default FiltersSidebar;
+export default Page;
