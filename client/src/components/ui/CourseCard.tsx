@@ -76,16 +76,17 @@ export default function CourseCard({ isHorizontal }: CourseCardProps) {
                         {isHorizontal && <CourseInfoItem icon={hour} text="229 students" />}
                         <CourseInfoItem icon={hour} text="16 hours" isLast />
                     </div>
-                    <h5 className="relative mb-[2px] overflow-hidden text-[16px] font-medium leading-7 hover:text-accent-900 hover:cursor-pointer">
-                        Become a Certified Web Developer: HTML, CSS and JavaScript
+                    <h5 className="relative mb-[2px] overflow-hidden text-[20px] font-medium leading-7 text-gray-900 transition-colors duration-300 hover:text-accent-900 hover:cursor-pointer">
+                    The Complete 2024 Web Development Bootcamp
                     </h5>
+
                     {isHorizontal && (
-                        <h6 className="text-[12px] mb-[10px]">
+                        <h6 className="text-[14px] mb-[10px]">
                             Become a Full-Stack Web Developer with just ONE course. HTML, CSS, Javascript, Node, React,
                             PostgreSQL, Web3 and DApps
                         </h6>
                     )}
-                    <div className="pt-[10px] mb-[2px] flex gap-2 items-center">
+                    <div className="mb-[2px] flex gap-2 items-center">
                         <div className="text-sm font-normal">4.9</div>
                         <IoMdStar />
                         <IoMdStar />
