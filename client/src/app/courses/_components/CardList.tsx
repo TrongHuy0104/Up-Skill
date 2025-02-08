@@ -14,7 +14,7 @@ export default function CardList() {
 
     return (
         <section className="w-full bg-primary-50 py-[48px]">
-            <div className="tf-container mx-auto max-w-[1400px] px-[14px]">
+            <div className="tf-container mx-auto max-w-screen-xl px-[14px]">
                 <div className="row flex flex-col items-start">
                     {/* Heading Section */}
                     <div className="col-span-12 w-full">

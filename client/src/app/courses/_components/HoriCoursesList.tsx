@@ -1,5 +1,5 @@
 import React from 'react';
 
 export default function HoriCoursesList() {
-    return <div>card horiza</div>;
+    return <div className="mx-auto max-w-screen-xl">card horiza</div>;
 }
