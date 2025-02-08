@@ -46,7 +46,7 @@ export default function Banner({
             )}
 
             {/* Nội dung */}
-            <div className="tf-container mx-auto py-16 max-w-screen-xl w-full relative z-10 px-[14px]">
+            <div className="tf-container mx-auto py-16 w-[1400px]  relative z-10 px-[14px]">
                 <div
                     className={`flex ${buttonPosition === 'left' ? 'flex-row-reverse' : 'flex-row'} justify-between items-center gap-8`}
                 >

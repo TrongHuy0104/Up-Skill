@@ -18,7 +18,7 @@ const refreshTokenExpire = parseInt(process.env.REFRESH_TOKEN_EXPIRE || '1200', 
 export const accessTokenOptions: ITokenOptions = {
     expires: new Date(Date.now() + accessTokenExpire * 60 * 60 * 1000),
     maxAge: accessTokenExpire * 60 * 60 * 1000,
-    httpOnly: true,
+    httpOnly: false,
     sameSite: 'lax'
 };
 

@@ -27,6 +27,7 @@ export default function AuthDialog() {
     const handleDialogChange = (type: DialogType) => {
         setDialogType(type);
     };
+
     return (
         <Providers>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>

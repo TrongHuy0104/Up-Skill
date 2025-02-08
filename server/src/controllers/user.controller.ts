@@ -156,7 +156,6 @@ export const loginUser = catchAsync(async (req: Request, res: Response, next: Ne
 export const logoutUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     res.cookie('access_token', '', { maxAge: 1 });
     res.cookie('refresh_token', '', { maxAge: 1 });
-    console.log(req.user);
 
     const userId = req.user?._id || '';
     if (userId) {
@@ -215,7 +214,7 @@ export const getUserInfo = catchAsync(async (req: Request, res: Response, next: 
 
 export const socialAuth = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { email, name, avatar } = req.body as ISocialAuthBody;
-    const user = await UserModel.findOneAndDelete({ email });
+    const user = await UserModel.findOne({ email });
     if (!user) {
         const newUser = await UserModel.create({ email, name, avatar });
         sendToken(newUser, 200, res);
