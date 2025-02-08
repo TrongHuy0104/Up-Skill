@@ -46,7 +46,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
                 onClick={() => handlePageChange(currentPage - 1)}
                 className={`flex items-center justify-center px-6 mr-4 rounded-full ${
                     currentPage === 1
-                        ? 'bg-primary-100 text-primary-800 cursor-not-allowed'
+                        ? 'bg-primary-100 text-primary-800 cursor-default hover:bg-primary-100'
                         : 'border hover:bg-accent-100 hover:text-primary-800 hover:border-primary-800'
                 }`}
                 aria-disabled={currentPage === 1}
@@ -87,7 +87,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
                 onClick={() => handlePageChange(currentPage + 1)}
                 className={`flex items-center justify-center px-6 ml-4 rounded-full ${
                     currentPage === totalPages
-                        ? 'bg-primary-100 text-primary-800 cursor-not-allowed'
+                        ? 'bg-primary-100 text-primary-800 cursor-default hover:bg-primary-100'
                         : 'border hover:bg-accent-100 hover:text-primary-800 hover:border-primary-800'
                 }`}
                 aria-disabled={currentPage === totalPages}
