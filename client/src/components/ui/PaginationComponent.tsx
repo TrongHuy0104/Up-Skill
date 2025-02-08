@@ -87,7 +87,7 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
                 onClick={() => handlePageChange(currentPage + 1)}
                 className={`flex items-center justify-center px-6 ml-4 rounded-full ${
                     currentPage === totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        ? 'bg-primary-100 text-primary-800 cursor-not-allowed'
                         : 'border hover:bg-accent-100 hover:text-primary-800 hover:border-primary-800'
                 }`}
                 aria-disabled={currentPage === totalPages}
