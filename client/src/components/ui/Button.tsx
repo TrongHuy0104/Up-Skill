@@ -21,7 +21,7 @@ const buttonVariants = cva(
                 default: 'rounded px-9 py-3',
                 rounded: 'rounded-full px-9 py-3',
                 sm: 'rounded text-[15px] py-2 px-5',
-                lg: 'h-10 rounded-md px-8',
+                lg: 'rounded px-[35px] py-3 text-base',
                 icon: 'h-9 w-9'
             }
         },

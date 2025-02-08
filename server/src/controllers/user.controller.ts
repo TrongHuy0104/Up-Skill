@@ -46,7 +46,7 @@ interface ISocialAuthBody {
 
 interface IUpdateUserInfo {
     name?: string;
-    // email?: string;
+    avatar: string;
 }
 
 interface IUpdatePassword {
@@ -224,7 +224,7 @@ export const socialAuth = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const updateUserInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { name } = req.body as IUpdateUserInfo;
+    const { name, avatar } = req.body as IUpdateUserInfo;
     const userId = req.user?._id as RedisKey;
     const user = await UserModel.findById(userId);
 
@@ -238,6 +238,22 @@ export const updateUserInfo = catchAsync(async (req: Request, res: Response, nex
 
     if (user && name) {
         user.name = name;
+    }
+
+    if (user && avatar) {
+        // If user already have avatar
+        if (user?.avatar?.public_id) {
+            await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+        }
+
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+            folder: 'avatars',
+            width: 150
+        });
+        user.avatar = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url
+        };
     }
 
     await user?.save();

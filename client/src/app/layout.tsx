@@ -1,13 +1,13 @@
 import { ReactNode } from 'react';
 import { DM_Sans } from 'next/font/google';
+import { SessionProvider } from 'next-auth/react';
 import type { Metadata } from 'next';
 import '@/styles/global.css';
 import { cn } from '@/utils/helpers';
 import { Toaster } from '@/components/ui/Toaster';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Header from '@/components/common/Header';
+import Footer from '@/components/common/Footer';
 import { Providers } from './Provider';
-import { SessionProvider } from 'next-auth/react';
 
 const dmSans = DM_Sans({ subsets: ['latin'] });
 
@@ -28,13 +28,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={cn(dmSans.className, 'overflow-x-hidden relative')}>
-                <SessionProvider>
-                    <Providers>
+                <Providers>
+                    <SessionProvider>
                         <Header />
-                    </Providers>
-                    {children}
-                    <Footer />
-                </SessionProvider>
+                        {children}
+                        <Footer />
+                    </SessionProvider>
+                </Providers>
                 <Toaster />
             </body>
         </html>

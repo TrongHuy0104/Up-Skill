@@ -44,13 +44,12 @@ export function UserDropdown({ user }: UserDropdownProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                {/* <Button variant="outline">Open</Button> */}
                 <div className="h-[60px] flex items-center gap-3 cursor-pointer">
                     <Image
                         className="h-8 rounded-full"
                         width={32}
                         height={32}
-                        src={user.image ?? defaultAvatar}
+                        src={user.avatar.url ?? defaultAvatar}
                         alt={user.name ?? 'User Avatar'}
                         referrerPolicy="no-referrer"
                     />
@@ -61,7 +60,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href="/profile">
+                    <Link href="/dashboard/settings">
                         <DropdownMenuItem>
                             Profile
                             <DropdownMenuShortcut>

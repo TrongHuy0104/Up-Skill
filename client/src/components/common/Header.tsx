@@ -5,14 +5,14 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
-import Search from '@/components/Search';
+import Search from '@/components/common/Search';
 import Logo from '@/components/ui/Logo';
-import Category from '@/components/Category';
+import Category from '@/components/common/Category';
 import { UserDropdown } from '@/components/auth/UserDropdown';
 
 import AuthDialog from '@/components/auth/AuthDialog';
 import { useLogoutQuery, useSocialAuthMutation } from '@/lib/redux/features/auth/authApi';
-import { AuthBtnsSkeleton } from './ui/Skeleton';
+import { AuthBtnsSkeleton } from '../ui/Skeleton';
 
 export default function Header() {
     const { user, isLoggingOut } = useSelector((state: any) => state.auth);
@@ -22,7 +22,6 @@ export default function Header() {
     const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data, status } = useSession();
     const [socialAuth] = useSocialAuthMutation();
-    // const { isLoading } = useLoadUserQuery({});
 
     useEffect(() => {
         if (!user && !isLoggingOut) {
