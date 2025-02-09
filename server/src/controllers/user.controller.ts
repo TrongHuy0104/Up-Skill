@@ -286,6 +286,7 @@ export const updatePassword = catchAsync(async (req: Request, res: Response, nex
     }
 
     user.password = newPassword;
+    await user.save();
 
     redis.set(req.user?._id as RedisKey, JSON.stringify(user));
 

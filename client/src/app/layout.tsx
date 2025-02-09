@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { DM_Sans } from 'next/font/google';
+import { DM_Sans, Cardo } from 'next/font/google';
 import { SessionProvider } from 'next-auth/react';
 import type { Metadata } from 'next';
 import '@/styles/global.css';
@@ -9,7 +9,8 @@ import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { Providers } from './Provider';
 
-const dmSans = DM_Sans({ subsets: ['latin'] });
+const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dmSans' });
+const cardo = Cardo({ subsets: ['latin'], variable: '--font-cardo', weight: ['400', '700'] });
 
 export const metadata: Metadata = {
     title: 'UpSkill',
@@ -26,8 +27,8 @@ export default function RootLayout({
     children: ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className={cn(dmSans.className, 'overflow-x-hidden relative')}>
+        <html lang="en" className="font-dmSans">
+            <body className={cn(cardo.variable, dmSans.variable, 'overflow-x-hidden relative')}>
                 <Providers>
                     <SessionProvider>
                         <Header />

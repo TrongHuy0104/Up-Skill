@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useSelector } from 'react-redux';
 
-// import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/Form';
 import { formStyles } from '@/styles/styles';
 import { Input } from '../ui/Input';
@@ -17,12 +16,14 @@ import { Button } from '../ui/Button';
 import { useUpdateUserInfoMutation } from '@/lib/redux/features/user/userApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import SpinnerMini from '../ui/SpinnerMini';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
     name: z.string().min(1, { message: 'This field has to be filled.' })
 });
 
 const ProfileInfo = () => {
+    const { toast } = useToast();
     const { user } = useSelector((state: any) => state.auth);
     const [imagePreview, setImagePreview] = useState('');
     const [avatarImage, setAvatarImage] = useState<string | ArrayBuffer | null>(null);
@@ -40,17 +41,20 @@ const ProfileInfo = () => {
     useEffect(() => {
         if (isSuccess) {
             setLoadUser(true);
+            toast({
+                variant: 'success',
+                title: 'Update User Successfully'
+            });
         }
         if (error) {
             console.log(error);
         }
-    }, [isSuccess, error]);
+    }, [isSuccess, error, toast]);
 
     const imageHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             setImagePreview(URL.createObjectURL(e.target.files[0]));
 
-            // if (avatarImage) {
             const fileReader = new FileReader();
 
             fileReader.onload = () => {

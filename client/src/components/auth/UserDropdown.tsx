@@ -68,12 +68,14 @@ export function UserDropdown({ user }: UserDropdownProps) {
                             </DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <DropdownMenuItem>
-                        Settings
-                        <DropdownMenuShortcut>
-                            <IoSettingsOutline className="text-lg" />
-                        </DropdownMenuShortcut>
-                    </DropdownMenuItem>
+                    <Link href="/ui">
+                        <DropdownMenuItem>
+                            Settings
+                            <DropdownMenuShortcut>
+                                <IoSettingsOutline className="text-lg" />
+                            </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </Link>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
