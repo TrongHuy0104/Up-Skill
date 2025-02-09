@@ -1,8 +1,9 @@
 'use client';
 import Image from 'next/image';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
 import { CourseHorizontalCard } from '@/components/ui/CourseCard';
+import PaginationComponent from '@/components/ui/PaginationComponent';
 
 export default function HoriCoursesList() {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
@@ -14,6 +15,14 @@ export default function HoriCoursesList() {
     const closeModal = () => {
         setIsModalOpen(false); // Đóng modal khi chọn một mục
     };
+
+    //pagination
+    const [currentPage, setCurrentPage] = React.useState(1);
+
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+    // Fetch data for the new page here.  This is the most crucial part.
 
     return (
         <div className="pl-[28px] relative">
@@ -59,6 +68,9 @@ export default function HoriCoursesList() {
             <CourseHorizontalCard />
             <CourseHorizontalCard />
             <CourseHorizontalCard />
+            <div className="p-5">
+                <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />
+            </div>
         </div>
     );
 }

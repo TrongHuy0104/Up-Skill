@@ -6,7 +6,7 @@ import HoriCoursesList from './_components/HoriCoursesList';
 
 export default function page() {
     return (
-        <div className="w-full">
+        <div className="w-full pb-40">
             <Banner />
             <PopularInstructor />
             <div className="flex w-[1400px] mx-auto pt-[54px] relative">
