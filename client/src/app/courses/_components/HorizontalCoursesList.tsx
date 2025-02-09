@@ -1,12 +1,22 @@
 'use client';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
 import { CourseHorizontalCard } from '@/components/ui/CourseCard';
 import PaginationComponent from '@/components/ui/PaginationComponent';
+import dynamic from 'next/dynamic';
 
-export default function HoriCoursesList() {
+// Sử dụng dynamic để tắt SSR cho modal
+const Modal = dynamic(() => import('@/app/courses/_components/ModalComponent'), { ssr: false });
+
+export default function HorizontalCoursesList() {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
+    const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
+    const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ modal
+
+    useEffect(() => {
+        setIsClient(true); // Chỉ chạy sau khi component render trên client
+    }, []);
 
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen); // Đổi trạng thái của modal khi click vào mũi tên
@@ -16,13 +26,21 @@ export default function HoriCoursesList() {
         setIsModalOpen(false); // Đóng modal khi chọn một mục
     };
 
-    //pagination
-    const [currentPage, setCurrentPage] = React.useState(1);
+    // Hàm xử lý khi chọn giá trị trong modal
+    const handleSortSelect = (sortValue: string) => {
+        setSelectedSort(sortValue); // Cập nhật giá trị đã chọn
+    };
+
+    // pagination
+    const [currentPage, setCurrentPage] = useState(1);
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
-    // Fetch data for the new page here.  This is the most crucial part.
+
+    if (!isClient) {
+        return null; // Không render gì khi chưa ở client
+    }
 
     return (
         <div className="pl-[28px] relative">
@@ -30,9 +48,9 @@ export default function HoriCoursesList() {
                 <p className="text-primary-800">Showing 1-9 Of 62 Courses</p>
                 <div className="flex items-center gap-3">
                     <p className="text-primary-600">Sort by</p>
-                    <span className="text-primary-800">Best Selling</span>
+                    <span className="text-primary-800">{selectedSort}</span> {/* Hiển thị giá trị đã chọn */}
                     <Image
-                        className="cursor-pointer "
+                        className="cursor-pointer"
                         src={arrowDownIcon}
                         alt="Arrow Down Icon"
                         onClick={toggleModal} // Khi click vào mũi tên, sẽ gọi toggleModal
@@ -41,25 +59,9 @@ export default function HoriCoursesList() {
             </div>
 
             {/* Dropdown Modal */}
-            {isModalOpen && (
-                <div
-                    className="absolute top-[1%] right-0 mt-2 bg-white rounded-lg shadow-lg w-48 p-4 z-50"
-                    onClick={(e) => e.stopPropagation()} // Ngăn việc đóng khi click vào bên trong modal
-                >
-                    <ul className="space-y-2">
-                        <li className="cursor-pointer hover:bg-gray-200 p-2 rounded" onClick={closeModal}>
-                            Best Selling
-                        </li>
-                        <li className="cursor-pointer hover:bg-gray-200 p-2 rounded" onClick={closeModal}>
-                            Oldest
-                        </li>
-                        <li className="cursor-pointer hover:bg-gray-200 p-2 rounded" onClick={closeModal}>
-                            3 days
-                        </li>
-                    </ul>
-                </div>
-            )}
+            {isModalOpen && <Modal closeModal={closeModal} onSelectSort={handleSortSelect} />}
 
+            {/* List of course cards */}
             <CourseHorizontalCard />
             <CourseHorizontalCard />
             <CourseHorizontalCard />
@@ -68,6 +70,8 @@ export default function HoriCoursesList() {
             <CourseHorizontalCard />
             <CourseHorizontalCard />
             <CourseHorizontalCard />
+
+            {/* Pagination */}
             <div className="p-5">
                 <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />
             </div>
