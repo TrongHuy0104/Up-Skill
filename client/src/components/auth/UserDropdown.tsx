@@ -30,7 +30,7 @@ interface UserDropdownProps {
 
 export function UserDropdown({ user }: UserDropdownProps) {
     const [logout, setLogout] = useState(false);
-    const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
+    useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data: session } = useSession();
 
     const logoutHandler = async () => {
@@ -44,13 +44,12 @@ export function UserDropdown({ user }: UserDropdownProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                {/* <Button variant="outline">Open</Button> */}
                 <div className="h-[60px] flex items-center gap-3 cursor-pointer">
                     <Image
                         className="h-8 rounded-full"
                         width={32}
                         height={32}
-                        src={user.image ?? defaultAvatar}
+                        src={user.avatar.url ?? defaultAvatar}
                         alt={user.name ?? 'User Avatar'}
                         referrerPolicy="no-referrer"
                     />
@@ -61,7 +60,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href="/profile">
+                    <Link href="/dashboard/settings">
                         <DropdownMenuItem>
                             Profile
                             <DropdownMenuShortcut>
@@ -69,12 +68,14 @@ export function UserDropdown({ user }: UserDropdownProps) {
                             </DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <DropdownMenuItem>
-                        Settings
-                        <DropdownMenuShortcut>
-                            <IoSettingsOutline className="text-lg" />
-                        </DropdownMenuShortcut>
-                    </DropdownMenuItem>
+                    <Link href="/ui">
+                        <DropdownMenuItem>
+                            Settings
+                            <DropdownMenuShortcut>
+                                <IoSettingsOutline className="text-lg" />
+                            </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </Link>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

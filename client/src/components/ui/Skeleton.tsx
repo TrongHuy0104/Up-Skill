@@ -6,6 +6,10 @@ function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>)
 
 export { Skeleton };
 
+export function DashboardBannerSkeleton() {
+    return <Skeleton className="h-[288px] w-full" />;
+}
+
 export function AuthBtnsSkeleton() {
     return (
         <div className="flex items-center space-x-4">
