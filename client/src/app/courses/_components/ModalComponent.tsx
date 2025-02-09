@@ -1,4 +1,3 @@
-// components/ui/ModalComponent.tsx
 const ModalComponent = ({
     closeModal,
     onSelectSort
@@ -14,6 +13,13 @@ const ModalComponent = ({
                     onSelectSort('Best Selling');
                     closeModal();
                 }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        onSelectSort('Best Selling');
+                        closeModal();
+                    }
+                }}
+                tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
             >
                 Best Selling
             </li>
@@ -23,6 +29,13 @@ const ModalComponent = ({
                     onSelectSort('Oldest');
                     closeModal();
                 }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        onSelectSort('Oldest');
+                        closeModal();
+                    }
+                }}
+                tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
             >
                 Oldest
             </li>
@@ -32,6 +45,13 @@ const ModalComponent = ({
                     onSelectSort('3 days');
                     closeModal();
                 }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        onSelectSort('3 days');
+                        closeModal();
+                    }
+                }}
+                tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
             >
                 3 days
             </li>
