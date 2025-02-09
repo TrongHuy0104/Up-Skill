@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function FilterCourses() {
     return (
-        <div className="max-w-screen-xl mx-auto">
+        <div className="">
             <FilterCoursesList />
         </div>
     );

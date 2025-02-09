@@ -12,7 +12,7 @@ export default function UnAuthLayout({ children }: { children: ReactNode }) {
                             <Image src={loginImg} alt="Login" className="object-cover rounded-l-lg" />
                         </div>
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full">
                         <div className="h-full rounded-r-lg -ml-[29px] justify-start px-[60px] pt-[137px] pb-[60px] bg-primary-50 flex flex-col">
                             {children}
                         </div>

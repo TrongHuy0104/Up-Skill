@@ -9,7 +9,7 @@ export default function page() {
         <div className="w-full">
             <Banner />
             <PopularInstructor />
-            <div className="flex">
+            <div className="flex w-[1400px] mx-auto pt-[54px] relative">
                 <FilterCourses />
                 <HoriCoursesList />
             </div>

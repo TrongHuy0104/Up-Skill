@@ -1,5 +1,5 @@
 import React from 'react';
-import Bannerr from '../../../components/Banner';
+import Bannerr from '../../../components/ui/Banner';
 
 export default function Banner() {
     const breadcrumbs = [

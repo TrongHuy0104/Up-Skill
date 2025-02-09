@@ -1,5 +1,5 @@
 import React from 'react';
-import Breadcrumbs from './Breadcrumbs';
+import Breadcrumb from './Breadcrumb';
 
 interface Breadcrumb {
     href?: string;
@@ -27,7 +27,7 @@ export default function Banner({
     title,
     breadcrumbs,
     contentAlignment = 'center',
-    backgroundColor = 'bg-red-100',
+    backgroundColor = 'bg-accent-100',
     background,
     children,
     button,
@@ -36,23 +36,23 @@ export default function Banner({
     const alignmentClass = getAlignmentClass(contentAlignment);
 
     return (
-        <div className={`page-title min-h-[200px] flex items-center relative text-primary-800 ${backgroundColor}`}>
+        <div className={`page-title py-[54px] flex items-center relative text-primary-800 ${backgroundColor}`}>
             {/* Overlay hình nền */}
             {background && (
                 <div
-                    className="absolute inset-0  bg-center bg-no-repeat bg-contain"
+                    className="absolute inset-0 bg-center bg-no-repeat bg-contain"
                     style={{ backgroundImage: `url(${background})` }}
                 />
             )}
 
             {/* Nội dung */}
-            <div className="tf-container mx-auto py-16 w-[1400px]  relative z-10 px-[14px]">
+            <div className="tf-container mx-auto w-[1428px] relative z-10">
                 <div
                     className={`flex ${buttonPosition === 'left' ? 'flex-row-reverse' : 'flex-row'} justify-between items-center gap-8`}
                 >
                     {/* Content section */}
                     <div className={`flex-1 ${alignmentClass}`}>
-                        <Breadcrumbs breadcrumbs={breadcrumbs} alignment={contentAlignment} />
+                        <Breadcrumb breadcrumbs={breadcrumbs} alignment={contentAlignment} />
                         <h2 className="font-serif text-[42px] mb-4">{title}</h2>
                         {children}
                     </div>
