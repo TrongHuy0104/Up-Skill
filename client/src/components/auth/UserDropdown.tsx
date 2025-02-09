@@ -30,7 +30,7 @@ interface UserDropdownProps {
 
 export function UserDropdown({ user }: UserDropdownProps) {
     const [logout, setLogout] = useState(false);
-    const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
+    useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data: session } = useSession();
 
     const logoutHandler = async () => {

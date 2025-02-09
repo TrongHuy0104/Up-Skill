@@ -19,7 +19,7 @@ export default function Header() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [logout, setLogout] = useState(false);
-    const {} = useLogoutQuery(undefined, { skip: !logout ? true : false });
+    useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data, status } = useSession();
     const [socialAuth] = useSocialAuthMutation();
 
