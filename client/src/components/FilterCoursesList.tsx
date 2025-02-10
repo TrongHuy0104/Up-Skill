@@ -89,7 +89,7 @@ function FilterCoursesList() {
     ];
 
     return (
-        <div className="p-6">
+        <div className="">
             <div className="w-[320px] h-auto bg-primary-50 border border-primary-100 p-5 rounded-lg">
                 {filtersData.map((filter) => (
                     <FilterBlock
