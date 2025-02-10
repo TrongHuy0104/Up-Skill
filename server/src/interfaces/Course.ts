@@ -1,5 +1,8 @@
 import mongoose, { Document } from 'mongoose';
 import { UserT } from './User';
+import { ICategory } from './Category';
+import { ISubCategory } from './SubCategory';
+import { ILevel } from './Level';
 
 export interface IComment extends Document {
     user: UserT;
@@ -38,7 +41,7 @@ export interface ICourse extends Document {
     thumbnail: object;
     authorId: mongoose.Schema.Types.ObjectId;
     tags: string;
-    level: string;
+    level: [ILevel];
     demoUrl: string;
     benefits: { title: string }[];
     prerequisites: { title: string }[];
@@ -46,4 +49,7 @@ export interface ICourse extends Document {
     courseData: ICourseData[];
     rating?: number;
     purchased?: number;
+    isPublished: boolean;
+    category: ICategory;
+    subCategory: ISubCategory;
 }

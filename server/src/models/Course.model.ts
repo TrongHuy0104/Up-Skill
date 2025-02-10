@@ -1,5 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 import { IComment, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
+import { LevelSchema } from './Level.model';
+import { CategorySchema } from './Category.model';
+import { SubCategorySchema } from './SubCategory.model';
 
 const ReviewSchema = new Schema<IReview>({
     user: Object,
@@ -65,10 +68,7 @@ const CourseSchema = new Schema<ICourse>({
         type: String,
         required: true
     },
-    level: {
-        type: String,
-        required: true
-    },
+    level: LevelSchema,
     demoUrl: {
         type: String,
         required: true
@@ -84,7 +84,10 @@ const CourseSchema = new Schema<ICourse>({
     purchased: {
         type: Number,
         default: 0
-    }
+    },
+    isPublished: { type: Boolean, default: false },
+    category: CategorySchema,
+    subCategory: SubCategorySchema
 });
 
 export default mongoose.models.Course || mongoose.model<ICourse>('Course', CourseSchema);
