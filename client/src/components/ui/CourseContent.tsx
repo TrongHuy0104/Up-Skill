@@ -207,7 +207,9 @@ export default function CourseContent() {
                     )}
                 </div>
             ))}
-            <button className="flex justify-center items-center gap-[10px] border border-[#131836] hover:border-[#E27447] rounded-lg mt-4 w-full h-[55px]">
+            <button className="flex justify-center items-center gap-[10px] border border-[#131836] hover:border-[#E27447] rounded-lg mt-4 w-full h-[55px]"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
                 78 More Sections
                 <Image src={MoreSections} alt="more sections" />
             </button>
