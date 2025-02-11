@@ -1,5 +1,11 @@
+import ReviewSection from '@/components/ReviewSection';
+
 const Page = () => {
-    return <div>page</div>;
+    return (
+        <div>
+            <ReviewSection />
+        </div>
+    );
 };
 
 export default Page;
