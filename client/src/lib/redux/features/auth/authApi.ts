@@ -1,5 +1,5 @@
 import { apiSlice } from '../api/apiSlice';
-import { userLoggerIn, userLoggerOut, userRegistration } from './authSlice';
+import { userLoggerIn, userLoggerOut, userRegistration, userResetToken } from './authSlice';
 
 type RegistrationResponse = {
     message: string;
@@ -104,9 +104,53 @@ export const authApi = apiSlice.injectEndpoints({
                     console.log(error);
                 }
             }
+        }),
+        forgotPassword: builder.mutation({
+            query: ({ email }) => ({
+                url: 'user/forgot-password',
+                method: 'POST',
+                body: { email }
+            }),
+            async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+                try {
+                    const result = await queryFulfilled;
+                    console.log(result);
+                    dispatch(userResetToken({ resetToken: result.data.resetToken }));
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }),
+        resetCode: builder.mutation({
+            query: ({ reset_token, reset_code }) => ({
+                url: 'user/resetcode-verify',
+                method: 'POST',
+                body: {
+                    reset_token,
+                    reset_code
+                }
+            })
+        }),
+        resetPassword: builder.mutation({
+            query: ({ reset_token, newPassword }) => ({
+                url: 'user/reset-password',
+                method: 'PUT',
+                body: {
+                    reset_token,
+                    newPassword
+                }
+            })
         })
     })
 });
 
-export const { useRegisterMutation, useActivationMutation, useLoginMutation, useSocialAuthMutation, useLogoutQuery } =
-    authApi;
+export const {
+    useRegisterMutation,
+    useActivationMutation,
+    useLoginMutation,
+    useSocialAuthMutation,
+    useLogoutQuery,
+    useForgotPasswordMutation,
+    useResetCodeMutation,
+    useResetPasswordMutation
+} = authApi;

@@ -22,10 +22,13 @@ const authSlice = createSlice({
             state.token = '';
             state.user = '';
             state.isLoggingOut = true;
+        },
+        userResetToken: (state, action: PayloadAction<{ resetToken: string }>) => {
+            state.token = action.payload.resetToken;
         }
     }
 });
 
-export const { userRegistration, userLoggerIn, userLoggerOut } = authSlice.actions;
+export const { userRegistration, userLoggerIn, userLoggerOut, userResetToken } = authSlice.actions;
 
 export default authSlice.reducer;
