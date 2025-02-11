@@ -15,7 +15,7 @@ type VerifyNumber = {
 };
 
 type Props = {
-    handleDialogChange: (type: DialogType) => void;
+    readonly handleDialogChange: (type: DialogType) => void;
 };
 
 export default function VerifyResetCode({ handleDialogChange }: Props) {

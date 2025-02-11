@@ -15,8 +15,8 @@ import SpinnerMini from '../ui/SpinnerMini';
 import { DialogType } from '@/types/commons';
 
 type Props = {
-    handleOpenDialog: (open: boolean) => void;
-    handleDialogChange: (type: DialogType) => void;
+    readonly handleOpenDialog: (open: boolean) => void;
+    readonly handleDialogChange: (type: DialogType) => void;
 };
 
 const formSchema = z.object({
@@ -123,12 +123,13 @@ export default function LoginForm({ handleOpenDialog, handleDialogChange }: Prop
                     )}
                 />
                 <div className="mb-6 flex items-center justify-end">
-                    <span
+                    <button
+                        type="button"
                         onClick={() => handleDialogChange('forgot')}
-                        className="font-medium leading-7 text-accent-900 -mt-1 cursor-pointer"
+                        className="font-medium leading-7 text-accent-900 -mt-1 cursor-pointer bg-transparent border-none"
                     >
                         Forgot your password?
-                    </span>
+                    </button>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (

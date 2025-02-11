@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import SpinnerMini from '@/components/ui/SpinnerMini';
 
 type Props = {
-    handleDialogChange: (type: DialogType) => void;
+    readonly handleDialogChange: (type: DialogType) => void;
 };
 
 const formSchema = z.object({
