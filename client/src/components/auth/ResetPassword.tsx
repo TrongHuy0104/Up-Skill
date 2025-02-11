@@ -16,7 +16,7 @@ import SpinnerMini from '@/components/ui/SpinnerMini';
 import { useSelector } from 'react-redux';
 
 type Props = {
-    handleDialogChange: (type: DialogType) => void;
+    readonly handleDialogChange: (type: DialogType) => void;
 };
 
 const formSchema = z
@@ -123,6 +123,7 @@ export default function ResetPassword({ handleDialogChange }: Props) {
                                     <Input {...field} type="password" className={formStyles.textInput} />
                                     <FormLabel
                                         className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        htmlFor="confirmPassword"
                                     >
                                         Confirm Password
                                     </FormLabel>
@@ -137,7 +138,8 @@ export default function ResetPassword({ handleDialogChange }: Props) {
                         <SpinnerMini />
                     ) : (
                         <>
-                            <span>Reset</span> <Image src={arrowTopRightIcon} alt="" />
+                            <span className="flex items-center gap-2">Reset</span>{' '}
+                            <Image src={arrowTopRightIcon} alt="" />
                         </>
                     )}
                 </Button>
