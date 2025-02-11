@@ -12,7 +12,10 @@ import {
     updatePassword,
     updateProfilePicture,
     updateUserInfo,
-    updateUserRole
+    updateUserRole,
+    forgotPasswordUser,
+    resetCodeVerify,
+    resetPassword
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -24,6 +27,12 @@ router.post('/register', registrationUser);
 router.post('/activate-user', activateUser);
 
 router.post('/login', loginUser);
+
+router.post('/forgot-password', forgotPasswordUser);
+
+router.post('/resetcode-verify', resetCodeVerify);
+
+router.put('/reset-password', resetPassword);
 
 router.get('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
 
