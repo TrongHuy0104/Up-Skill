@@ -168,26 +168,26 @@ export default function CourseContent() {
     return (
         <div className={cn(dmSans.className, 'max-w-[900px] mx-auto p-4 text-[#131836]')}>
             <h2 className="text-2xl font-bold mb-4">Course Content</h2>
-            {sections.map((section, sectionIndex) => (
-                <div key={sectionIndex} className="border rounded-lg p-4 w-full max-w-4xl mt-4 ">
+            {sections.map((section, sectionKey) => (
+                <div key={sectionKey} className="border rounded-lg p-4 w-full max-w-4xl mt-4 ">
                     <button
-                        onClick={() => toggleSection(sectionIndex)}
+                        onClick={() => toggleSection(sectionKey)}
                         className="flex w-full text-left text-lg font-semibold p-4 gap-x-3 "
                     >
                         <ChevronDown
-                            className={`transition-transform ${openSections.includes(sectionIndex) ? 'rotate-180' : ''}`}
+                            className={`transition-transform ${openSections.includes(sectionKey) ? 'rotate-180' : ''}`}
                         />
                         <div className="flex justify-between items-center w-full">
                             {section.title}
                             <span className="text-sm font-normal">3 lectures • 9 min</span>
                         </div>
                     </button>
-                    {openSections.includes(sectionIndex) && (
+                    {openSections.includes(sectionKey) && (
                         <div className="mt-2 border-t pt-2 space-y-2">
                             {section.lectures &&
                                 Array.isArray(section.lectures) &&
-                                section.lectures.map((lecture, index) => (
-                                    <div key={index} className="flex justify-between items-center h-[35px]">
+                                section.lectures.map((lecture) => (
+                                    <div key={lecture.title} className="flex justify-between items-center h-[35px]">
                                         <span className="flex items-center gap-2">
                                             <span className="p-5">{lecture.icon}</span>
                                             {lecture.title}
