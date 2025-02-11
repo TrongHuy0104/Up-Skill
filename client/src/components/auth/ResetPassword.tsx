@@ -77,7 +77,8 @@ export default function ResetPassword({ handleDialogChange }: Props) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            password: ''
+            password: '',
+            confirmPassword: ''
         }
     });
 
