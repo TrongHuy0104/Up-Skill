@@ -10,7 +10,7 @@ export const getBaseUrl = () => {
         return `https://${process.env.VERCEL_URL}`;
     }
 
-    return 'https://memmomind-be-1.onrender.com';
+    return 'http://localhost:3000';
 };
 
 export function cn(...inputs: ClassValue[]) {
