@@ -6,6 +6,8 @@ import timeTable from '@/public/assets/icons/timetable.svg';
 import student from '@/public/assets/icons/students.svg';
 import CoursesDetailInfor from '@/components/CoursesDetailInfor';
 import CoursesDetailReview from '@/components/CoursesDetailReview';
+import CourseContent from '@/components/ui/CourseContent';
+import CoursesDetailLine from '@/components/ui/CoursesDetailLine';
 // import CourseSidebar from "@/components/ui/CourseSidebar";
 
 const Page = () => {
@@ -54,6 +56,8 @@ const Page = () => {
                 </CoursesDetailBanner>
 
                 <CoursesDetailInfor />
+                <CourseContent />
+                <CoursesDetailLine />
                 <CoursesDetailReview />
             </div>
 
