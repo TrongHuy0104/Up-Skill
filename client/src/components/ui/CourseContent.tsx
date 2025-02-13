@@ -10,11 +10,13 @@ import ToolContent from '@/public/assets/icons/tool-content.svg';
 import Question from '@/public/assets/icons/question.svg';
 import LockIcon from '@/public/assets/icons/lock.svg';
 import MoreSections from '@/public/assets/icons/more-sections.svg';
+import { redirect } from 'next/navigation';
 
 const dmSans = DM_Sans({ subsets: ['latin'] });
 
 export default function CourseContent() {
     const [openSections, setOpenSections] = useState<number[]>([]);
+    
 
     interface Lecture {
         title: string;
@@ -190,7 +192,7 @@ export default function CourseContent() {
                                     <div key={lecture.title} className="flex justify-between items-center h-[35px]">
                                         <span className="flex items-center gap-2">
                                             <span className="p-5">{lecture.icon}</span>
-                                            {lecture.title}
+                                            <button className='hover:text-[#E27447]' onClick={() => redirect('/')}>{lecture.title}</button>
                                         </span>
                                         <div className="flex items-center gap-2">
                                             <span className="text-sm text-[##131836]">{lecture.duration}</span>
@@ -207,7 +209,8 @@ export default function CourseContent() {
                     )}
                 </div>
             ))}
-            <button className="flex justify-center items-center gap-[10px] border border-[#131836] hover:border-[#E27447] rounded-lg mt-4 w-full h-[55px]"
+            <button
+                className="flex justify-center items-center gap-[10px] border border-[#131836] hover:border-[#E27447] rounded-lg mt-4 w-full h-[55px]"
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
                 78 More Sections
