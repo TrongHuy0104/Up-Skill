@@ -91,7 +91,7 @@ const ReviewSection: React.FC = () => {
     const reversedReviews = allReviews.reverse();
 
     return (
-        <div className="space-y-6 ml-0 w-[900px] px-4 mx-auto p-8">
+        <div className="space-y-6 ml-0 w-[900px]  mx-auto py-8 px-[14px]">
             <div className="text-left flex justify-between w-[900px]">
                 <h3 className="text-[22px] font-semibold text-primary-800">Reviews</h3>
                 <div className="gap-2 flex right-0">

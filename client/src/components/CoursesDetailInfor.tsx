@@ -30,7 +30,7 @@ const CoursesDetailInfor = () => {
             <div className="border-t border-primary-100 mb-[61px] w-[900px] px-[14px]"></div>
 
             {/* What you'll learn */}
-            <section className="mb-8">
+            <section className="mb-8 w-[900px]">
                 <h2 className="text-2xl font-bold mb-4">What youll learn</h2>
                 <div className="grid grid-cols-2 gap-4 pb-[61px]">
                     {/* Cột 1 */}
@@ -57,7 +57,7 @@ const CoursesDetailInfor = () => {
             </section>
 
             {/* Requirements */}
-            <section className="mb-8">
+            <section className="mb-8 w-[900px]">
                 <h2 className="text-2xl font-bold mb-4">Requirements</h2>
                 <ul className="list-disc pl-6 space-y-2 pb-[61px]">
                     <li>
@@ -71,7 +71,7 @@ const CoursesDetailInfor = () => {
             </section>
 
             {/* About This Course */}
-            <section className="pb-[61px] leading-7">
+            <section className="pb-[61px] leading-7 w-[900px]">
                 <h2 className="text-2xl font-bold mb-4">About This Course</h2>
 
                 {/* Nội dung có thể thu gọn */}
