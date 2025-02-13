@@ -18,7 +18,7 @@ const CoursesDetailInfor = () => {
                 <div className="grid grid-cols-2 gap-4 pb-[61px]">
                     <div className="space-y-2">
                         {[...Array(5)].map((_, index) => (
-                            <div key={index} className="flex gap-2">
+                            <div key={`item-${index}`} className="flex gap-2">
                                 <Image alt="Check Icon" src={check} />
                                 <p>Prepare for Industry Certification Exam</p>
                             </div>
@@ -26,7 +26,7 @@ const CoursesDetailInfor = () => {
                     </div>
                     <div className="space-y-2">
                         {[...Array(5)].map((_, index) => (
-                            <div key={index} className="flex gap-2">
+                            <div key={`item-${index}`} className="flex gap-2">
                                 <Image alt="Check Icon" src={check} />
                                 <p>Prepare for Industry Certification Exam</p>
                             </div>

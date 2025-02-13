@@ -7,14 +7,14 @@ interface Breadcrumb {
 }
 
 interface BannerProps {
-    title?: string;
-    breadcrumbs?: Breadcrumb[];
-    contentAlignment?: 'center' | 'left' | 'right';
-    backgroundColor?: string; // Màu nền
-    background?: string; // Hình nền (URL hoặc gradient)
-    children?: React.ReactNode;
-    button?: React.ReactNode;
-    buttonPosition?: 'left' | 'right';
+    readonly title?: string;
+    readonly breadcrumbs?: Breadcrumb[];
+    readonly contentAlignment?: 'center' | 'left' | 'right';
+    readonly backgroundColor?: string;
+    readonly background?: string;
+    readonly children?: React.ReactNode;
+    readonly button?: React.ReactNode;
+    readonly buttonPosition?: 'left' | 'right';
 }
 
 function getAlignmentClass(alignment: 'center' | 'left' | 'right'): string {
