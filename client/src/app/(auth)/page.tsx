@@ -22,13 +22,13 @@ const Page = () => {
                     Learn: HTML | CSS | JavaScript | Web programming | Web development | Front-end | Responsive | JQuery
                 </p>
                 <div className="flex items-center text-primary-800 mt-2 pb-4">
-                    <Image alt="Star Icon" src={star} width={20} height={20} />
+                    <Image alt="Star Icon" src={star} />
                     <span className="pl-[6px] pr-6"> 4.9 (315,475 rating)</span>
-                    <Image alt="Time Table Icon" src={timeTable} width={20} height={20} />
+                    <Image alt="Time Table Icon" src={timeTable} />
                     <span className="pl-[6px] pr-6"> 11 Lessons</span>
-                    <Image alt="Student Icon" src={student} width={20} height={20} />
+                    <Image alt="Student Icon" src={student} />
                     <span className="pl-[6px] pr-6"> 229 Students</span>
-                    <Image alt="Time Icon" src={time} width={20} height={20} />
+                    <Image alt="Time Icon" src={time} />
                     <span className="pl-[6px] pr-6">Last updated 12/2024</span>
                 </div>
                 <div className="flex items-center mt-4">
