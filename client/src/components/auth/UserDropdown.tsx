@@ -49,7 +49,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                         className="h-8 rounded-full"
                         width={32}
                         height={32}
-                        src={user.avatar.url ?? defaultAvatar}
+                        src={user?.avatar?.url ?? defaultAvatar}
                         alt={user.name ?? 'User Avatar'}
                         referrerPolicy="no-referrer"
                     />
