@@ -110,18 +110,18 @@ export function CourseHorizontalCard() {
                             className='pr-[10px] relative flex items-center justify-start gap-[7px]
                             after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
                         >
-                            <Image src={timeTableIcon} alt="" />
+                            <Image src={timeTableIcon} className="relative bottom-[1px]" alt="" />
                             <p>11 Lessons</p>
                         </div>
                         <div
                             className='pr-[10px] relative flex items-center justify-start gap-[7px]
                             after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
                         >
-                            <Image src={studentsIcon} alt="" />
+                            <Image src={studentsIcon} className="relative bottom-[1px]" alt="" />
                             <p>229 Students</p>
                         </div>
                         <div className="pr-[10px] relative flex items-center justify-start gap-[7px]">
-                            <Image src={hourIcon} alt="" />
+                            <Image src={hourIcon} className="relative bottom-[1px]" alt="" />
                             <p>16 hours</p>
                         </div>
                     </div>

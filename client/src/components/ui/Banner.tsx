@@ -7,8 +7,8 @@ interface Breadcrumb {
 }
 
 interface BannerProps {
-    title: string;
-    breadcrumbs: Breadcrumb[];
+    title?: string;
+    breadcrumbs?: Breadcrumb[];
     contentAlignment?: 'center' | 'left' | 'right';
     backgroundColor?: string; // Màu nền
     background?: string; // Hình nền (URL hoặc gradient)
@@ -52,8 +52,8 @@ export default function Banner({
                 >
                     {/* Content section */}
                     <div className={`flex-1 ${alignmentClass}`}>
-                        <Breadcrumb breadcrumbs={breadcrumbs} alignment={contentAlignment} />
-                        <h2 className="font-serif text-[42px] mb-4">{title}</h2>
+                        {breadcrumbs && <Breadcrumb breadcrumbs={breadcrumbs} alignment={contentAlignment} />}
+                        {title && <h2 className="text-[42px] mb-4 font-bold leading-[56px] font-cardo">{title}</h2>}
                         {children}
                     </div>
 

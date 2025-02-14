@@ -74,9 +74,13 @@ export default {
                 lg: 'var(--radius)',
                 md: 'calc(var(--radius) - 2px)',
                 sm: 'calc(var(--radius) - 4px)'
+            },
+            fontFamily: {
+                dmSans: ['var(--font-dmSans)', 'sans-serif'], // Set as default
+                cardo: ['var(--font-cardo)', 'sans-serif']
             }
         }
     },
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     plugins: [require('tailwindcss-animate')]
 } satisfies Config;
