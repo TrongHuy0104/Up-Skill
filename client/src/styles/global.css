@@ -6,6 +6,7 @@
 @layer base {
     body {
         @apply font-dmSans;
+        @apply font-cardo;
         @apply text-primary-800 text-[15px];
     }
 
