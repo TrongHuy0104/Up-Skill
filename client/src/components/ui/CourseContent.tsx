@@ -15,7 +15,7 @@ import { redirect } from 'next/navigation';
 const dmSans = DM_Sans({ subsets: ['latin'] });
 
 export default function CourseContent() {
-    const [openSections, setOpenSections] = useState<number[]>([]);
+    const [openSections, setOpenSections] = useState<(string | number)[]>([]);
 
     interface Lecture {
         title: string;
@@ -163,27 +163,30 @@ export default function CourseContent() {
             ]
         }
     ];
-    const toggleSection = (index: number) => {
-        setOpenSections((prev) => (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]));
+    const toggleSection = (sectionTitle: string | number) => {
+        setOpenSections((prev) =>
+            prev.includes(sectionTitle) ? prev.filter((title) => title !== sectionTitle) : [...prev, sectionTitle]
+        );
     };
+
     return (
-        <div className={cn(dmSans.className, 'w-[900px] px-[14px]  text-[#131836]')}>
+        <div className={cn(dmSans.className, 'w-[900px] px-[14px] text-[#131836]')}>
             <h2 className="text-2xl font-bold mb-4">Course Content</h2>
-            {sections.map((section, sectionKey) => (
-                <div key={sectionKey} className="border rounded-lg p-4 w-[900px] mt-4 ">
+            {sections.map((section) => (
+                <div key={section.title} className="border rounded-lg p-4 w-[900px] mt-4 ">
                     <button
-                        onClick={() => toggleSection(sectionKey)}
+                        onClick={() => toggleSection(section.title)}
                         className="flex w-full text-left text-lg font-semibold p-4 gap-x-3 "
                     >
                         <ChevronDown
-                            className={`transition-transform ${openSections.includes(sectionKey) ? 'rotate-180' : ''}`}
+                            className={`transition-transform ${openSections.includes(section.title) ? 'rotate-180' : ''}`}
                         />
                         <div className="flex justify-between items-center w-full">
                             {section.title}
                             <span className="text-sm font-normal">3 lectures • 9 min</span>
                         </div>
                     </button>
-                    {openSections.includes(sectionKey) && (
+                    {openSections.includes(section.title) && (
                         <div className="mt-2 border-t pt-2 space-y-2">
                             {section.lectures &&
                                 Array.isArray(section.lectures) &&
@@ -196,7 +199,7 @@ export default function CourseContent() {
                                             </button>
                                         </span>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-sm text-[##131836]">{lecture.duration}</span>
+                                            <span className="text-sm text-[#131836]">{lecture.duration}</span>
                                             {lecture.preview && (
                                                 <button className="text-[#E27447] border border-[#E27447] px-2 py-1 text-sm rounded">
                                                     Preview
