@@ -5,10 +5,10 @@ import time from '@/public/assets/icons/hour.svg';
 import timeTable from '@/public/assets/icons/timetable.svg';
 import student from '@/public/assets/icons/students.svg';
 import CoursesDetailInfor from '@/components/CoursesDetailInfor';
-import CoursesDetailReview from '@/components/CoursesDetailReview';
+import CoursesDetailReview from '@/components/ui/CoursesReview';
 import CourseContent from '@/components/ui/CourseContent';
 import CoursesDetailLine from '@/components/ui/CoursesDetailLine';
-// import CourseSidebar from "@/components/ui/CourseSidebar";
+import CourseSidebar from '@/components/ui/CourseSidebar';
 
 const Page = () => {
     return (
@@ -63,15 +63,14 @@ const Page = () => {
 
             {/* Sidebar khóa học */}
             <div className="w-full md:w-1/3">
-                {/* <CourseSidebar
-              price={249.00}
-              originalPrice={449.00}
-              discount={39}
-              videoHours={54.5}
-              articles={3}
-              resources={249}
-            /> */}
-                <div>Slider bả</div>
+                <CourseSidebar
+                    price={249.0}
+                    originalPrice={449.0}
+                    discount={39}
+                    videoHours={54.5}
+                    articles={3}
+                    resources={249}
+                />
             </div>
         </div>
     );

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import check from '@/public/assets/icons/check-icon.svg';
 import arrowDownOrangeIcon from '@/public/assets/icons/arrow-down-orange.svg';
 import Image from 'next/image';
+import CoursesDetailLine from './ui/CoursesDetailLine';
 
 const CoursesDetailInfor = () => {
     // Dữ liệu mẫu với 10 đối tượng
@@ -26,11 +27,9 @@ const CoursesDetailInfor = () => {
     const secondColumnItems = learnItems.slice(5, 10);
 
     return (
-        <div className="w-[900px] px-[14px] mr-0 text-primary-800">
-            <div className="border-t border-primary-100 mb-[61px] w-[900px] px-[14px]"></div>
-
+        <div className="w-[900px] px-[14px] mr-0 text-primary-800 ">
             {/* What you'll learn */}
-            <section className="mb-8 w-[900px]">
+            <section className="mb-[61px] w-[900px]">
                 <h2 className="text-2xl font-bold mb-4">What youll learn</h2>
                 <div className="grid grid-cols-2 gap-4 pb-[61px]">
                     {/* Cột 1 */}
@@ -53,11 +52,11 @@ const CoursesDetailInfor = () => {
                         ))}
                     </div>
                 </div>
-                <div className="border-t border-primary-100 mb-[61px] w-[900px] px-[14px]"></div>
+                <CoursesDetailLine />
             </section>
 
             {/* Requirements */}
-            <section className="mb-8 w-[900px]">
+            <section className="mb-[61px] w-[900px]">
                 <h2 className="text-2xl font-bold mb-4">Requirements</h2>
                 <ul className="list-disc pl-6 space-y-2 pb-[61px]">
                     <li>
@@ -67,7 +66,7 @@ const CoursesDetailInfor = () => {
                     <li>You can take this course using a Mac, PC or Linux machine.</li>
                     <li>It is recommended that you download the free Komodo text editor.</li>
                 </ul>
-                <div className="border-t border-primary-100 mb-[61px] w-[900px] px-[14px]"></div>
+                <CoursesDetailLine />
             </section>
 
             {/* About This Course */}
@@ -108,7 +107,6 @@ const CoursesDetailInfor = () => {
                     />
                 </button>
             </section>
-            <div className="border-t border-primary-100 mb-[61px] w-[900px] px-[14px]"></div>
         </div>
     );
 };

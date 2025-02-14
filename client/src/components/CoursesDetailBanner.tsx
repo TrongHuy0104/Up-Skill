@@ -36,7 +36,7 @@ export default function CoursesDetailBanner({
     const alignmentClass = getAlignmentClass(contentAlignment);
 
     return (
-        <div className={`page-title py-[54px] flex items-center relative text-primary-800 ${backgroundColor}`}>
+        <div className={`page-title pb-[61px] flex items-center relative text-primary-800 ${backgroundColor}`}>
             {/* Overlay hình nền */}
             {background && (
                 <div

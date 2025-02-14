@@ -33,7 +33,7 @@ export default {
                     '600': '#FF7633',
                     '700': '#FF5F20',
                     '800': '#FF471E',
-                    '900': '#E27447 ',
+                    '900': '#E27447',
                     DEFAULT: 'hsl(var(--accent))',
                     foreground: 'hsl(var(--accent-foreground))'
                 },

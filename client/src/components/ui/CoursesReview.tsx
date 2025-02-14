@@ -5,6 +5,8 @@ import likeIcon from '@/public/assets/icons/like-icon.svg';
 import dislikeIcon from '@/public/assets/icons/dislike-icon.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import { formatDistanceToNow } from 'date-fns';
+import FormReview from './FormReview';
+import MoreSections from '@/public/assets/icons/more-sections.svg';
 
 interface ReviewProps {
     name: string;
@@ -19,10 +21,10 @@ const Review: React.FC<ReviewProps> = ({ name, rating, date, content, isLastRevi
     const formattedDate = formatDistanceToNow(date, { addSuffix: true });
 
     return (
-        <div className="bg-white p-6 rounded-lg justify-start text-left col-span-1 w-[900px] leading-9">
+        <div className="bg-white px-6 rounded-lg justify-start text-left col-span-1 w-[900px] leading-9">
             <div className="flex space-x-6">
                 {/* Avatar column */}
-                <div className="w-[46px] h-[46px] bg-primary-100 rounded-full flex items-center justify-center">
+                <div className="w-[46px] h-[46px] bg-primary-100 rounded-full flex items-center justify-center min-w-[46px]">
                     <span className="font-bold text-primary-900 text-2xl">{name.charAt(0)}</span>
                 </div>
 
@@ -38,7 +40,7 @@ const Review: React.FC<ReviewProps> = ({ name, rating, date, content, isLastRevi
                             <p className="text-primary-800 text-sm">{formattedDate}</p>
                         </div>
                     </div>
-                    <p className="text-primary-800">{content}</p>
+                    <p className="text-primary-800 break-words  ">{content}</p>
 
                     <div className="flex space-x-2 mt-2">
                         <div className="flex gap-2">
@@ -54,7 +56,7 @@ const Review: React.FC<ReviewProps> = ({ name, rating, date, content, isLastRevi
             </div>
 
             {/* Border line separating reviews, only shown if it's not the last review */}
-            {!isLastReview && <div className="border-t border-primary-100 mt-[36px]"></div>}
+            {!isLastReview && <div className="border-t border-primary-100 my-[26px]"></div>}
         </div>
     );
 };
@@ -76,7 +78,13 @@ const ReviewSection: React.FC = () => {
         { name: 'Alice Brown', rating: 5, date: new Date('2023-11-20'), content: 'Absolutely amazing!' },
         { name: 'Jane Smith', rating: 4.5, date: new Date('2023-10-15'), content: 'Nice, but could be better.' },
         { name: 'John Doe', rating: 4.8, date: new Date('2023-10-10'), content: 'Great course, very informative!' },
-        { name: 'Theresa Edin', rating: 4.9, date: new Date('2025-08-15'), content: 'Lorem ipsum dolor sit amet.' }
+        {
+            name: 'Theresa Edin',
+            rating: 4.9,
+            date: new Date('2025-08-15'),
+            content:
+                'Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.'
+        }
     ];
 
     // State to control how many reviews to show
@@ -91,9 +99,9 @@ const ReviewSection: React.FC = () => {
     const reversedReviews = allReviews.reverse();
 
     return (
-        <div className="space-y-6 ml-0 w-[900px]  mx-auto py-8 px-[14px]">
+        <div className="space-y-6 ml-0 w-[900px]   pb-8 px-[14px]">
             <div className="text-left flex justify-between w-[900px]">
-                <h3 className="text-[22px] font-semibold text-primary-800">Reviews</h3>
+                <h3 className="text-[24px] font-semibold text-primary-800">Reviews</h3>
                 <div className="gap-2 flex right-0">
                     <span className="text-primary-800">4.9 course rating</span>
                     <p className="text-[10px] mt-1 text-primary-800">●</p>
@@ -102,7 +110,7 @@ const ReviewSection: React.FC = () => {
             </div>
 
             {/* Display reviews based on the visibleReviews state */}
-            <div className="">
+            <div className=" w-[900px] ">
                 {reversedReviews
                     .slice(0, visibleReviews) // Get the reviews to display based on `visibleReviews`
                     .map((review, index) => (
@@ -122,12 +130,14 @@ const ReviewSection: React.FC = () => {
                 <div className="text-center">
                     <button
                         onClick={loadMoreReviews}
-                        className="flex w-[900px] justify-center items-center gap-[10px] border border-primary-800 hover:border-accent-600 rounded-lg mt-4  h-[55px]"
+                        className="flex w-[900px]  justify-center items-center gap-[10px] border border-primary-800 hover:border-accent-600 rounded-lg mt-4  h-[55px]"
                     >
                         View More Reviews
+                        <Image src={MoreSections} alt="more sections" />
                     </button>
                 </div>
             )}
+            <FormReview />
         </div>
     );
 };
