@@ -7,9 +7,6 @@ import About from "@/components/ui/About";
 import InstructorCard from "@/components/ui/Instructor";
 
 export default function page() {
-
-
-
     return (
         <div>
             <Banner
@@ -863,8 +860,6 @@ export default function page() {
                         </div>
                     </div>
                 </section>
-
-
             </div >
         </div >
     );
