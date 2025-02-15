@@ -9,7 +9,46 @@ import dynamic from 'next/dynamic';
 // Sử dụng dynamic để tắt SSR cho modal
 const Modal = dynamic(() => import('@/app/courses/_components/ModalComponent'), { ssr: false });
 
-export default function HorizontalCoursesList() {
+type Benefit = {
+    title: string;
+    _id: string;
+};
+
+type Prerequisite = {
+    title: string;
+    _id: string;
+};
+
+type CourseData = {
+    title: string;
+    description: string;
+    _id: string;
+};
+
+export type Course = {
+    _id: string;
+    name: string;
+    description: string;
+    authorId: string;
+    price: number;
+    estimatedPrice: number;
+    tags: string;
+    level: string;
+    demoUrl: string;
+    benefits: Benefit[];
+    prerequisites: Prerequisite[];
+    courseData: CourseData[];
+    rating: number;
+    purchased: number;
+    reviews: any[];
+    __v: number;
+};
+
+interface HorizontalCoursesListProps {
+    courses: Course[];
+}
+
+export default function HorizontalCoursesList({ courses }: HorizontalCoursesListProps) {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
     const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
     const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ modal
@@ -53,7 +92,7 @@ export default function HorizontalCoursesList() {
                         className="cursor-pointer"
                         src={arrowDownIcon}
                         alt="Arrow Down Icon"
-                        onClick={toggleModal} // Khi click vào mũi tên, sẽ gọi toggleModal
+                        onClick={toggleModal}
                     />
                 </div>
             </div>
@@ -61,15 +100,9 @@ export default function HorizontalCoursesList() {
             {/* Dropdown Modal */}
             {isModalOpen && <Modal closeModal={closeModal} onSelectSort={handleSortSelect} />}
 
-            {/* List of course cards */}
-            <CourseHorizontalCard />
-            <CourseHorizontalCard />
-            <CourseHorizontalCard />
-            <CourseHorizontalCard />
-            <CourseHorizontalCard />
-            <CourseHorizontalCard />
-            <CourseHorizontalCard />
-            <CourseHorizontalCard />
+            {courses.map((course) => (
+                <CourseHorizontalCard key={course._id} course={course} />
+            ))}
 
             {/* Pagination */}
             <div className="p-5">

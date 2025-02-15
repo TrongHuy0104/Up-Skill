@@ -94,7 +94,7 @@ export const getAllCoursesWithoutPurchase = catchAsync(async (req: Request, res:
     if (isCacheExist) {
         courses = JSON.parse(isCacheExist);
     } else {
-        courses = await CourseModel.find().select(
+        const courses = await CourseModel.find().select(
             '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links'
         );
         redis.set(`allCourses ${req.user?._id}`, JSON.stringify(courses));

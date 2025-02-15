@@ -9,6 +9,7 @@ import hourIcon from '@/public/assets/icons/hour.svg';
 import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
+import { Course } from '@/app/courses/_components/HorizontalCoursesList';
 
 export default function CourseVerticalCard() {
     return (
@@ -85,7 +86,8 @@ export default function CourseVerticalCard() {
     );
 }
 
-export function CourseHorizontalCard() {
+export function CourseHorizontalCard({ course }: { course: Course }) {
+    console.log(course);
     return (
         <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
             <div className="h-[240px] max-w-[320px] relative rounded-sm overflow-hidden">
@@ -111,7 +113,7 @@ export function CourseHorizontalCard() {
                             after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
                         >
                             <Image src={timeTableIcon} className="relative bottom-[1px]" alt="" />
-                            <p>11 Lessons</p>
+                            <p>{course.courseData.length} Lessons</p>
                         </div>
                         <div
                             className='pr-[10px] relative flex items-center justify-start gap-[7px]
@@ -125,7 +127,7 @@ export function CourseHorizontalCard() {
                             <p>16 hours</p>
                         </div>
                     </div>
-                    <div className="text-accent-600 font-medium text-lg leading-7">$89.29</div>
+                    <div className="text-accent-600 font-medium text-lg leading-7">${course.price}</div>
                 </div>
                 <h6 className="mb-[10px] line-clamp-2 font-medium text-base leading-7">
                     <Link
@@ -134,15 +136,14 @@ export function CourseHorizontalCard() {
                     from-[calc(100%-1px)] to-current to-[1px] transition-all duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] 
                     backface-hidden group-hover:bg-[length:100%_100%] group-hover:delay-300 hover:text-accent-600"
                     >
-                        Become a Certified Web Developer: HTML, CSS and JavaScript
+                        {course?.name}
                     </Link>
                 </h6>
                 <p className="mb-[10px] text-sm leading-7 max-w-[80%]">
-                    Become a Full-Stack Web Developer with just ONE course. HTML, CSS, Javascript, Node, React,
-                    PostgreSQL, Web3 and DApps
+                    {course?.description.length > 100 ? course.description.slice(0, 100) + '...' : course.description}
                 </p>
                 <div className="mb-[8px] flex items-center gap-[7px]">
-                    <span>4.9</span>
+                    <span>{course.rating}</span>
                     <div className="flex items-center relative gap-[7px] pb-[2px]">
                         <Image src={starIcon} alt="" />
                         <Image src={starIcon} alt="" />
