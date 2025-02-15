@@ -45,7 +45,7 @@ export type Course = {
 };
 
 interface HorizontalCoursesListProps {
-    courses: Course[];
+    readonly courses: Course[];
 }
 
 export default function HorizontalCoursesList({ courses }: HorizontalCoursesListProps) {
@@ -88,12 +88,7 @@ export default function HorizontalCoursesList({ courses }: HorizontalCoursesList
                 <div className="flex items-center gap-3">
                     <p className="text-primary-600">Sort by</p>
                     <span className="text-primary-800">{selectedSort}</span> {/* Hiển thị giá trị đã chọn */}
-                    <Image
-                        className="cursor-pointer"
-                        src={arrowDownIcon}
-                        alt="Arrow Down Icon"
-                        onClick={toggleModal}
-                    />
+                    <Image className="cursor-pointer" src={arrowDownIcon} alt="Arrow Down Icon" onClick={toggleModal} />
                 </div>
             </div>
 
