@@ -76,6 +76,7 @@ export default function Sort() {
                         }
                     }}
                     tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
+                    role="button"
                 />
             </div>
 

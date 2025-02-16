@@ -20,6 +20,7 @@ const ModalComponent = ({
                     }
                 }}
                 tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
+                role="button" // Đảm bảo phần tử <li> được nhận diện là button cho accessibility
             >
                 Best Selling
             </li>
@@ -36,6 +37,7 @@ const ModalComponent = ({
                     }
                 }}
                 tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
+                role="button" // Đảm bảo phần tử <li> được nhận diện là button cho accessibility
             >
                 Oldest
             </li>
@@ -52,6 +54,7 @@ const ModalComponent = ({
                     }
                 }}
                 tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
+                role="button" // Đảm bảo phần tử <li> được nhận diện là button cho accessibility
             >
                 3 days
             </li>
