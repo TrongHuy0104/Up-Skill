@@ -127,7 +127,7 @@ export default function InstructorList() {
 
     return (
         <div>
-            <div className="w-[1400px] px-[14px] mx-auto flex flex-wrap gap-[20px] mb-10">
+            <div className="w-[1400px] px-[14px] mx-auto flex flex-wrap gap-x-[20px] gap-y-[40px] mb-10">
                 {/* Render the current instructors */}
                 {currentInstructors}
             </div>

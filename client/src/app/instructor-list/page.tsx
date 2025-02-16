@@ -2,7 +2,7 @@ import React from 'react';
 import Search from './_component/SearchBar';
 import Banner from './_component/BannerInstructor';
 import Sort from './_component/Sort';
-import InstructorList from './_component/InstructorList';
+import InstructorList from './_component/InstructorsList';
 
 export default function page() {
     return (
