@@ -53,8 +53,8 @@ export default function Sort() {
             {/* Chỉnh sửa flex container */}
             <div className="flex items-center h-[45px] gap-2">
                 <p className="text-primary-600">Sort by</p>
-                <div className="flex gap-2 cursor-pointer" onClick={toggleSortDropdown}>
-                    <span
+                <div className="flex gap-2">
+                    <button
                         className="text-primary-800 cursor-pointer"
                         onClick={toggleSortDropdown} // Mở dropdown khi click vào "Date Created"
                         onKeyDown={(e) => {
@@ -65,11 +65,9 @@ export default function Sort() {
                         tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
                     >
                         {selectedSort}
-                    </span>
-                    <Image
+                    </button>
+                    <button
                         className="cursor-pointer"
-                        src={arrowDownIcon}
-                        alt="Arrow Down Icon"
                         onClick={toggleSortDropdown} // Mở dropdown khi click vào mũi tên
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
@@ -77,8 +75,9 @@ export default function Sort() {
                             }
                         }}
                         tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
-                        role="button"
-                    />
+                    >
+                        <Image src={arrowDownIcon} alt="Arrow Down Icon" />
+                    </button>
                 </div>
             </div>
 
