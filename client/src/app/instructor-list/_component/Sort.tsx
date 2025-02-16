@@ -56,6 +56,12 @@ export default function Sort() {
                 <span
                     className="text-primary-800 cursor-pointer"
                     onClick={toggleSortDropdown} // Mở dropdown khi click vào "Date Created"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
+                        }
+                    }}
+                    tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
                 >
                     {selectedSort}
                 </span>
@@ -64,6 +70,12 @@ export default function Sort() {
                     src={arrowDownIcon}
                     alt="Arrow Down Icon"
                     onClick={toggleSortDropdown} // Mở dropdown khi click vào mũi tên
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
+                        }
+                    }}
+                    tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
                 />
             </div>
 
