@@ -10,16 +10,16 @@ const dmSans = DM_Sans({ subsets: ['latin'] });
 
 export default function InstructorCard({ isHorizontal = false }) {
     return (
-        <div className={cn('bg-white  text-left', isHorizontal ? 'flex w-full items-center ' : 'w-full sm:w-80')}>
+        <div className={cn('bg-white  text-left', isHorizontal ? 'flex w-full items-center ' : 'w-full sm:w-64')}>
             <div
                 className={cn(
                     'relative overflow-hidden',
                     isHorizontal ? 'w-25 h-25 flex-shrink-0' : 'w-full h-48 sm:h-64'
                 )}
             >
-                <div className="group  overflow-hidden rounded-xl">
+                <div className="group  overflow-hidden rounded-sm">
                     <Image
-                        className="w-[100px] h-[100px] object-cover transition duration-1000 group-hover:scale-125"
+                        className="w-full h-full object-cover transition duration-1000 group-hover:scale-125"
                         src={img}
                         alt="Instructor"
                     />
