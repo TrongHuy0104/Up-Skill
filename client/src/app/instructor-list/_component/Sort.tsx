@@ -53,31 +53,33 @@ export default function Sort() {
             {/* Chỉnh sửa flex container */}
             <div className="flex items-center h-[45px] gap-2">
                 <p className="text-primary-600">Sort by</p>
-                <span
-                    className="text-primary-800 cursor-pointer"
-                    onClick={toggleSortDropdown} // Mở dropdown khi click vào "Date Created"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
-                        }
-                    }}
-                    tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
-                >
-                    {selectedSort}
-                </span>
-                <Image
-                    className="cursor-pointer"
-                    src={arrowDownIcon}
-                    alt="Arrow Down Icon"
-                    onClick={toggleSortDropdown} // Mở dropdown khi click vào mũi tên
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
-                        }
-                    }}
-                    tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
-                    role="button"
-                />
+                <div className="flex gap-2 cursor-pointer" onClick={toggleSortDropdown}>
+                    <span
+                        className="text-primary-800 cursor-pointer"
+                        onClick={toggleSortDropdown} // Mở dropdown khi click vào "Date Created"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
+                            }
+                        }}
+                        tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
+                    >
+                        {selectedSort}
+                    </span>
+                    <Image
+                        className="cursor-pointer"
+                        src={arrowDownIcon}
+                        alt="Arrow Down Icon"
+                        onClick={toggleSortDropdown} // Mở dropdown khi click vào mũi tên
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
+                            }
+                        }}
+                        tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
+                        role="button"
+                    />
+                </div>
             </div>
 
             {/* Sort Dropdown */}
