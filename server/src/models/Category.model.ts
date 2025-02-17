@@ -8,6 +8,7 @@ export const CategorySchema: Schema<ICategory> = new Schema({
         maxLength: 100,
         minLength: 3,
         trim: true
+        // unique: true
     },
     courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
 });

@@ -1,8 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 import { IComment, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
-import { LevelSchema } from './Level.model';
-import { CategorySchema } from './Category.model';
-import { SubCategorySchema } from './SubCategory.model';
 
 const ReviewSchema = new Schema<IReview>({
     user: Object,
@@ -40,9 +37,12 @@ const CourseSchema = new Schema<ICourse>({
         type: String,
         required: true
     },
+    subTitle: {
+        type: String
+    },
     description: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     },
     authorId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -50,8 +50,8 @@ const CourseSchema = new Schema<ICourse>({
         required: [true, 'Author is required']
     },
     price: {
-        type: Number,
-        required: true
+        type: Number
+        // required: true
     },
     estimatedPrice: {
         type: Number
@@ -65,13 +65,16 @@ const CourseSchema = new Schema<ICourse>({
         }
     },
     tags: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     },
-    level: LevelSchema,
+    level: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Level'
+    },
     demoUrl: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     },
     benefits: [{ title: String }],
     prerequisites: [{ title: String }],
@@ -86,8 +89,16 @@ const CourseSchema = new Schema<ICourse>({
         default: 0
     },
     isPublished: { type: Boolean, default: false },
-    category: CategorySchema,
-    subCategory: SubCategorySchema
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: [true, 'Category is required']
+    },
+    subCategory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SubCategory',
+        required: [true, 'Sub Category is required']
+    }
 });
 
 export default mongoose.models.Course || mongoose.model<ICourse>('Course', CourseSchema);

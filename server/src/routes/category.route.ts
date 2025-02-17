@@ -3,6 +3,7 @@ import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import {
     createCategory,
     createSubCategory,
+    getAllCategoriesWithSubcategories,
     getCategories,
     getCategory,
     getSubCategoriesByCategoryId
@@ -15,6 +16,8 @@ router.post('/', isAuthenticated, createCategory);
 router.post('/sub-category/:id', isAuthenticated, createSubCategory);
 
 router.get('/', getCategories);
+
+router.get('/all', getAllCategoriesWithSubcategories);
 
 router.get('/:id', getCategory);
 

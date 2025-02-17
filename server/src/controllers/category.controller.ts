@@ -81,3 +81,24 @@ export const getCategory = catchAsync(async (req: Request, res: Response, next: 
         category
     });
 });
+export const getAllCategoriesWithSubcategories = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const categories = await CategoryModel.find();
+
+    const subCategories = await SubCategoryModel.find().populate('categoryId');
+
+    const result = categories.map((category) => {
+        return {
+            ...category.toObject(),
+            subCategories: subCategories
+                .filter((subCat) => subCat.categoryId._id.toString() === category._id.toString())
+                .map((subCat) => ({
+                    _id: subCat._id,
+                    title: subCat.title
+                }))
+        };
+    });
+    res.status(200).json({
+        success: true,
+        categories: result
+    });
+});

@@ -8,6 +8,7 @@ export const SubCategorySchema: Schema<ISubCategory> = new Schema({
         maxLength: 100,
         minLength: 3,
         trim: true
+        // unique: true
     },
     categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
     courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]

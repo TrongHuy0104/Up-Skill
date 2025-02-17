@@ -29,19 +29,19 @@ router.get('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
 
 router.get('/refresh', updateAccessToken);
 
-router.get('/me', isAuthenticated, getUserInfo);
+router.get('/me', updateAccessToken, isAuthenticated, getUserInfo);
 
 router.post('/social-auth', socialAuth);
 
-router.put('/update-user', isAuthenticated, updateUserInfo);
+router.put('/update-user', updateAccessToken, isAuthenticated, updateUserInfo);
 
-router.put('/update-password', isAuthenticated, updatePassword);
+router.put('/update-password', updateAccessToken, isAuthenticated, updatePassword);
 
-router.put('/update-avatar', isAuthenticated, updateProfilePicture);
+router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePicture);
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
-router.put('/update-role', isAuthenticated, authorizeRoles('admin'), updateUserRole);
+router.put('/update-role', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateUserRole);
 
 router.delete('/delete-user:id', isAuthenticated, authorizeRoles('admin'), deleteUser);
 
