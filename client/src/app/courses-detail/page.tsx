@@ -5,6 +5,8 @@ import Review from './_component/Review';
 import SideBar from './_component/SideBar';
 import CoursesContent from './_component/CoursesContent';
 import CoursesDetailLine from '@/components/ui/CoursesDetailLine';
+import Instructor from './_component/Instructor';
+import CoursesList from './_component/CoursesList';
 
 export default function page() {
     return (
@@ -12,10 +14,17 @@ export default function page() {
             <div className="left-content ml-7">
                 <Banner />
                 <CoursesDetailLine />
+
                 <CoursesInfor />
                 <CoursesDetailLine />
 
                 <CoursesContent />
+                <CoursesDetailLine />
+
+                <Instructor />
+                <CoursesDetailLine />
+
+                <CoursesList />
                 <CoursesDetailLine />
 
                 <Review />
