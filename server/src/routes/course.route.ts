@@ -9,6 +9,7 @@ import {
     deleteCourse,
     getAllCourses,
     getAllCoursesWithoutPurchase,
+    getCoursesLimitWithPagination,
     getPurchasedCourseByUser,
     getSingleCourse,
     updateCourse,
@@ -20,6 +21,8 @@ const router = express.Router();
 router.post('/create-course', isAuthenticated, uploadCourse);
 
 router.put('/update-course/:id', isAuthenticated, updateCourse);
+
+router.get('/pagination', getCoursesLimitWithPagination);
 
 router.get('/:id', getSingleCourse);
 

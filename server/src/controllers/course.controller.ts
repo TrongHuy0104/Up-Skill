@@ -372,3 +372,29 @@ export const deleteCourse = catchAsync(async (req: Request, res: Response, next:
         message: 'Course deleted successfully'
     });
 });
+
+//get courses -- pagination
+
+export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    console.log(page);
+    console.log(limit);
+    const courses = await CourseModel.find()
+        .select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')
+        .skip(skip)
+        .limit(limit);
+
+    const totalCourses = await CourseModel.countDocuments();
+
+    res.status(200).json({
+        success: true,
+        page,
+        limit,
+        totalCourses,
+        totalPages: Math.ceil(totalCourses / limit),
+        courses
+    });
+});
