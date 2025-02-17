@@ -33,6 +33,11 @@ interface IActivationRequest {
     activation_code: string;
 }
 
+interface IResetCode {
+    reset_token: string;
+    reset_code: string;
+}
+
 interface ILoginRequest {
     email: string;
     password: string;
@@ -355,5 +360,83 @@ export const deleteUser = catchAsync(async (req: Request, res: Response, next: N
     res.status(200).json({
         success: true,
         message: 'User deleted successfully'
+    });
+});
+
+export const forgotPasswordUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    const user = await UserModel.findOne({ email });
+    if (!user) return next(new ErrorHandler('User not found', 404));
+
+    const resetToken = createActivationToken(user);
+
+    const resetCode = resetToken.activationCode;
+
+    const data = { user: { name: user.name }, resetCode };
+    await ejs.renderFile(path.join(__dirname, '../mails/reset-password-mail.ejs'), data);
+
+    try {
+        await sendMail({
+            email: user.email,
+            subject: 'Reset your password',
+            template: 'reset-password-mail.ejs',
+            data
+        });
+
+        res.status(200).json({
+            success: true,
+            message: `Please check your email: ${user.email} to reset your password!`,
+            resetToken: resetToken.token
+        });
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
+
+export const resetCodeVerify = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { reset_token, reset_code } = req.body as IResetCode;
+
+    const decoded: { user: UserT; activationCode: string } = jwt.verify(
+        reset_token,
+        process.env.ACTIVATION_SECRET as string
+    ) as { user: UserT; activationCode: string };
+
+    if (decoded.activationCode !== reset_code) {
+        return next(new ErrorHandler('Invalid reset code', 400));
+    }
+
+    res.status(201).json({
+        success: true
+    });
+});
+
+export const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { reset_token, newPassword } = req.body;
+
+    if (!reset_token || !newPassword) {
+        return next(new ErrorHandler('Missing reset token or new password', 400));
+    }
+
+    let decoded;
+    try {
+        decoded = jwt.verify(reset_token, process.env.ACTIVATION_SECRET as string) as { user: { email: string } };
+    } catch (error) {
+        return next(new ErrorHandler('Invalid or expired reset token', 400));
+    }
+
+    console.log(decoded.user.email);
+
+    const user = await UserModel.findOne({ email: decoded?.user?.email });
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        message: 'Password has been reset successfully'
     });
 });
