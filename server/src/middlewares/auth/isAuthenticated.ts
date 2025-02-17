@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import { redis } from '@/utils/redis';
 
 export const isAuthenticated = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const access_token = req.cookies.access_token as string;
+    const access_token = req.access_token || (req.cookies.access_token as string);
 
     if (!access_token) {
         return next(new ErrorHandler('Please login to access this resource.', 400));
