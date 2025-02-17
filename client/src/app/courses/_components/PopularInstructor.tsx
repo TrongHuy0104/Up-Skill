@@ -1,4 +1,4 @@
-import InstructorCard from '@/components/ui/Instructor';
+// import InstructorCard from '@/components/ui/Instructor';
 import React from 'react';
 
 export default function PopularInstructor() {
@@ -11,10 +11,10 @@ export default function PopularInstructor() {
                 </div>
             </div>
             <div className=" flex  justify-between gap-[15px]">
+                {/* <InstructorCard isHorizontal={true} />
                 <InstructorCard isHorizontal={true} />
                 <InstructorCard isHorizontal={true} />
-                <InstructorCard isHorizontal={true} />
-                <InstructorCard isHorizontal={true} />
+                <InstructorCard isHorizontal={true} /> */}
             </div>
         </div>
     );

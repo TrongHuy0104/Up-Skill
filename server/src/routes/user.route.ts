@@ -2,6 +2,7 @@ import express from 'express';
 import {
     activateUser,
     deleteUser,
+    getAllInstructors,
     getAllUsers,
     getUserInfo,
     loginUser,
@@ -40,6 +41,8 @@ router.put('/update-password', isAuthenticated, updatePassword);
 router.put('/update-avatar', isAuthenticated, updateProfilePicture);
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
+
+router.get('/get-instructors', getAllInstructors);
 
 router.put('/update-role', isAuthenticated, authorizeRoles('admin'), updateUserRole);
 

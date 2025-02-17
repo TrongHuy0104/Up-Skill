@@ -1,10 +1,15 @@
+// page.tsx
 import React from 'react';
 import Search from './_component/SearchBar';
 import Banner from './_component/BannerInstructor';
 import Sort from './_component/Sort';
 import InstructorList from './_component/InstructorsList';
 
-export default function page() {
+export default async function page() {
+    // Gọi API để lấy dữ liệu instructors
+    const res = await fetch('http://localhost:8000/api/user/get-instructors');
+    const instructors = await res.json();
+
     return (
         <div className="pb-[160px]">
             <Banner />
@@ -12,7 +17,7 @@ export default function page() {
                 <Search />
                 <Sort />
             </div>
-            <InstructorList />
+            <InstructorList instructors={instructors.instructors} />
         </div>
     );
 }

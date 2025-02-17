@@ -12,7 +12,12 @@ import sendMail from '@/utils/sendMail';
 import { UserT } from '@/interfaces/User';
 import { accessTokenOptions, refreshTokenOptions, sendToken } from '@/utils/jwt';
 import { redis } from '@/utils/redis';
-import { getAllUsersService, getUserById, updateUserRoleService } from '@/services/user.service';
+import {
+    getAllInstructorsService,
+    getAllUsersService,
+    getUserById,
+    updateUserRoleService
+} from '@/services/user.service';
 
 dotenv.config();
 
@@ -358,4 +363,8 @@ export const deleteUser = catchAsync(async (req: Request, res: Response, next: N
         success: true,
         message: 'User deleted successfully'
     });
+});
+
+export const getAllInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    getAllInstructorsService(res);
 });
