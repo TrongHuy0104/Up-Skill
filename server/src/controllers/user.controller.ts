@@ -187,21 +187,19 @@ export const updateAccessToken = catchAsync(async (req: Request, res: Response, 
     const user = JSON.parse(session);
 
     const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN as string, {
-        expiresIn: '5m'
+        expiresIn: '1m'
     });
     const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN as string, {
         expiresIn: '3d'
     });
 
     req.user = user;
+    req.access_token = accessToken;
 
     res.cookie('access_token', accessToken, accessTokenOptions);
     res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
-    res.status(200).json({
-        success: true,
-        accessToken
-    });
+    next();
 });
 
 export const getUserInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
