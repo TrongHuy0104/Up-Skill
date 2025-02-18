@@ -11,6 +11,7 @@ import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
 import { Button } from '../ui/Button';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 
 const InstructorDashboardBanner = async () => {
     const cookieStore = await cookies();
@@ -69,9 +70,11 @@ const InstructorDashboardBanner = async () => {
                         </div>
                     </div>
                     <div className="w-1/3">
-                        <Button variant="secondary" size="xl">
-                            Create A New Course <Image src={arrowTopRightIcon} alt="" />
-                        </Button>
+                        <Link href="/dashboard/instructor/create-course">
+                            <Button variant="secondary" size="xl">
+                                Create A New Course <Image src={arrowTopRightIcon} alt="" />
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
