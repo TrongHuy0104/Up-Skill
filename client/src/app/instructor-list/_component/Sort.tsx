@@ -46,14 +46,14 @@ export default function Sort() {
 
         // **Chuyển đổi `sortValue` từ UI sang API**
         const sortApiMap: { [key: string]: string } = {
-            'best selling': 'bestselling',
-            oldest: 'oldest',
-            '3 days': '3days',
-            'date created': 'date-created'
+            'Best Selling': 'bestselling',
+            Oldest: 'oldest',
+            '3 Days': '3days',
+            'Date Created': 'date-created'
         };
 
-        // Chuyển `sortValue` thành chữ thường để khớp với `sortApiMap`
-        const formattedSort = sortApiMap[sortValue.toLowerCase()];
+        // Map giá trị từ UI sang API
+        const formattedSort = sortApiMap[sortValue];
 
         if (!formattedSort) {
             console.error('❌ Sort mapping failed for:', sortValue);
@@ -72,10 +72,14 @@ export default function Sort() {
         <div className="items-center relative">
             <div className="flex items-center h-[45px] gap-2">
                 <p className="text-primary-600">Sort by</p>
-                <div className="flex gap-2 cursor-pointer" onClick={() => setIsSortOpen(!isSortOpen)}>
+                <button
+                    className="flex gap-2 cursor-pointer focus:outline-none"
+                    onClick={() => setIsSortOpen(!isSortOpen)}
+                    aria-label="Toggle Sort Options"
+                >
                     <span className="text-primary-800">{displaySortType}</span>
                     <Image className="cursor-pointer" src={arrowDownIcon} alt="Arrow Down Icon" />
-                </div>
+                </button>
             </div>
 
             {isSortOpen && (

@@ -7,6 +7,7 @@ import UserModel from '@/models/User.model';
 import { catchAsync } from '@/utils/catchAsync';
 import ErrorHandler from '@/utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
+
 import path from 'path';
 import sendMail from '@/utils/sendMail';
 import { UserT } from '@/interfaces/User';
