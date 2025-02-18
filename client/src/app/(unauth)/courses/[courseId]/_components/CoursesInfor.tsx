@@ -1,5 +1,5 @@
 import React from 'react';
-import CoursesDetailInfor from '@/components/CoursesDetailInfor';
+import CoursesDetailInfor from '@/app/(unauth)/courses/[courseId]/_components/CoursesDetailInfor';
 
 export default function CoursesInfor() {
     return (

@@ -1,11 +1,11 @@
 import React from 'react';
-import CoursesDetailBanner from '@/components/CoursesDetailBanner';
 import Image from 'next/image';
 import star from '@/public/assets/icons/star-outline.svg';
 import time from '@/public/assets/icons/hour.svg';
 import timeTable from '@/public/assets/icons/timetable.svg';
 import student from '@/public/assets/icons/students.svg';
 import avatar from '@/public/assets/images/avatar/user-1.png';
+import CoursesDetailBanner from './CoursesDetailBanner';
 export default function Banner() {
     return (
         <div>

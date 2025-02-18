@@ -1,4 +1,4 @@
-import CourseVerticalCard from '@/components/ui/CourseCard';
+import CourseVerticalCard from '@/components/custom/CourseCard';
 import React from 'react';
 
 export default function CoursesList() {

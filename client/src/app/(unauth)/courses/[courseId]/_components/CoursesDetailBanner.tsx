@@ -1,5 +1,5 @@
 import React from 'react';
-import Breadcrumb from './ui/Breadcrumb';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 
 interface Breadcrumb {
     href?: string;

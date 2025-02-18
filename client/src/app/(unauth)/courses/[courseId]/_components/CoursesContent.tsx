@@ -1,5 +1,5 @@
+import CourseContent from '@/components/custom/CourseContent';
 import React from 'react';
-import CourseContent from '@/components/ui/CourseContent';
 
 export default function CoursesContent() {
     return (
