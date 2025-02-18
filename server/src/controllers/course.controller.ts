@@ -179,6 +179,10 @@ interface IAddAnswerData {
     questionId: string;
 }
 
+interface CourseFilter {
+    level?: string;
+}
+
 export const addAnswer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { answer, courseId, contentId, questionId } = req.body as IAddAnswerData;
     const course = await CourseModel.findById(courseId);
@@ -380,14 +384,18 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
     const limit = parseInt(req.query.limit as string, 10) || 10;
     const skip = (page - 1) * limit;
 
-    console.log(page);
-    console.log(limit);
-    const courses = await CourseModel.find()
+    const filter: CourseFilter = {};
+
+    if (req.query.level) {
+        filter.level = req.query.level as string;
+    }
+
+    const courses = await CourseModel.find(filter)
         .select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')
         .skip(skip)
         .limit(limit);
 
-    const totalCourses = await CourseModel.countDocuments();
+    const totalCourses = await CourseModel.countDocuments(filter);
 
     res.status(200).json({
         success: true,
