@@ -15,6 +15,7 @@ import { redis } from '@/utils/redis';
 import {
     getAllInstructorsService,
     getAllUsersService,
+    getInstructorsWithSortService,
     getUserById,
     updateUserRoleService
 } from '@/services/user.service';
@@ -367,4 +368,8 @@ export const deleteUser = catchAsync(async (req: Request, res: Response, next: N
 
 export const getAllInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     getAllInstructorsService(res);
+});
+
+export const getInstructorsWithSort = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    getInstructorsWithSortService(req, res);
 });

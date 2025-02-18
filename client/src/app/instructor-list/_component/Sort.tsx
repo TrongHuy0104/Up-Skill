@@ -1,91 +1,86 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
-import ModalComponent from './ModalComponent'; // Import the SortComponent
+
+import React, { useRef, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import ModalComponent from './ModalComponent';
 import Image from 'next/image';
 import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
 
 export default function Sort() {
-    const [isSortOpen, setIsSortOpen] = useState(false); // Toggle sort dropdown
-    const [isClient, setIsClient] = useState(false); // Ensures rendering only on the client
-    const [selectedSort, setSelectedSort] = useState('Date Created'); // Manage the selected sort option
-
-    // Reference to the dropdown to check if the click is outside
+    const [isSortOpen, setIsSortOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // **Lấy giá trị `sort` từ URL hoặc mặc định là "date-created"**
+    const sortType = searchParams.get('sort') || 'date-created';
+
+    // **Map giá trị API sang format UI**
+    const sortDisplayMap: { [key: string]: string } = {
+        bestselling: 'Best Selling',
+        oldest: 'Oldest',
+        '3days': '3 Days',
+        'date-created': 'Date Created' // Default nếu không có giá trị trong URL
+    };
+
+    // Nếu `sortType` không có trong map, hiển thị mặc định
+    const displaySortType = sortDisplayMap[sortType] || 'Date Created';
 
     useEffect(() => {
-        setIsClient(true); // Only run on the client
-
-        // Event listener to close dropdown when clicked outside
+        // Đóng dropdown khi click ra ngoài
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsSortOpen(false); // Close the dropdown if clicked outside
+                setIsSortOpen(false);
             }
         };
-
-        // Attach the event listener on mount
         document.addEventListener('mousedown', handleClickOutside);
-
-        // Clean up the event listener on component unmount
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
-    const toggleSortDropdown = () => {
-        setIsSortOpen(!isSortOpen); // Toggle dropdown visibility
-    };
-
-    const closeSortDropdown = () => {
-        setIsSortOpen(false); // Close dropdown when an option is selected
-    };
-
     const handleSortSelect = (sortValue: string) => {
-        setSelectedSort(sortValue); // Update selected sort option
-        closeSortDropdown(); // Close the dropdown after selection
-    };
+        setIsSortOpen(false); // Đóng dropdown
 
-    if (!isClient) {
-        return null; // Don't render anything until it's client-side
-    }
+        console.log('📢 Selected from Modal:', sortValue); // Debug
+
+        // **Chuyển đổi `sortValue` từ UI sang API**
+        const sortApiMap: { [key: string]: string } = {
+            'best selling': 'bestselling',
+            oldest: 'oldest',
+            '3 days': '3days',
+            'date created': 'date-created'
+        };
+
+        // Chuyển `sortValue` thành chữ thường để khớp với `sortApiMap`
+        const formattedSort = sortApiMap[sortValue.toLowerCase()];
+
+        if (!formattedSort) {
+            console.error('❌ Sort mapping failed for:', sortValue);
+            return; // Tránh lỗi nếu sortValue không hợp lệ
+        }
+
+        console.log('📢 Updating URL with sort:', formattedSort);
+
+        // **Cập nhật URL query params**
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('sort', formattedSort);
+        router.replace(`?${params.toString()}`);
+    };
 
     return (
         <div className="items-center relative">
-            {/* Chỉnh sửa flex container */}
             <div className="flex items-center h-[45px] gap-2">
                 <p className="text-primary-600">Sort by</p>
-                <div className="flex gap-2 cursor-pointer" onClick={toggleSortDropdown}>
-                    <span
-                        className="text-primary-800 cursor-pointer"
-                        onClick={toggleSortDropdown} // Mở dropdown khi click vào "Date Created"
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
-                            }
-                        }}
-                        tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
-                    >
-                        {selectedSort}
-                    </span>
-                    <Image
-                        className="cursor-pointer"
-                        src={arrowDownIcon}
-                        alt="Arrow Down Icon"
-                        onClick={toggleSortDropdown} // Mở dropdown khi click vào mũi tên
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                toggleSortDropdown(); // Kích hoạt dropdown khi nhấn Enter hoặc Space
-                            }
-                        }}
-                        tabIndex={0} // Đảm bảo phần tử có thể nhận tiêu điểm từ bàn phím
-                        role="button"
-                    />
+                <div className="flex gap-2 cursor-pointer" onClick={() => setIsSortOpen(!isSortOpen)}>
+                    <span className="text-primary-800">{displaySortType}</span>
+                    <Image className="cursor-pointer" src={arrowDownIcon} alt="Arrow Down Icon" />
                 </div>
             </div>
 
-            {/* Sort Dropdown */}
             {isSortOpen && (
                 <div ref={dropdownRef}>
-                    <ModalComponent closeModal={closeSortDropdown} onSelectSort={handleSortSelect} />
+                    <ModalComponent closeModal={() => setIsSortOpen(false)} onSelectSort={handleSortSelect} />
                 </div>
             )}
         </div>

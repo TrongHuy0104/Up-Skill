@@ -1,23 +1,25 @@
-// page.tsx
 import React from 'react';
+import { Metadata } from 'next';
 import Search from './_component/SearchBar';
 import Banner from './_component/BannerInstructor';
 import Sort from './_component/Sort';
-import InstructorList from './_component/InstructorsList';
+import InstructorListWrapper from './_component/InstructorListWrapper';
 
-export default async function page() {
-    // Gọi API để lấy dữ liệu instructors
-    const res = await fetch('http://localhost:8000/api/user/get-instructors');
-    const instructors = await res.json();
+export const metadata: Metadata = {
+    title: 'Instructor List',
+    description: 'Browse and sort instructors'
+};
 
+export default function Page() {
     return (
         <div className="pb-[160px]">
             <Banner />
-            <div className="flex justify-between w-[1400px] px-[14px] mx-auto  pt-[60px] pb-[40px]">
+            <div className="flex justify-between w-[1400px] px-[14px] mx-auto pt-[60px] pb-[40px]">
                 <Search />
                 <Sort />
             </div>
-            <InstructorList instructors={instructors.instructors} />
+            {/* Dùng Client Component để fetch dữ liệu dựa trên `sortType` */}
+            <InstructorListWrapper />
         </div>
     );
 }
