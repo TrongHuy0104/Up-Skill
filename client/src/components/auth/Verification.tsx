@@ -5,7 +5,7 @@ import { Button } from '../ui/Button';
 import { DialogType } from '@/types/commons';
 import { useActivationMutation } from '@/lib/redux/features/auth/authApi';
 import { useToast } from '@/hooks/use-toast';
-import SpinnerMini from '@/components/ui/SpinnerMini';
+import SpinnerMini from '@/components/custom/SpinnerMini';
 
 type VerifyNumber = {
     '0': string;

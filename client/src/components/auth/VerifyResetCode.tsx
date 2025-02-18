@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { VscWorkspaceTrusted } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
-import { Button } from '../ui/Button';
+import { Button } from '@/components/ui/Button';
 import { DialogType } from '@/types/commons';
 import { useResetCodeMutation } from '@/lib/redux/features/auth/authApi';
 import { useToast } from '@/hooks/use-toast';
-import SpinnerMini from '@/components/ui/SpinnerMini';
+import SpinnerMini from '@/components/custom/SpinnerMini';
 
 type VerifyNumber = {
     '0': string;

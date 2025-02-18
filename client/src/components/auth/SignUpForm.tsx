@@ -12,7 +12,7 @@ import { formStyles } from '@/styles/styles';
 import { DialogType } from '@/types/commons';
 import { useRegisterMutation } from '@/lib/redux/features/auth/authApi';
 import { useToast } from '@/hooks/use-toast';
-import SpinnerMini from '@/components/ui/SpinnerMini';
+import SpinnerMini from '@/components/custom/SpinnerMini';
 
 type Props = {
     handleDialogChange: (type: DialogType) => void;

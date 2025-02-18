@@ -1,4 +1,4 @@
-import InstructorCard from '@/components/ui/Instructor';
+import InstructorCard from '@/components/custom/Instructor';
 import React from 'react';
 
 export default function PopularInstructor() {

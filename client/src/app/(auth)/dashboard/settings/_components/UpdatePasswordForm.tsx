@@ -7,13 +7,13 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 // import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/Form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { formStyles } from '@/styles/styles';
-import { Input } from '../ui/Input';
+import { Input } from '@/components/ui/Input';
 import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
-import { Button } from '../ui/Button';
+import { Button } from '@/components/ui/Button';
 import { useUpdatePasswordMutation } from '@/lib/redux/features/user/userApi';
-import SpinnerMini from '../ui/SpinnerMini';
+import SpinnerMini from '@/components/custom/SpinnerMini';
 import { useToast } from '@/hooks/use-toast';
 
 // Define reusable password validation schema

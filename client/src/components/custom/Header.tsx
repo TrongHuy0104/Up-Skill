@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
-import Search from '@/components/common/Search';
-import Logo from '@/components/ui/Logo';
-import Category from '@/components/common/Category';
+import Search from '@/components/custom/Search';
+import Logo from '@/components/custom/Logo';
+import Category from '@/components/custom/Category';
 import { UserDropdown } from '@/components/auth/UserDropdown';
 
 import AuthDialog from '@/components/auth/AuthDialog';
