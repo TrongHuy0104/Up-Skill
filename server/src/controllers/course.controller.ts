@@ -10,9 +10,11 @@ import { redis } from '@/utils/redis';
 import path from 'path';
 import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
+import axios from 'axios';
 
 export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
+
     const thumbnail = data.thumbnail;
     if (thumbnail) {
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
@@ -25,6 +27,11 @@ export const uploadCourse = catchAsync(async (req: Request, res: Response, next:
     }
     createCourse(data, req, res, next);
 });
+// export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const data = req.body;
+
+//     createCourse(data, req, res, next);
+// });
 
 export const updateCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const courseId = req.params.id;
@@ -33,10 +40,25 @@ export const updateCourse = catchAsync(async (req: Request, res: Response, next:
         return next(new ErrorHandler('Please provide a course id', 400));
     }
 
+    const isCacheExist = await redis.get(courseId);
+    let course;
+
+    if (isCacheExist) {
+        course = await JSON.parse(isCacheExist);
+    } else {
+        course = await CourseModel.findById(req.params.id).select(
+            '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links'
+        );
+        redis.set(courseId, JSON.stringify(course));
+    }
+
     const data = req.body;
+
     const thumbnail = data.thumbnail;
     if (thumbnail) {
-        await cloudinary.v2.uploader.destroy(thumbnail.public_id);
+        if (course?.thumbnail?.public_id) {
+            await cloudinary.v2.uploader.destroy(course.thumbnail.public_id);
+        }
 
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
             folder: 'courses'
@@ -48,11 +70,13 @@ export const updateCourse = catchAsync(async (req: Request, res: Response, next:
         };
     }
 
-    const course = await CourseModel.findByIdAndUpdate(courseId, { $set: data }, { new: true });
+    const courseAfterUpdated = await CourseModel.findByIdAndUpdate(courseId, { $set: data }, { new: true });
+
+    redis.set(courseId, JSON.stringify(courseAfterUpdated));
 
     res.status(200).json({
         success: true,
-        course
+        course: courseAfterUpdated
     });
 });
 
@@ -405,4 +429,21 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
         totalPages: Math.ceil(totalCourses / limit),
         courses
     });
+});
+// generate video url
+export const generateVideoUrl = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { videoId } = req.body;
+    const response = await axios.post(
+        `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
+        { ttl: 300 },
+        {
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Apisecret ${process.env.VIDEOCIPHER_API_SECRET}`
+            },
+            withCredentials: true
+        }
+    );
+    res.json(response.data);
 });

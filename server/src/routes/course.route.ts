@@ -7,6 +7,7 @@ import {
     addReplyToReview,
     addReview,
     deleteCourse,
+    generateVideoUrl,
     getAllCourses,
     getAllCoursesWithoutPurchase,
     getCoursesLimitWithPagination,
@@ -15,12 +16,13 @@ import {
     updateCourse,
     uploadCourse
 } from '@/controllers/course.controller';
+import { updateAccessToken } from '@/controllers/user.controller';
 
 const router = express.Router();
 
-router.post('/create-course', isAuthenticated, uploadCourse);
+router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
-router.put('/update-course/:id', isAuthenticated, updateCourse);
+router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
 
 router.get('/pagination', getCoursesLimitWithPagination);
 
@@ -41,5 +43,7 @@ router.put('/add-reply/:id', isAuthenticated, addReplyToReview);
 router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCourses);
 
 router.delete('/delete-course:id', isAuthenticated, authorizeRoles('admin'), deleteCourse);
+
+router.post('/getVdoCipherOTP', updateAccessToken, isAuthenticated, generateVideoUrl);
 
 export = router;

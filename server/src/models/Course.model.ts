@@ -37,9 +37,12 @@ const CourseSchema = new Schema<ICourse>({
         type: String,
         required: true
     },
+    subTitle: {
+        type: String
+    },
     description: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     },
     authorId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -47,8 +50,8 @@ const CourseSchema = new Schema<ICourse>({
         required: [true, 'Author is required']
     },
     price: {
-        type: Number,
-        required: true
+        type: Number
+        // required: true
     },
     estimatedPrice: {
         type: Number
@@ -62,16 +65,16 @@ const CourseSchema = new Schema<ICourse>({
         }
     },
     tags: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     },
     level: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Level'
     },
     demoUrl: {
-        type: String,
-        required: true
+        type: String
+        // required: true
     },
     benefits: [{ title: String }],
     prerequisites: [{ title: String }],
@@ -84,6 +87,17 @@ const CourseSchema = new Schema<ICourse>({
     purchased: {
         type: Number,
         default: 0
+    },
+    isPublished: { type: Boolean, default: false },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: [true, 'Category is required']
+    },
+    subCategory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SubCategory',
+        required: [true, 'Sub Category is required']
     }
 });
 
