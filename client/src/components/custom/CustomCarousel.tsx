@@ -4,15 +4,14 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 
 interface Props {
     component: any;
-    colNumber: number;
 }
 
-export function CarouselSpacing({ component, colNumber }: Props) {
+export function CarouselSpacing({ component }: Props) {
     return (
         <Carousel className="w-full">
             <CarouselContent className="-ml-1">
                 {Array.from({ length: 10 }).map((_, index) => (
-                    <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/${colNumber}`}>
+                    <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                         <div className="p-1">{component}</div>
                     </CarouselItem>
                 ))}

@@ -25,7 +25,7 @@ function TopInstructors() {
                                 </Link>
                             </div>
                             <div className="mt-6">
-                                <CarouselSpacing component={<InstructorCard />} colNumber={5} />
+                                <CarouselSpacing component={<InstructorCard />} />
                             </div>
                         </div>
                     </div>

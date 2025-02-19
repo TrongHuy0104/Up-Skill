@@ -25,7 +25,7 @@ function TopCourses() {
                                 </Link>
                             </div>
                             <div className="mt-6">
-                                <CarouselSpacing component={<CourseVerticalCard />} colNumber={5} />
+                                <CarouselSpacing component={<CourseVerticalCard />} />
                             </div>
                         </div>
                     </div>

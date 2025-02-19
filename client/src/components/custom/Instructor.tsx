@@ -19,7 +19,8 @@ export default function InstructorCard({ isHorizontal = false, width = '260px' }
             >
                 <div className="group  overflow-hidden rounded-xl">
                     <Image
-                        className={`object-cover transition duration-1000 group-hover:scale-125 ${width}`}
+                        className={`object-cover transition duration-1000 group-hover:scale-125`}
+                        style={{ width }}
                         src={img}
                         alt="Instructor"
                     />
