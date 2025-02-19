@@ -10,7 +10,7 @@ interface SortByProps {
 }
 
 export default function SortBy({ options, defaultValue }: SortByProps) {
-    const [selected, setSelected] = useState(defaultValue || options[0]?.label);
+    const [selected, setSelected] = useState(defaultValue ?? options[0]?.label);
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -19,9 +19,11 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                 <p className="text-[15px] px-[7px] pl-10 text-primary-600 font-normal leading-[28px]">
                     Sort by
                 </p>
-                <div 
+                <button 
                     className="flex relative cursor-pointer text-primary-800 py-4 w-48"
                     onClick={() => setIsOpen(!isOpen)}
+                    onKeyDown={() =>setIsOpen(!isOpen)}
+                    role="listitem"
                 >
                     <span className="block pr-4">{selected}</span>
                     
@@ -43,7 +45,7 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                         </ul>
                     )}
                     <Image src={arrowDownIcon} alt="arrow down icon" />
-                </div>
+                </button>
             </div>
         </div>
     );

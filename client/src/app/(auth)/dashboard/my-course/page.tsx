@@ -20,7 +20,6 @@ export default function Page() {
     };
 
     return (
-        <>
             <div className="px-10 py-10 ml-auto max-w-[1000px] border-[1px] border-primary-100 rounded-xl">
                 <div className="row -mx-3">
                     <div className="flex items-center justify-center gap-5 pb-8">
@@ -60,7 +59,5 @@ export default function Page() {
                     <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />
                 </div>
             </div>
-
-        </>
     );
 }
