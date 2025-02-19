@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 
 interface Props {
-    component: any;
+    readonly component: any;
 }
 
 export function CarouselSpacing({ component }: Props) {
