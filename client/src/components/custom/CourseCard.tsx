@@ -86,7 +86,7 @@ export default function CourseVerticalCard() {
     );
 }
 
-export function CourseHorizontalCard({ course }: Readonly<{ course: Course }>) {
+export function CourseHorizontalCard({ course }: { course: Course }) {
     return (
         <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
             <div className="h-[240px] max-w-[320px] relative rounded-sm overflow-hidden">
