@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import check from '@/public/assets/icons/check-icon.svg';
 import arrowDownOrangeIcon from '@/public/assets/icons/arrow-down-orange.svg';
 import Image from 'next/image';
-import CoursesDetailLine from './ui/CoursesDetailLine';
+import CoursesDetailLine from '../../../../../components/custom/CoursesDetailLine';
 
 const CoursesDetailInfor = () => {
     // Dữ liệu mẫu với 10 đối tượng

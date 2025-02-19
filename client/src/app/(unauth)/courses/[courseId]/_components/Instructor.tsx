@@ -1,5 +1,5 @@
 import React from 'react';
-import BigHorizontalInstructor from '@/components/ui/BigHorizontalInstructor';
+import BigHorizontalInstructor from '@/components/custom/BigHorizontalInstructor';
 
 export default function Instructor() {
     return (

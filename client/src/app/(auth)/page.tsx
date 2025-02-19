@@ -1,14 +1,14 @@
-import CoursesDetailBanner from '@/components/CoursesDetailBanner';
+import CoursesDetailBanner from '@/app/(unauth)/courses/[courseId]/_components/CoursesDetailBanner';
 import Image from 'next/image';
 import star from '@/public/assets/icons/star-outline.svg';
 import time from '@/public/assets/icons/hour.svg';
 import timeTable from '@/public/assets/icons/timetable.svg';
 import student from '@/public/assets/icons/students.svg';
-import CoursesDetailInfor from '@/components/CoursesDetailInfor';
-import CoursesDetailReview from '@/components/ui/CoursesReview';
-import CourseContent from '@/components/ui/CourseContent';
-import CoursesDetailLine from '@/components/ui/CoursesDetailLine';
-import CourseSidebar from '@/components/ui/CourseSidebar';
+import CoursesDetailInfor from '@/app/(unauth)/courses/[courseId]/_components/CoursesDetailInfor';
+import CoursesDetailReview from '@/components/custom/CoursesReview';
+import CourseContent from '@/components/custom/CourseContent';
+import CoursesDetailLine from '@/components/custom/CoursesDetailLine';
+import CourseSidebar from '@/components/custom/CourseSidebar';
 
 const Page = () => {
     return (

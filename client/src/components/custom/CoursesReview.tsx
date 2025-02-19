@@ -5,7 +5,7 @@ import likeIcon from '@/public/assets/icons/like-icon.svg';
 import dislikeIcon from '@/public/assets/icons/dislike-icon.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import { formatDistanceToNow } from 'date-fns';
-import FormReview from './FormReview';
+import FormReview from '../ui/FormReview';
 import MoreSections from '@/public/assets/icons/more-sections.svg';
 
 interface ReviewProps {

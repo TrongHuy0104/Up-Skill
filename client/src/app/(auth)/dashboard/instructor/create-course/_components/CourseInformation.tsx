@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/common/Input';
+import { Input } from '@/components/custom/Input';
 import { Combobox } from '@/components/ui/ComboBox';
 import { formCreateCourseStyles } from '@/styles/styles';
 

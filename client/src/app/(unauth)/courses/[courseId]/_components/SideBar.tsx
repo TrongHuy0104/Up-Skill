@@ -1,4 +1,4 @@
-import CourseSidebar from '@/components/ui/CourseSidebar';
+import CourseSidebar from '@/components/custom/CourseSidebar';
 
 const Sidebar = () => {
     return (
