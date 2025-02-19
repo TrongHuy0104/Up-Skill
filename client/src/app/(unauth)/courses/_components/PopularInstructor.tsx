@@ -11,10 +11,10 @@ export default function PopularInstructor() {
                 </div>
             </div>
             <div className=" flex  justify-between gap-[15px]">
-                <InstructorCard isHorizontal={true} />
-                <InstructorCard isHorizontal={true} />
-                <InstructorCard isHorizontal={true} />
-                <InstructorCard isHorizontal={true} />
+                <InstructorCard isHorizontal={true} width="100px" />
+                <InstructorCard isHorizontal={true} width="100px" />
+                <InstructorCard isHorizontal={true} width="100px" />
+                <InstructorCard isHorizontal={true} width="100px" />
             </div>
         </div>
     );

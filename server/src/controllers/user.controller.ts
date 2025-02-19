@@ -204,6 +204,42 @@ export const updateAccessToken = catchAsync(async (req: Request, res: Response, 
     res.cookie('access_token', accessToken, accessTokenOptions);
     res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
+    res.status(200).json({
+        success: true,
+        accessToken
+    });
+});
+export const refreshToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const refresh_token = req.cookies.refresh_token as string;
+    const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
+
+    const message = 'Could not refresh token';
+
+    if (!decoded) {
+        return next(new ErrorHandler(message, 400));
+    }
+
+    const session = await redis.get(decoded.id as string);
+
+    if (!session) {
+        return next(new ErrorHandler(message, 400));
+    }
+
+    const user = JSON.parse(session);
+
+    const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN as string, {
+        expiresIn: '1m'
+    });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN as string, {
+        expiresIn: '3d'
+    });
+
+    req.user = user;
+    req.access_token = accessToken;
+
+    res.cookie('access_token', accessToken, accessTokenOptions);
+    res.cookie('refresh_token', refreshToken, refreshTokenOptions);
+
     next();
 });
 

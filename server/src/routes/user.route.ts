@@ -15,7 +15,8 @@ import {
     updateUserRole,
     forgotPasswordUser,
     resetCodeVerify,
-    resetPassword
+    resetPassword,
+    refreshToken
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -36,7 +37,7 @@ router.put('/reset-password', resetPassword);
 
 router.get('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
 
-router.get('/refresh', updateAccessToken);
+router.get('/refresh', refreshToken);
 
 router.get('/me', updateAccessToken, isAuthenticated, getUserInfo);
 
