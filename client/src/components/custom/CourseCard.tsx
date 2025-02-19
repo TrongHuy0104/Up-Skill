@@ -112,7 +112,7 @@ export function CourseHorizontalCard({ course }: Readonly<{ course: Course }>) {
                             after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
                         >
                             <Image src={timeTableIcon} className="relative bottom-[1px]" alt="" />
-                            <p>{course.courseData.length} Lessons</p>
+                            <p>{course?.courseData?.length} Lessons</p>
                         </div>
                         <div
                             className='pr-[10px] relative flex items-center justify-start gap-[7px]
@@ -126,7 +126,7 @@ export function CourseHorizontalCard({ course }: Readonly<{ course: Course }>) {
                             <p>16 hours</p>
                         </div>
                     </div>
-                    <div className="text-accent-600 font-medium text-lg leading-7">${course.price}</div>
+                    <div className="text-accent-600 font-medium text-lg leading-7">${course?.price}</div>
                 </div>
                 <h6 className="mb-[10px] line-clamp-2 font-medium text-base leading-7">
                     <Link
@@ -139,7 +139,7 @@ export function CourseHorizontalCard({ course }: Readonly<{ course: Course }>) {
                     </Link>
                 </h6>
                 <p className="mb-[10px] text-sm leading-7 max-w-[80%]">
-                    {course?.description.length > 100 ? course.description.slice(0, 100) + '...' : course.description}
+                    {course?.description?.length > 100 ? course.description.slice(0, 100) + '...' : course.description}
                 </p>
                 <div className="mb-[8px] flex items-center gap-[7px]">
                     <span>{course.rating}</span>
