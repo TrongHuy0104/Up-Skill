@@ -18,6 +18,7 @@ import {
     resetPassword
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
+import { isAuthenticatedForUser } from '@/middlewares/auth/isAuthenticatedForUser';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
 
 const router = express.Router();
@@ -53,7 +54,7 @@ router.get('/get-user-information', isAuthenticated, getUserInfo);
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
 // router.put('/update-role', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateUserRole);
-router.put('/update-role', updateAccessToken, isAuthenticated, updateUserRole);
+router.put('/update-role', updateAccessToken, isAuthenticatedForUser, updateUserRole);
 
 router.delete('/delete-user:id', isAuthenticated, authorizeRoles('admin'), deleteUser);
 

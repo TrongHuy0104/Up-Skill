@@ -339,9 +339,9 @@ export const getAllUsers = catchAsync(async (req: Request, res: Response, next: 
 
 // update user role -- for admin
 export const updateUserRole = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { id, role } = req.body;
+    const { user, role } = req.body;
 
-    updateUserRoleService(res, id, role);
+    updateUserRoleService(res, user._id, role);
 });
 
 // delete user -- for admin
