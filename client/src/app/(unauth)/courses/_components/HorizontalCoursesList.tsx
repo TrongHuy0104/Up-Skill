@@ -2,12 +2,12 @@
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
-import { CourseHorizontalCard } from '@/components/ui/CourseCard';
-import PaginationComponent from '@/components/ui/PaginationComponent';
+import { CourseHorizontalCard } from '@/components/custom/CourseCard';
+import PaginationComponent from '@/components/custom/PaginationComponent';
 import dynamic from 'next/dynamic';
 
 // Sử dụng dynamic để tắt SSR cho modal
-const Modal = dynamic(() => import('@/app/courses/_components/ModalComponent'), { ssr: false });
+const Modal = dynamic(() => import('@/app/(unauth)/courses/_components//ModalComponent'), { ssr: false });
 
 export default function HorizontalCoursesList() {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal

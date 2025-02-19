@@ -5,8 +5,8 @@ import type { Metadata } from 'next';
 import '@/styles/global.css';
 import { cn } from '@/utils/helpers';
 import { Toaster } from '@/components/ui/Toaster';
-import Header from '@/components/common/Header';
-import Footer from '@/components/common/Footer';
+import Header from '@/components/custom/Header';
+import Footer from '@/components/custom/Footer';
 import { Providers } from './Provider';
 
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dmSans' });

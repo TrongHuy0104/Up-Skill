@@ -1,12 +1,12 @@
 import React, { ReactNode, Suspense } from 'react';
-import InstructorDashboardBanner from '@/components/instructor-dashboard/Banner';
-import DashboardNavigationBar from '@/components/instructor-dashboard/DashboardNavigationBar';
-import { DashboardBannerSkeleton } from '@/components/ui/Skeleton';
+import InstructorDashboardBanner from '@/app/(auth)/dashboard/_components/Banner';
+import DashboardNavigationBar from '@/app/(auth)/dashboard/_components/DashboardNavigationBar';
+import { DashboardSkeleton } from '@/components/ui/Skeleton';
 
 export default async function ProfileLayout({ children }: { children: ReactNode }) {
     return (
         <>
-            <Suspense fallback={<DashboardBannerSkeleton />}>
+            <Suspense fallback={<DashboardSkeleton />}>
                 <InstructorDashboardBanner />
             </Suspense>
             <div className="pt-[60px] pb-[160px]">

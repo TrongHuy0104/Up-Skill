@@ -1,17 +1,17 @@
 import React from 'react';
 import Image from 'next/image';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
 
-import Banner from '../ui/Banner';
+import Banner from '@/components/ui/Banner';
 import { layoutStyles } from '@/styles/styles';
-import Avatar from '../ui/Avatar';
+import Avatar from '@/components/ui/Avatar';
 import playOutlineIcon from '@/public/assets/icons/play-outline.svg';
 import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
-import { Button } from '../ui/Button';
-import { cookies } from 'next/headers';
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 
 const InstructorDashboardBanner = async () => {
     const cookieStore = await cookies();

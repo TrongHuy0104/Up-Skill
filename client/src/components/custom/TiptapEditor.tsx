@@ -6,7 +6,7 @@ import Heading from '@tiptap/extension-heading';
 import Highlight from '@tiptap/extension-highlight';
 import BulletList from '@tiptap/extension-bullet-list';
 import OrderedList from '@tiptap/extension-ordered-list';
-import ToolBar from './Toolbar';
+import ToolBar from '../ui/Toolbar';
 
 type TiptapProps = {
     description?: string;

@@ -1,4 +1,4 @@
-import FilterCoursesList from '@/components/FilterCoursesList';
+import FilterCoursesList from '@/app/(unauth)/courses/_components/FilterCoursesList';
 import React from 'react';
 
 export default function FilterCourses() {
