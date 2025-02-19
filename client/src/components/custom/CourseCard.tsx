@@ -12,7 +12,7 @@ import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 
 export default function CourseVerticalCard() {
     return (
-        <div className="group w-[260px] mr-[25px] shrink-0 h-full relative transition-transform">
+        <div className="group w-[260px] shrink-0 h-full relative transition-transform">
             <div className="h-[190px] relative rounded-sm overflow-hidden">
                 <Image
                     src={img}
