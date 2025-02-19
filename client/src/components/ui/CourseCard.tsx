@@ -10,7 +10,16 @@ import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 
-export default function CourseVerticalCard() {
+interface CourseHorizontalCardProps {
+    isProgress?: boolean; // Show progress bar only if true
+    progress?: number; // Progress percentage (0-100)
+}
+
+interface CourseVerticalCardProps {
+    isProgress?: boolean; // Show progress bar only if true
+    progress?: number; // Progress percentage (0-100)
+}
+export default function CourseVerticalCard({ isProgress = false, progress = 0 }: CourseVerticalCardProps) {
     return (
         <div className="group w-[260px] mr-[25px] shrink-0 h-full relative transition-transform">
             <div className="h-[190px] relative rounded-sm overflow-hidden">
@@ -63,6 +72,22 @@ export default function CourseVerticalCard() {
                     </div>
                     <span>(230)</span>
                 </div>
+                {/* Conditional Progress Bar */}
+                {isProgress && (
+                    <div className="mt-3">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 my-3">
+                            <div
+                                className="bg-accent-600 h-1.5 rounded-full"
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+                        <div className="flex text-[15px] text-primary-800 mt-1 items-center justify-between pb-2">
+                            <p>Complete</p>
+                            <p>{progress}%</p>
+                        </div>
+
+                    </div>
+                )}
                 <div className="text-primary-600 mb-[13px]">
                     By:{' '}
                     <Link href="#!" className="hover:text-accent-600 transition-colors duration-300">
@@ -85,7 +110,9 @@ export default function CourseVerticalCard() {
     );
 }
 
-export function CourseHorizontalCard() {
+
+export function CourseHorizontalCard({ isProgress = false, progress = 0 }: CourseHorizontalCardProps) {
+
     return (
         <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
             <div className="h-[240px] max-w-[320px] relative rounded-sm overflow-hidden">
@@ -158,12 +185,21 @@ export function CourseHorizontalCard() {
                         Carolyn Welborn
                     </Link>
                 </div>
+                {/* Conditional Progress Bar */}
+                {isProgress && (
+                    <div className="mt-4">
+                        <p className="text-sm text-gray-700">Complete</p>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div
+                                className="bg-accent-600 h-2.5 rounded-full"
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+                        <p className="text-sm font-medium text-gray-700 mt-1">{progress}%</p>
+                    </div>
+                )}
                 <div className="flex items-center justify-between border-t border-primary-100 pt-[13px]">
-                    <Link
-                        href="#!"
-                        className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7
-                        transition-colors cursor-pointer duration-300 hover:text-accent-600"
-                    >
+                    <Link href="#!" className="flex items-center gap-[10px] font-medium text-base leading-7 hover:text-accent-600">
                         <span className="font-medium">Enroll Course</span>
                         <GoArrowUpRight />
                     </Link>
