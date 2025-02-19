@@ -48,9 +48,12 @@ router.put('/update-password', updateAccessToken, isAuthenticated, updatePasswor
 
 router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePicture);
 
+router.get('/get-user-information', isAuthenticated, getUserInfo);
+
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
-router.put('/update-role', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateUserRole);
+// router.put('/update-role', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateUserRole);
+router.put('/update-role', updateAccessToken, isAuthenticated, updateUserRole);
 
 router.delete('/delete-user:id', isAuthenticated, authorizeRoles('admin'), deleteUser);
 
