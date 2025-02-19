@@ -32,13 +32,14 @@ export interface ICourseData extends Document {
 
 export interface ICourse extends Document {
     name: string;
+    subTitle: string;
     description?: string;
     price: number;
     estimatedPrice?: number;
     thumbnail: object;
     authorId: mongoose.Schema.Types.ObjectId;
     tags: string;
-    level: string;
+    level: mongoose.Schema.Types.ObjectId;
     demoUrl: string;
     benefits: { title: string }[];
     prerequisites: { title: string }[];
@@ -46,4 +47,7 @@ export interface ICourse extends Document {
     courseData: ICourseData[];
     rating?: number;
     purchased?: number;
+    isPublished: boolean;
+    category: mongoose.Schema.Types.ObjectId;
+    subCategory: mongoose.Schema.Types.ObjectId;
 }
