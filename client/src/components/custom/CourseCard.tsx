@@ -9,7 +9,7 @@ import hourIcon from '@/public/assets/icons/hour.svg';
 import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
-import { Course } from '@/app/courses/_components/HorizontalCoursesList';
+import { Course } from '@/app/(unauth)/courses/_components/HorizontalCoursesList';
 
 export default function CourseVerticalCard() {
     return (
@@ -86,8 +86,7 @@ export default function CourseVerticalCard() {
     );
 }
 
-export function CourseHorizontalCard({ course }: { course: Course }) {
-    console.log(course);
+export function CourseHorizontalCard({ course }: Readonly<{ course: Course }>) {
     return (
         <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
             <div className="h-[240px] max-w-[320px] relative rounded-sm overflow-hidden">
