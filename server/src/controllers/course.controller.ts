@@ -11,6 +11,10 @@ import path from 'path';
 import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
 import axios from 'axios';
+import LevelModel from '@/models/Level.model';
+import CategoryModel from '@/models/Category.model';
+import SubCategoryModel from '@/models/SubCategory.model';
+import UserModel from '@/models/User.model';
 
 export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
@@ -204,7 +208,10 @@ interface IAddAnswerData {
 }
 
 interface CourseFilter {
-    level?: string;
+    level?: mongoose.Types.ObjectId;
+    category?: mongoose.Types.ObjectId;
+    subCategory?: mongoose.Types.ObjectId;
+    authorId?: mongoose.Types.ObjectId;
 }
 
 export const addAnswer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -411,7 +418,23 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
     const filter: CourseFilter = {};
 
     if (req.query.level) {
-        filter.level = req.query.level as string;
+        const levelDoc = await LevelModel.findOne({ name: req.query.level as string });
+        if (levelDoc) filter.level = levelDoc._id;
+    }
+
+    if (req.query.category) {
+        const categoryDoc = await CategoryModel.findOne({ title: req.query.category as string });
+        if (categoryDoc) filter.category = categoryDoc._id;
+    }
+
+    if (req.query.subCategory) {
+        const subCategoryDoc = await SubCategoryModel.findOne({ title: req.query.subCategory as string });
+        if (subCategoryDoc) filter.subCategory = subCategoryDoc._id;
+    }
+
+    if (req.query.authorId) {
+        const authorDoc = await UserModel.findOne({ name: req.query.authorId as string });
+        if (authorDoc) filter.authorId = authorDoc._id;
     }
 
     const courses = await CourseModel.find(filter)
