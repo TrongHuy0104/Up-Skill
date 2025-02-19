@@ -23,7 +23,7 @@ export default function Breadcrumb({ breadcrumbs, alignment = 'center' }: Breadc
 
     return (
         <ul className={`breadcrumbs text-sm flex items-center ${justifyClass} gap-[10px] mb-10 text-primary-800`}>
-            {breadcrumbs.map((item, index) => (
+            {breadcrumbs?.map((item, index) => (
                 <li key={item.text || item.href || index.toString()} className="flex items-center">
                     {index === 0 ? (
                         <Link

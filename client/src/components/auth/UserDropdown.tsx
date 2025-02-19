@@ -50,7 +50,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                         width={32}
                         height={32}
                         src={user?.avatar?.url ?? defaultAvatar}
-                        alt={user.name ?? 'User Avatar'}
+                        alt={user?.name ?? 'User Avatar'}
                         referrerPolicy="no-referrer"
                     />
                     <span className="font-medium">{user.name}</span>

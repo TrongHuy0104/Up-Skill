@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Image from 'next/image';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
 import { Button } from '@/components/ui/Button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
@@ -12,8 +13,7 @@ import { formStyles } from '@/styles/styles';
 import { DialogType } from '@/types/commons';
 import { useResetPasswordMutation } from '@/lib/redux/features/auth/authApi';
 import { useToast } from '@/hooks/use-toast';
-import SpinnerMini from '@/components/ui/SpinnerMini';
-import { useSelector } from 'react-redux';
+import SpinnerMini from '@/components/custom/SpinnerMini';
 
 type Props = {
     readonly handleDialogChange: (type: DialogType) => void;

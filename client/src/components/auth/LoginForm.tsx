@@ -11,7 +11,7 @@ import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
 import { formStyles } from '@/styles/styles';
 import { useLoginMutation } from '@/lib/redux/features/auth/authApi';
 import { useToast } from '@/hooks/use-toast';
-import SpinnerMini from '../ui/SpinnerMini';
+import SpinnerMini from '@/components/custom/SpinnerMini';
 import { DialogType } from '@/types/commons';
 
 type Props = {

@@ -1,4 +1,4 @@
-import Spinner from '@/components/ui/Spinner';
+import Spinner from '@/components/custom/Spinner';
 
 function Loading() {
     return <Spinner />;
