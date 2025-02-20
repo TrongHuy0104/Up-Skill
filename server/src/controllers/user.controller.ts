@@ -204,10 +204,7 @@ export const updateAccessToken = catchAsync(async (req: Request, res: Response, 
     res.cookie('access_token', accessToken, accessTokenOptions);
     res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
-    res.status(200).json({
-        success: true,
-        accessToken
-    });
+    next();
 });
 export const refreshToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const refresh_token = req.cookies.refresh_token as string;
@@ -240,7 +237,10 @@ export const refreshToken = catchAsync(async (req: Request, res: Response, next:
     res.cookie('access_token', accessToken, accessTokenOptions);
     res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
-    next();
+    res.status(200).json({
+        success: true,
+        accessToken
+    });
 });
 
 export const getUserInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
