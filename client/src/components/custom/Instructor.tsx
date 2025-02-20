@@ -8,9 +8,9 @@ import { cn } from '@/utils/helpers';
 
 const dmSans = DM_Sans({ subsets: ['latin'] });
 
-export default function InstructorCard({ isHorizontal = false }) {
+export default function InstructorCard({ isHorizontal = false, width = '260px' }) {
     return (
-        <div className={cn('bg-white  text-left', isHorizontal ? 'flex w-full items-center ' : 'w-full sm:w-80')}>
+        <div className={cn('bg-white  text-left', isHorizontal ? 'flex w-full items-center ' : 'w-full')}>
             <div
                 className={cn(
                     'relative overflow-hidden',
@@ -19,7 +19,8 @@ export default function InstructorCard({ isHorizontal = false }) {
             >
                 <div className="group  overflow-hidden rounded-xl">
                     <Image
-                        className="w-[100px] h-[100px] object-cover transition duration-1000 group-hover:scale-125"
+                        className={`object-cover transition duration-1000 group-hover:scale-125`}
+                        style={{ width }}
                         src={img}
                         alt="Instructor"
                     />
