@@ -43,8 +43,8 @@ export const connectDB = (MONGODB_URI: any) => {
             mongoose.connect(MONGODB_URI, {
                 socketTimeoutMS: 3000,
                 connectTimeoutMS: 3000,
-                useNewUrlParser: true,
-                useUnifiedTopology: true
+                // useNewUrlParser: true,
+                // useUnifiedTopology: true
                 // useFindAndModify: true,
                 // useCreateIndex: true,
             } as ConnectOptions);
@@ -65,8 +65,8 @@ export const connectDB = (MONGODB_URI: any) => {
 
     // mongoose.connect return promise
     mongoose.connect(MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
+        // useNewUrlParser: true,
+        // useUnifiedTopology: true
     } as ConnectOptions);
 
     return mongoose.connect(MONGODB_URI);
