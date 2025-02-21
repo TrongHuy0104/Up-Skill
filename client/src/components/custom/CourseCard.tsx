@@ -11,15 +11,15 @@ import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 
 interface CourseVerticalCardProps {
-    isProgress?: boolean; // Show progress bar only if true
-    progress?: number; // Progress percentage (0-100)
-    width?: string; // Custom width
-    height?: string; // Custom height
+    readonly isProgress?: boolean; // Show progress bar only if true
+    readonly progress?: number; // Progress percentage (0-100)
+    readonly width?: string; // Custom width
+    readonly height?: string; // Custom height
 }
 
 interface CourseHorizontalCard {
-    width?: string; // Custom width
-    height?: string; // Custom height
+    readonly width?: string; // Custom width
+    readonly height?: string; // Custom height
 }
 
 export default function CourseVerticalCard({

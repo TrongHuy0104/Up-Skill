@@ -67,9 +67,9 @@ export default function Page() {
         <TabsContent value="enrolled">
           {loading ? (
             <p className="text-center text-primary-600">Loading...</p>
-          ) : courses.enrolled.length > 0 ? (
+          ) : courses?.enrolled.length > 0 ? (
             <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.enrolled.length)}`}>
-              {courses.enrolled.map((course) => (
+              {courses?.enrolled.map((course) => (
                 <CourseVerticalCard
                   key={course.id}
                   // title={course.title}
@@ -91,9 +91,9 @@ export default function Page() {
         <TabsContent value="active">
           {loading ? (
             <p className="text-center text-primary-600">Loading...</p>
-          ) : courses.active.length > 0 ? (
+          ) : courses?.active.length > 0 ? (
             <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.active.length)}`}>
-              {courses.active.map((course) => (
+              {courses?.active.map((course) => (
                 <CourseVerticalCard
                   key={course.id}
                   // title={course.title}

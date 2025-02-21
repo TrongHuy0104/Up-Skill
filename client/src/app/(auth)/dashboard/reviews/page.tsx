@@ -5,6 +5,7 @@ import ReviewItem from "./_components/ReviewItem";
 
 const reviews = [
     {
+        id: 1,
         name: "Sophia Carter",
         rating: 5,
         date: "1 week ago",
@@ -12,6 +13,7 @@ const reviews = [
         content: "The course was structured really well, and the instructor explained concepts clearly. Highly recommended!"
     },
     {
+        id: 2,
         name: "Daniel Lee",
         rating: 4,
         date: "2 months ago",
@@ -19,6 +21,7 @@ const reviews = [
         content: "I learned a lot from this course. Some parts could have been more detailed, but overall a great experience."
     },
     {
+        id: 3,
         name: "Jessica Adams",
         rating: 5,
         date: "3 days ago",
@@ -26,6 +29,7 @@ const reviews = [
         content: "The instructor is very knowledgeable and provides great real-world examples. Will definitely enroll in more courses!"
     },
     {
+        id: 4,
         name: "Michael Brown",
         rating: 3,
         date: "1 month ago",
@@ -33,6 +37,7 @@ const reviews = [
         content: "Content is good but needs more real-life examples. The pace was a bit fast for beginners."
     },
     {
+        id: 5,
         name: "Emily Johnson",
         rating: 4,
         date: "5 days ago",
@@ -61,9 +66,9 @@ export default function Page() {
 
             {/* Nội dung Review */}
             <div className="p-2.5 rounded-xl">
-                {reviews.map((review, index) => (
+                {reviews?.map((review, id) => (
                     <ReviewItem
-                        key={index}
+                        key={id}
                         name={review.name}
                         rating={review.rating}
                         date={review.date}

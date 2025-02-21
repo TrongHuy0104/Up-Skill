@@ -37,18 +37,16 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                     className="flex relative items-center cursor-pointer text-primary-800 w-48 flex-end"
                     onClick={() => setIsOpen(!isOpen)}
                     onKeyDown={handleKeyDown}
-                    role="button"
                     aria-haspopup="listbox"
                     aria-expanded={isOpen}
                 >
                     <span className="block pr-4">{selected}</span>
 
                     {isOpen && (
-                        <ul className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg" role="listbox">
+                        <ul className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
                             {options.map((option) => (
                                 <li
                                     key={option.value}
-                                    role="option"
                                     tabIndex={0}
                                     className={` px-4 py-2 relative cursor-pointer hover:bg-gray-100 
                         ${selected === option.label ? "text-accent-900" : ""}`}
