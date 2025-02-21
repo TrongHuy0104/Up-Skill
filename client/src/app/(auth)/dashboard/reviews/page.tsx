@@ -66,9 +66,9 @@ export default function Page() {
 
             {/* Nội dung Review */}
             <div className="p-2.5 rounded-xl">
-                {reviews?.map((review, id) => (
+                {reviews?.map((review) => (
                     <ReviewItem
-                        key={id}
+                        key={review.id}
                         name={review.name}
                         rating={review.rating}
                         date={review.date}

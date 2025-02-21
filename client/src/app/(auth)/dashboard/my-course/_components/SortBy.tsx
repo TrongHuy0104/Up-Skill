@@ -27,7 +27,7 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
             setSelected(options[nextIndex].label);
         }
     };
-    
+
     return (
         <div className="mt-[-8px]">
             <div className="flex flex-wrap text-[15px] ml-15">
@@ -46,23 +46,21 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                     {isOpen && (
                         <ul className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
                             {options.map((option) => (
-                                <div role="listitem"
+                                <li
                                     key={option.value}
-                                    className={` px-4 py-2 relative cursor-pointer hover:bg-gray-100 
-                        ${selected === option.label ? "text-accent-900" : ""}`}
-                                    onClick={() => {
-                                        setSelected(option.label);
-                                        setIsOpen(false);
-                                    }}
-                                    onKeyDown={(event) => {
-                                        if (event.key === "Enter" || event.key === " ") {
+                                    role="menuitem"
+                                >
+                                    <button
+                                        className={`w-full text-left px-4 py-2 relative cursor-pointer hover:bg-gray-100 ${selected === option.label ? "text-accent-900" : ""
+                                            }`}
+                                        onClick={() => {
                                             setSelected(option.label);
                                             setIsOpen(false);
-                                        }
-                                    }}
-                                >
-                                    {option.label}
-                                </div>
+                                        }}
+                                    >
+                                        {option.label}
+                                    </button>
+                                </li>
                             ))}
                         </ul>
                     )}
