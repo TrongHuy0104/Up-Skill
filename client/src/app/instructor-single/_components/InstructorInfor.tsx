@@ -2,7 +2,7 @@
 
 const InstructorInfor = () => {
     return (
-        <div className="w-[900px] mr-0 text-primary-800 ">
+        <div className="w-full text-primary-800 ">
             <div className="pb-[61px] leading-7 w-[900px]">
                 <h2 className="text-2xl font-bold mb-4">About Me</h2>
 

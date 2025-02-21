@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import { layoutStyles } from '@/styles/styles';
 import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import lessionsIcon from '@/public/assets/icons/lession.svg';
@@ -15,41 +14,53 @@ const InstructorSingleBanner = async () => {
             breadcrumbs={breadcrumbs}
             background="https://creativelayers.net/themes/upskill-html/images/page-title/inner-page.png" // Hình nền
         >
-            <div className={`relative mx-auto w-[1428px] max-w-full px-[12px]`}>
-                <div className={`${layoutStyles.row} items-center`}>
-                    <div className="w-2/3">
-                        <div className="flex items-center justify-start gap-[30px]">
+            <div className="relative mx-auto w-full max-w-[1428px]">
+                <div className="flex flex-col md:flex-row items-center">
+                    <div className="w-full md:w-2/3">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-start gap-8">
                             <div>
-                                <h2 className="text-[42px] leading-[56px] mb-2 font-bold font-cardo">
+                                {/* Tiêu đề */}
+                                <h2 className="text-3xl sm:text-4xl md:text-[42px] leading-tight md:leading-[56px] mb-2 font-bold font-cardo">
                                     Hi <span>I Am Ali Tufan</span>
                                 </h2>
+                                {/* Mô tả */}
                                 <div className="mb-4">
                                     <span>Developer and Teacher</span>
                                 </div>
-                                <div className="text-primary-800 gap-3 flex items-center justify-start flex-wrap">
-                                    <div
-                                        className='pr-[10px] relative flex items-center justify-start gap-[7px]
-                                        after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
-                                    >
+                                {/* Thông tin đánh giá, bài học, học viên */}
+                                <div className="text-primary-800 gap-3 flex flex-wrap items-center justify-start">
+                                    {/* Đánh giá */}
+                                    <div className="pr-3 relative flex items-center justify-start gap-2 after:absolute after:content-[''] after:right-0 after:w-px after:h-4 after:bg-primary-100">
                                         <span>4.9</span>
-                                        <div className="flex items-center relative gap-[7px] pb-[2px]">
-                                            <Image src={starIcon} alt="" />
-                                            <Image src={starIcon} alt="" />
-                                            <Image src={starIcon} alt="" />
-                                            <Image src={starIcon} alt="" />
-                                            <Image src={starOutlineIcon} alt="" />
+                                        <div className="flex items-center relative gap-2 pb-0.5">
+                                            <Image src={starIcon} alt="" width={16} height={16} />
+                                            <Image src={starIcon} alt="" width={16} height={16} />
+                                            <Image src={starIcon} alt="" width={16} height={16} />
+                                            <Image src={starIcon} alt="" width={16} height={16} />
+                                            <Image src={starOutlineIcon} alt="" width={16} height={16} />
                                         </div>
                                         <p>315,475 rating</p>
                                     </div>
-                                    <div
-                                        className='pr-[10px] relative flex items-center justify-start gap-[7px]
-                            after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
-                                    >
-                                        <Image src={lessionsIcon} className="relative bottom-[1px]" alt="" />
+                                    {/* Bài học */}
+                                    <div className="pr-3 relative flex items-center justify-start gap-2 after:absolute after:content-[''] after:right-0 after:w-px after:h-4 after:bg-primary-100">
+                                        <Image
+                                            src={lessionsIcon}
+                                            alt=""
+                                            width={16}
+                                            height={16}
+                                            className="relative bottom-0.5"
+                                        />
                                         <p>11 Lessons</p>
                                     </div>
-                                    <div className="pr-[10px] relative flex items-center justify-start gap-[7px]">
-                                        <Image src={studentsIcon} className="relative bottom-[1px]" alt="" />
+                                    {/* Học viên */}
+                                    <div className="pr-3 relative flex items-center justify-start gap-2">
+                                        <Image
+                                            src={studentsIcon}
+                                            alt=""
+                                            width={16}
+                                            height={16}
+                                            className="relative bottom-0.5"
+                                        />
                                         <p>200 Students</p>
                                     </div>
                                 </div>

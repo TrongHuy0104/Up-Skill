@@ -1,9 +1,6 @@
 import CourseVerticalCard from '@/components/custom/CourseCard';
 import React from 'react';
 
-
-
-
 export default function CoursesList() {
     return (
         <div className="mb-[61px] w-[9000px]">
