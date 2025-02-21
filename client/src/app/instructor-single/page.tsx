@@ -15,7 +15,7 @@ export default function Page() {
                     <Review />
                 </div>
                 <div className="relative mt-[-50px] md:mt-[-100px] lg:mt-[-150px] w-full md:w-1/3">
-                    <div className="sticky top-[1px]">
+                    <div className="sticky top-[20px]">
                         <Sidebar />
                     </div>
                 </div>
