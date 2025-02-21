@@ -149,6 +149,18 @@
     body {
         @apply bg-background text-foreground;
     }
+    h1 {
+        @apply text-2xl font-bold;
+    }
+    h2 {
+        @apply text-xl font-bold;
+    }
+    h3 {
+        @apply text-lg font-bold;
+    }
+    pre {
+        @apply p-2 bg-foreground text-background rounded-md;
+    }
 }
 
 @keyframes shake {
@@ -174,4 +186,52 @@
 
 .shake {
     animation: shake 0.5s ease-in-out;
+}
+
+@keyframes rotateTilt {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(15deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.animate-rotate-tilt {
+    animation: rotateTilt 5s ease-in-out infinite;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(30px);
+    }
+    50% {
+        transform: translateX(0px);
+    }
+    100% {
+        transform: translateX(30px);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 5s linear infinite;
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(30px);
+    }
+    50% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(30px);
+    }
+}
+
+.animate-slide-up {
+    animation: slideUp 5s linear infinite;
 }

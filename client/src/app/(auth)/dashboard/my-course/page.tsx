@@ -1,10 +1,10 @@
 "use client";
-import Search from "@/components/common/Search";
 import SortBy from "./_components/SortBy";
-import CourseVerticalCard from "@/components/ui/CourseCard";
-import PaginationComponent from "@/components/ui/PaginationComponent";
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+import Search from "@/components/custom/Search";
+import PaginationComponent from "@/components/custom/PaginationComponent";
+import CourseVerticalCard from "@/components/custom/CourseCard";
 
 // Danh sách lựa chọn sắp xếp
 const sortOptions = [

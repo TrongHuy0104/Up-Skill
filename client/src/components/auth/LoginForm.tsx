@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { Button } from '@/components/ui/Button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
@@ -12,10 +11,12 @@ import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
 import { formStyles } from '@/styles/styles';
 import { useLoginMutation } from '@/lib/redux/features/auth/authApi';
 import { useToast } from '@/hooks/use-toast';
-import SpinnerMini from '../ui/SpinnerMini';
+import SpinnerMini from '@/components/custom/SpinnerMini';
+import { DialogType } from '@/types/commons';
 
 type Props = {
-    handleOpenDialog: (open: boolean) => void;
+    readonly handleOpenDialog: (open: boolean) => void;
+    readonly handleDialogChange: (type: DialogType) => void;
 };
 
 const formSchema = z.object({
@@ -38,7 +39,7 @@ const formSchema = z.object({
         })
 });
 
-export default function LoginForm({ handleOpenDialog }: Props) {
+export default function LoginForm({ handleOpenDialog, handleDialogChange }: Props) {
     const [login, { error, isSuccess, isLoading }] = useLoginMutation();
     const { toast } = useToast();
 
@@ -122,9 +123,13 @@ export default function LoginForm({ handleOpenDialog }: Props) {
                     )}
                 />
                 <div className="mb-6 flex items-center justify-end">
-                    <Link href="#!" className="font-medium leading-7 text-accent-900 -mt-1">
+                    <button
+                        type="button"
+                        onClick={() => handleDialogChange('forgot')}
+                        className="font-medium leading-7 text-accent-900 -mt-1 cursor-pointer bg-transparent border-none"
+                    >
                         Forgot your password?
-                    </Link>
+                    </button>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
