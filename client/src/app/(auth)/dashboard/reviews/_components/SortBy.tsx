@@ -47,8 +47,7 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                         <ul className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
                             {options.map((option) => (
                                 <li
-                                    key={option.value}
-                                    role="menuitem"
+                                    key={option.value} // Key for React rendering
                                 >
                                     <button
                                         className={`w-full text-left px-4 py-2 relative cursor-pointer hover:bg-gray-100 ${selected === option.label ? "text-accent-900" : ""
