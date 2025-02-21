@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
+import arrowDownIcon from '@/public/assets/icons/arrow-dropdown.svg';
 import { useState } from "react";
 
 // Mark props as readonly
@@ -30,12 +30,12 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
     
     return (
         <div className="mt-[-8px]">
-            <div className="flex flex-wrap items-center text-[15px]">
+            <div className="flex flex-wrap text-[15px] ml-15">
                 <p className="text-[15px] px-[7px] pl-10 text-primary-600 font-normal leading-[28px]">
                     Sort by
                 </p>
                 <button
-                    className="flex relative cursor-pointer text-primary-800 py-4 w-48"
+                    className="flex relative items-center cursor-pointer text-primary-800 w-48 flex-end"
                     onClick={() => setIsOpen(!isOpen)}
                     onKeyDown={handleKeyDown}
                     role="button"
@@ -45,13 +45,13 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                     <span className="block pr-4">{selected}</span>
 
                     {isOpen && (
-                        <ul className="absolute left-0 top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg" role="listbox">
+                        <ul className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg" role="listbox">
                             {options.map((option) => (
                                 <li
                                     key={option.value}
                                     role="option"
                                     tabIndex={0}
-                                    className={`px-4 py-2 cursor-pointer hover:bg-gray-100 
+                                    className={` px-4 py-2 relative cursor-pointer hover:bg-gray-100 
                         ${selected === option.label ? "text-accent-900" : ""}`}
                                     onClick={() => {
                                         setSelected(option.label);
