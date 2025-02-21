@@ -14,8 +14,8 @@ export default function Page() {
                     <CoursesList />
                     <Review />
                 </div>
-                <div className="right-content w-full md:w-1/3 ">
-                    <div className="sticky top-0">
+                <div className="relative mt-[-50px] md:mt-[-100px] lg:mt-[-150px] w-full md:w-1/3">
+                    <div className="sticky top-[1px]">
                         <Sidebar />
                     </div>
                 </div>
