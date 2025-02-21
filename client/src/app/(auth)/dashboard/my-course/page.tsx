@@ -16,7 +16,7 @@ const sortOptions = [
 export default function Page() {
   // State pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading ] = useState(false);
+  const [loading] = useState(false);
 
   // Fake dữ liệu khóa học
   const [courses] = useState({
@@ -28,7 +28,7 @@ export default function Page() {
       { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
       { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
       { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
-      
+
     ],
     active: [
       { id: 4, title: "TypeScript Essentials", progress: 50, instructor: "Robert Johnson", price: 59 },
@@ -45,6 +45,77 @@ export default function Page() {
   // Hàm xử lý phân trang
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
+  };
+  const renderEnrolledCourses = () => {
+    if (loading) {
+      return <p className="text-center text-primary-600">Loading...</p>;
+    }
+
+    if (courses?.enrolled.length > 0) {
+      return (
+        <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.enrolled.length)}`}>
+          {courses.enrolled.map((course) => (
+            <CourseVerticalCard
+              key={course.id}
+              width="280px"
+              height="220px"
+              isProgress={true}
+              progress={course.progress}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    return <p className="text-center text-gray-500">No enrolled courses found.</p>;
+  };
+
+  const renderActiveCourses = () => {
+    if (loading) {
+      return <p className="text-center text-primary-600">Loading...</p>;
+    }
+
+    if (courses?.active.length > 0) {
+      return (
+        <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.active.length)}`}>
+          {courses.active.map((course) => (
+            <CourseVerticalCard
+              key={course.id}
+              width="280px"
+              height="220px"
+              isProgress={true}
+              progress={course.progress}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    return <p className="text-center text-gray-500">No active courses found.</p>;
+  };
+
+  const renderCompletedCourses = () => {
+    if (loading) {
+      return <p className="text-center text-primary-600">Loading...</p>;
+    }
+
+    if (courses?.completed.length > 0) {
+      return (
+        <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.completed.length)}`}>
+          {courses.completed.map((course) => (
+            <CourseVerticalCard
+              key={course.id}
+              width="280px"
+              height="220px"
+              isProgress={true} 
+              progress={course.progress}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    return <p className="text-center text-gray-500">No completed courses found.</p>;
   };
 
   return (
@@ -65,77 +136,19 @@ export default function Page() {
 
         {/* Tab: Enrolled Courses */}
         <TabsContent value="enrolled">
-          {loading ? (
-            <p className="text-center text-primary-600">Loading...</p>
-          ) : courses?.enrolled.length > 0 ? (
-            <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.enrolled.length)}`}>
-              {courses?.enrolled.map((course) => (
-                <CourseVerticalCard
-                  key={course.id}
-                  // title={course.title}
-                  // instructor={course.instructor}
-                  // price={course.price}
-                  width="280px"
-                  height="220px"
-                  isProgress={true}
-                  progress={course.progress}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">No enrolled courses found.</p>
-          )}
+          {renderEnrolledCourses()}
         </TabsContent>
 
-        {/*Tab: Active Courses */}
+        {/* Tab: Active Courses */}
         <TabsContent value="active">
-          {loading ? (
-            <p className="text-center text-primary-600">Loading...</p>
-          ) : courses?.active.length > 0 ? (
-            <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.active.length)}`}>
-              {courses?.active.map((course) => (
-                <CourseVerticalCard
-                  key={course.id}
-                  // title={course.title}
-                  // instructor={course.instructor}
-                  // price={course.price}
-                  width="280px"
-                  height="220px"
-                  isProgress={true}
-                  progress={course.progress}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">No active courses found.</p>
-          )}
+          {renderActiveCourses()}
         </TabsContent>
 
-        {/*Tab: Completed Courses */}
+        {/* Tab: Completed Courses */}
         <TabsContent value="completed">
-          {loading ? (
-            <p className="text-center text-primary-600">Loading...</p>
-          ) : courses.completed.length > 0 ? (
-            <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.completed.length)}`}>
-              {courses.completed.map((course) => (
-                <CourseVerticalCard
-                  key={course.id}
-                  // title={course.title}
-                  // instructor={course.instructor}
-                  // price={course.price}
-                  width="280px"
-                  height="220px"
-                  isProgress={true}
-                  progress={course.progress}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">No completed courses found.</p>
-          )}
+          {renderCompletedCourses()}
         </TabsContent>
       </Tabs>
-
       {/* Pagination */}
       <div className="p-5 mt-10">
         <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />

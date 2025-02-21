@@ -45,9 +45,8 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                     {isOpen && (
                         <ul className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg">
                             {options.map((option) => (
-                                <li
+                                <div role="listitem"
                                     key={option.value}
-                                    tabIndex={0}
                                     className={` px-4 py-2 relative cursor-pointer hover:bg-gray-100 
                         ${selected === option.label ? "text-accent-900" : ""}`}
                                     onClick={() => {
@@ -62,7 +61,7 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                                     }}
                                 >
                                     {option.label}
-                                </li>
+                                </div>
                             ))}
                         </ul>
                     )}
