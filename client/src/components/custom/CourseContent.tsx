@@ -96,7 +96,7 @@ export default function CourseContent({ data }: Props) {
                                                             Preview
                                                         </button>
                                                     )} */}
-                                                {true && <Image src={LockIcon} alt="locked" />}
+                                                {<Image src={LockIcon} alt="locked" />}
                                             </div>
                                         </div>
                                     );
