@@ -10,14 +10,8 @@ import CoursesDetailBanner from './_components/Banner';
 import CoursesDetailInfo from './_components/CoursesDetailInfo';
 import CourseSidebar from './_components/CourseSidebar';
 
-type PageProps = {
-    params: {
-        courseId: string;
-    };
-};
-
-export default async function page({ params }: PageProps) {
-    const courseId = await params.courseId;
+export default async function page({ params }: any) {
+    const { courseId } = await params;
     const cookieStore = await cookies();
     const cookie = cookieStore.toString();
 
