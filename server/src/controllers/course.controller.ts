@@ -94,9 +94,9 @@ export const getSingleCourse = catchAsync(async (req: Request, res: Response, ne
     if (isCacheExist) {
         course = await JSON.parse(isCacheExist);
     } else {
-        course = await CourseModel.findById(req.params.id).select(
-            '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links'
-        );
+        course = await CourseModel.findById(req.params.id)
+            .populate('authorId')
+            .select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links');
         redis.set(courseId, JSON.stringify(course));
     }
 
