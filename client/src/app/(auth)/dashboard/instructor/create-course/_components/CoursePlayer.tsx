@@ -4,9 +4,10 @@ import axios from 'axios';
 type Props = {
     videoUrl: string;
     title: string;
+    width?: number;
 };
 
-function CoursePlayer({ videoUrl }: Props) {
+function CoursePlayer({ videoUrl, width = 41 }: Props) {
     const [videoData, setVideoData] = useState({ otp: '', playbackInfo: '' });
 
     useEffect(() => {
@@ -22,10 +23,10 @@ function CoursePlayer({ videoUrl }: Props) {
     }, [videoUrl]);
 
     return (
-        <div style={{ paddingTop: '41%', position: 'relative' }}>
+        <div style={{ paddingTop: width + '%', position: 'relative' }}>
             {videoData.otp && videoData.playbackInfo !== '' && (
                 <iframe
-                    src={`https://player.vdocipher.com/v2/?otp=${videoData.otp}&playbackInfo=${videoData.playbackInfo}&player=${process.env.VIDEOCIPHER_PLAYER_ID}`}
+                    src={`https://player.vdocipher.com/v2/?otp=${videoData.otp}&playbackInfo=${videoData.playbackInfo}`}
                     allowFullScreen={true}
                     allow="encrypted-media"
                     style={{
