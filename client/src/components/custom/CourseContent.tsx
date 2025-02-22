@@ -10,8 +10,8 @@ import MoreSections from '@/public/assets/icons/more-sections.svg';
 import { getMinutes } from '@/lib/utils';
 
 interface Props {
-    data: any;
-    activeVideo?: number;
+    readonly data: any;
+    readonly activeVideo?: number;
     setActiveVideo?(value: number): void;
 }
 

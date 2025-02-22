@@ -4,7 +4,7 @@ import { CarouselSpacing } from '@/components/custom/CustomCarousel';
 import { Course } from '@/types/Course';
 
 interface Props {
-    course: Course;
+    readonly course: Course;
 }
 
 export default function CoursesList({ course }: Props) {

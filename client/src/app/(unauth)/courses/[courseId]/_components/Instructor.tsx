@@ -4,7 +4,7 @@ import { User } from '@/types/User';
 import defaultAvatar from '@/public/assets/images/avatar/default-avatar.jpg';
 
 interface Props {
-    instructor: User;
+    readonly instructor: User;
 }
 
 export default function Instructor({ instructor }: Props) {

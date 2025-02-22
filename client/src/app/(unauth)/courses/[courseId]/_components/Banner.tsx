@@ -12,7 +12,7 @@ import CoursesDetailBanner from './CoursesDetailBanner';
 import { Course } from '@/types/Course';
 
 interface Props {
-    course: Course;
+    readonly course: Course;
 }
 
 export default function Banner({ course }: Props) {

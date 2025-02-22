@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 type Props = {
-    videoUrl: string;
-    title: string;
-    width?: number;
+    readonly videoUrl: string;
+    readonly title: string;
+    readonly width?: number;
 };
 
 function CoursePlayer({ videoUrl, width = 41 }: Props) {
