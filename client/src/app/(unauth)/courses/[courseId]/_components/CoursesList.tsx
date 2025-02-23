@@ -1,15 +1,17 @@
-import CourseVerticalCard from '@/components/custom/CourseCard';
 import React from 'react';
+import CourseVerticalCard from '@/components/custom/CourseCard';
+import { CarouselSpacing } from '@/components/custom/CustomCarousel';
+import { Course } from '@/types/Course';
 
-export default function CoursesList() {
+interface Props {
+    readonly course: Course;
+}
+
+export default function CoursesList({ course }: Props) {
     return (
         <div className="mb-[61px] w-[900px]">
-            <h2 className="text-2xl font-bold mb-4">More Course By Theresa Edin</h2>
-            <div className="flex gap-5">
-                <CourseVerticalCard />
-                <CourseVerticalCard />
-                <CourseVerticalCard />
-            </div>
+            <h2 className="text-2xl font-bold mb-4 font-cardo">More Course By {course?.authorId?.name}</h2>
+            <CarouselSpacing component={<CourseVerticalCard />} colNumber={3} />
         </div>
     );
 }

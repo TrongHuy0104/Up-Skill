@@ -25,6 +25,7 @@ export interface ICourseData extends Document {
     videoUrl: string;
     videoLength: number;
     videoPlayer: string;
+    videoSection: string;
     links: ILink[];
     suggestion: string;
     questions: IComment[];

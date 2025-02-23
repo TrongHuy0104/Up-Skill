@@ -44,6 +44,6 @@ router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCours
 
 router.delete('/delete-course:id', isAuthenticated, authorizeRoles('admin'), deleteCourse);
 
-router.post('/getVdoCipherOTP', updateAccessToken, isAuthenticated, generateVideoUrl);
+router.post('/getVdoCipherOTP', generateVideoUrl);
 
 export = router;
