@@ -13,7 +13,6 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -44,40 +43,33 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
     };
 
     return (
-        <div className="mt-[-8px] relative" ref={dropdownRef}>
-            <div className="flex flex-wrap text-[15px] ml-15">
-                <p className="text-[15px] px-[7px] pl-10 text-primary-600 font-normal leading-[28px]">
+        <div className="relative flex justify-end" ref={dropdownRef}>
+            <div className="flex items-center gap-2 flex-wrap"> 
+                <p className="text-primary-600 text-[15px] min-w-20 text-right">
                     Sort by
                 </p>
                 <button
-                    className="flex relative items-center cursor-pointer text-primary-800 w-48 flex-end"
+                    className="flex items-center justify-between gap-2 text-primary-800 min-w-30"
                     onClick={() => setIsOpen(!isOpen)}
                     onKeyDown={handleKeyDown}
                     aria-haspopup="listbox"
                     aria-expanded={isOpen}
                 >
-                    <span className="block pr-4">{selected}</span>
-                    <Image src={arrowDownIcon} alt="arrow down icon" />
+                    <span className="truncate">{selected}</span> 
+                    <Image 
+                        src={arrowDownIcon} 
+                        alt="arrow down icon" 
+                        className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    />
                 </button>
             </div>
 
-            {/* Dropdown Menu */}
             {isOpen && (
-                <ul
-                    role="listbox"
-                    className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50"
-                >
+                <ul className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[192px]">
                     {options.map((option) => (
-                        <li
-                            key={option.value}
-                            role="none"
-                        >
+                        <li key={option.value}>
                             <button
-                                role="option"
-                                aria-selected={selected === option.label}
-                                className={`w-full text-left px-4 py-2 relative cursor-pointer hover:bg-gray-100 ${
-                                    selected === option.label ? "text-accent-900" : ""
-                                }`}
+                                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${selected === option.label ? 'text-accent-900 bg-gray-50' : ''}`}
                                 onClick={() => {
                                     setSelected(option.label);
                                     setIsOpen(false);

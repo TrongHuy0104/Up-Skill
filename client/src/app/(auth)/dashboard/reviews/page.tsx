@@ -1,6 +1,6 @@
 "use client";
 
-import SortBy from "./_components/SortBy";
+import SortBy from "../my-course/_components/SortBy";
 import ReviewItem from "./_components/ReviewItem";
 
 const reviews = [
@@ -56,27 +56,32 @@ export default function Page() {
     return (
         <div className="px-10 py-10 ml-auto max-w-[1000px] border-[1px] border-primary-100 rounded-xl">
             <div className="border-b flex items-center justify-between gap-5 pb-8">
+                {/* Tiêu đề "Student Reviews" */}
                 <div className="flex-grow">
                     <h6 className="text-[22px] font-medium leading-[28px]">
                         Student Reviews
                     </h6>
                 </div>
-                <SortBy options={sortOptions} defaultValue="Newest" />
+
+                {/* SortBy - Căn bên phải với khoảng cách đều hai bên */}
+                <div className="ml-auto right-0"> {/* Thêm ml-auto để đẩy SortBy sang bên phải */}
+                    <SortBy options={sortOptions} defaultValue="Newest" />
+                </div>
             </div>
 
-            {/* Nội dung Review */}
-            <div className="p-2.5 rounded-xl">
-                {reviews?.map((review) => (
-                    <ReviewItem
-                        key={review.id}
-                        name={review.name}
-                        rating={review.rating}
-                        date={review.date}
-                        title={review.title}
-                        content={review.content}
-                    />
-                ))}
-            </div>
-        </div>
+            {/* Nội dung Review */ }
+    <div className="p-2.5 rounded-xl">
+        {reviews?.map((review) => (
+            <ReviewItem
+                key={review.id}
+                name={review.name}
+                rating={review.rating}
+                date={review.date}
+                title={review.title}
+                content={review.content}
+            />
+        ))}
+    </div>
+        </div >
     );
 }

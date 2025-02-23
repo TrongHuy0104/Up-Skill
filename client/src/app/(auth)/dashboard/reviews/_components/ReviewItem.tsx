@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { MdOutlineStarPurple500 } from "react-icons/md";
 import arrowRightIcon from '@/public/assets/icons/arrow-right.svg';
-import ReviewAvatar from "./ReviewAvatar";
+import Avatar from "@/components/ui/Avatar";
 
 type Props = {
     readonly avatar?: string;
@@ -28,7 +28,7 @@ export default function ReviewItem({
         <div className="flex gap-8 pb-8 pt-6 border-b border-gray-300">
             {/* Avatar */}
             <div className="flex-none">
-                <ReviewAvatar size={60} avatar={avatar} />
+                <Avatar size={60} avatar={avatar} />
             </div>
 
             {/* Review Content */}
@@ -48,7 +48,7 @@ export default function ReviewItem({
                             className={i < rating ? "text-yellow-500" : "text-gray-300"}
                         />
                     ))}
-                    <div className="text-primary-800 text-sm">{date}</div>
+                    <div className="text-primary-800 text-sm ml-2">{date}</div>
                 </div>
 
                 {/* Review Title */}
