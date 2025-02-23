@@ -1,12 +1,12 @@
 'use client';
 
-const InstructorInfor = () => {
+const InstructorInfo = () => {
     return (
-        <div className="w-full text-primary-800 ">
+        <div className="w-full text-primary-800 mt-6">
             <div className="pb-[61px] leading-7 w-[900px]">
-                <h2 className="text-2xl font-bold mb-4">About Me</h2>
+                <h2 className="text-2xl font-bold mb-4 font-cardo">About Me</h2>
 
-                <div className="">
+                <div>
                     <p>
                         Lorem ipsum dolor sit amet consectur adipisicing elit, sed do eiusmod tempor inc idid unt ut
                         labore et dolore magna aliqua enim ad minim veniam, quis nostrud exerec tation ullamco laboris
@@ -24,4 +24,4 @@ const InstructorInfor = () => {
     );
 };
 
-export default InstructorInfor;
+export default InstructorInfo;

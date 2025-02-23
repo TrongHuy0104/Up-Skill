@@ -7,7 +7,7 @@ import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 import Banner from '@/components/ui/Banner';
 
 const InstructorSingleBanner = async () => {
-    const breadcrumbs = [{ href: '/', text: 'Home' }, { href: '/ages', text: 'Pages' }, { text: 'Instructor' }];
+    const breadcrumbs = [{ href: '/', text: 'Home' }, { text: 'Instructor' }];
     return (
         <Banner
             contentAlignment="left"
@@ -33,11 +33,11 @@ const InstructorSingleBanner = async () => {
                                     <div className="pr-3 relative flex items-center justify-start gap-2 after:absolute after:content-[''] after:right-0 after:w-px after:h-4 after:bg-primary-100">
                                         <span>4.9</span>
                                         <div className="flex items-center relative gap-2 pb-0.5">
-                                            <Image src={starIcon} alt="" width={16} height={16} />
-                                            <Image src={starIcon} alt="" width={16} height={16} />
-                                            <Image src={starIcon} alt="" width={16} height={16} />
-                                            <Image src={starIcon} alt="" width={16} height={16} />
-                                            <Image src={starOutlineIcon} alt="" width={16} height={16} />
+                                            <Image src={starIcon} alt="" width={15} height={15} />
+                                            <Image src={starIcon} alt="" width={15} height={15} />
+                                            <Image src={starIcon} alt="" width={15} height={15} />
+                                            <Image src={starIcon} alt="" width={15} height={15} />
+                                            <Image src={starOutlineIcon} alt="" width={15} height={15} />
                                         </div>
                                         <p>315,475 rating</p>
                                     </div>

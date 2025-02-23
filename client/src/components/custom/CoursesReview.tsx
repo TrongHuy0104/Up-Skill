@@ -101,7 +101,7 @@ const ReviewSection: React.FC = () => {
     return (
         <div className="space-y-6 ml-0 w-[900px]   pb-8 px-[14px]">
             <div className="text-left flex justify-between w-[900px]">
-                <h3 className="text-[24px] font-semibold text-primary-800">Reviews</h3>
+                <h3 className="text-[24px] font-semibold text-primary-800 font-cardo">Reviews</h3>
                 <div className="gap-2 flex right-0">
                     <span className="text-primary-800">4.9 course rating</span>
                     <p className="text-[10px] mt-1 text-primary-800">●</p>
