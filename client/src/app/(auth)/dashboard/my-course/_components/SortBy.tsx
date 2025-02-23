@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import arrowDownIcon from '@/public/assets/icons/arrow-dropdown.svg';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface SortByProps {
     readonly options: readonly { value: string; label: string }[];
@@ -11,6 +11,21 @@ interface SortByProps {
 export default function SortBy({ options, defaultValue }: SortByProps) {
     const [selected, setSelected] = useState(defaultValue ?? options[0]?.label);
     const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -29,16 +44,14 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
     };
 
     return (
-        <div className="mt-[-8px] relative"> {/* Add relative positioning */}
+        <div className="mt-[-8px] relative" ref={dropdownRef}>
             <div className="flex flex-wrap text-[15px] ml-15">
                 <p className="text-[15px] px-[7px] pl-10 text-primary-600 font-normal leading-[28px]">
                     Sort by
                 </p>
                 <button
                     className="flex relative items-center cursor-pointer text-primary-800 w-48 flex-end"
-                    onClick={() => {
-                        setIsOpen(!isOpen);
-                    }}
+                    onClick={() => setIsOpen(!isOpen)}
                     onKeyDown={handleKeyDown}
                     aria-haspopup="listbox"
                     aria-expanded={isOpen}
@@ -52,7 +65,7 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
             {isOpen && (
                 <ul
                     role="listbox"
-                    className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50" // Add z-50
+                    className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50"
                 >
                     {options.map((option) => (
                         <li
