@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UserT } from '@/interfaces/User';
+import { ILink } from '@/interfaces/User';
 
 export const UserSchema: Schema<UserT> = new Schema(
     {
@@ -65,7 +66,28 @@ export const UserSchema: Schema<UserT> = new Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Course' // add relationship
             }
-        ]
+        ],
+        introduce: {
+            type: String,
+            default: ''
+        },
+        position: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        age: {
+            type: Number,
+            min: [0, 'Age must be a positive number'],
+            default: null
+        },
+
+        socialLinks: {
+            facebook: { type: String, default: '' },
+            twitter: { type: String, default: '' },
+            linkedin: { type: String, default: '' },
+            instagram: { type: String, default: '' }
+        }
     },
     {
         timestamps: true,
@@ -83,6 +105,11 @@ export const UserSchema: Schema<UserT> = new Schema(
         }
     }
 );
+
+export const LinkSchema = new Schema<ILink>({
+    title: String,
+    url: String
+});
 
 // hash password before saving
 UserSchema.pre('save', async function (next) {

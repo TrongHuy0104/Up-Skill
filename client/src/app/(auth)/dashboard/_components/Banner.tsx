@@ -25,6 +25,7 @@ const InstructorDashboardBanner = async () => {
     });
 
     const { user } = await res.json();
+
     return (
         <Banner
             contentAlignment="left"

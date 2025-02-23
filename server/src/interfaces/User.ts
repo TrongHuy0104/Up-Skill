@@ -6,9 +6,18 @@ export interface UserT extends Document {
     email: string;
     password: string;
     role: string;
+    introduce?: string;
+    position: string;
+    age: number;
     avatar: {
         public_id: string;
         url: string;
+    };
+    socialLinks?: {
+        facebook?: string;
+        twitter?: string;
+        linkedin?: string;
+        instagram?: string;
     };
     purchasedCourses: mongoose.Schema.Types.ObjectId[];
     uploadedCourses: mongoose.Schema.Types.ObjectId[];
@@ -16,4 +25,9 @@ export interface UserT extends Document {
     confirmPassword: (password: string) => Promise<boolean>;
     signAccessToken: () => string;
     signRefreshToken: () => string;
+}
+
+export interface ILink extends Document {
+    title: string;
+    url: string;
 }

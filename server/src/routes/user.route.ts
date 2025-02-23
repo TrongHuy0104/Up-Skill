@@ -16,7 +16,8 @@ import {
     forgotPasswordUser,
     resetCodeVerify,
     resetPassword,
-    refreshToken
+    refreshToken,
+    updateUserSocialLinks
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -48,6 +49,8 @@ router.put('/update-user', updateAccessToken, isAuthenticated, updateUserInfo);
 router.put('/update-password', updateAccessToken, isAuthenticated, updatePassword);
 
 router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePicture);
+
+router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialLinks);
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
 

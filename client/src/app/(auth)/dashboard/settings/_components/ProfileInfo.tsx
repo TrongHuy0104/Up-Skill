@@ -17,9 +17,13 @@ import { useUpdateUserInfoMutation } from '@/lib/redux/features/user/userApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import { useToast } from '@/hooks/use-toast';
+import defaultImage from '@/public/assets/images/avatar/user-3.png';
 
 const formSchema = z.object({
-    name: z.string().min(1, { message: 'This field has to be filled.' })
+    name: z.string().min(1, { message: 'This field has to be filled.' }),
+    position: z.string().min(1, { message: 'This field has to be filled.' }),
+    introduce: z.string().optional(),
+    age: z.number().min(0, { message: 'Age must be a positive number' }).optional()
 });
 
 const ProfileInfo = () => {
@@ -34,7 +38,10 @@ const ProfileInfo = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: user?.name || ''
+            name: user?.name || '',
+            position: user?.position || '',
+            introduce: user?.introduce || '',
+            age: user?.age || undefined
         }
     });
 
@@ -68,15 +75,23 @@ const ProfileInfo = () => {
     };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        let data: { name: string; avatar?: any } = {
-            name: values.name
+        console.log('Form values: ', values);
+        let data: { name: string; position?: string; introduce?: string; age?: number; avatar?: any } = {
+            name: values.name,
+            position: values.position,
+            introduce: values.introduce,
+            age: values.age
         };
         if (avatarImage) {
             data = {
                 name: values.name,
-                avatar: avatarImage
+                avatar: avatarImage,
+                position: values.position,
+                introduce: values.introduce,
+                age: values.age
             };
         }
+        console.log('Data to send: ', data);
         await updateUserInfo(data);
     }
     return (
@@ -84,7 +99,7 @@ const ProfileInfo = () => {
             <div className="relative flex items-center gap-[30px] pb-[38px] mb-[30px] border-b border-primary-100">
                 <div className="relative flex items-center justify-center p-[2px] bg-gradient-to-br from-[hsl(308,98%,60%)] to-[hsl(25,100%,55%)] rounded-full w-[120px] h-[120px]">
                     <Image
-                        src={imagePreview || user?.avatar?.url}
+                        src={imagePreview || user?.avatar?.url || defaultImage}
                         alt="Avatar"
                         width={120}
                         height={120}
@@ -130,6 +145,76 @@ const ProfileInfo = () => {
                             </FormItem>
                         )}
                     />
+
+                    <FormField
+                        control={form.control}
+                        name="age"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input
+                                            {...field}
+                                            type="number"
+                                            className={formStyles.textInput}
+                                            onChange={(e) =>
+                                                field.onChange(e.target.value ? Number(e.target.value) : '')
+                                            }
+                                        />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Age
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="position"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input {...field} type="text" className={formStyles.textInput} />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Position
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="introduce"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <textarea
+                                            {...field}
+                                            className={`${formStyles.textInput} p-2  w-full h-24 mb-4`}
+                                        />
+                                        <FormLabel
+                                            className={`-z-2 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : 'translate-y-[-60px]'}`}
+                                        >
+                                            Introduce
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
                     <Button type="submit" size="lg" className="mt-6" disabled={isLoading}>
                         {isLoading && <SpinnerMini />}
                         <span>Update Profile</span> <Image src={arrowTopRightIcon} alt="" />
