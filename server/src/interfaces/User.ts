@@ -26,8 +26,3 @@ export interface UserT extends Document {
     signAccessToken: () => string;
     signRefreshToken: () => string;
 }
-
-export interface ILink extends Document {
-    title: string;
-    url: string;
-}

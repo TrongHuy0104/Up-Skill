@@ -2,7 +2,6 @@ import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { UserT } from '@/interfaces/User';
-import { ILink } from '@/interfaces/User';
 
 export const UserSchema: Schema<UserT> = new Schema(
     {
@@ -105,11 +104,6 @@ export const UserSchema: Schema<UserT> = new Schema(
         }
     }
 );
-
-export const LinkSchema = new Schema<ILink>({
-    title: String,
-    url: String
-});
 
 // hash password before saving
 UserSchema.pre('save', async function (next) {
