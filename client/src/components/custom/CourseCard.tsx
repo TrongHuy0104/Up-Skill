@@ -120,10 +120,10 @@ export default function CourseVerticalCard({
     );
 }
 
-export function CourseHorizontalCard({ width = '260px', height = '190px', course }: CourseHorizontalCard) {
+export function CourseHorizontalCard({course }: CourseHorizontalCard) {
     return (
-        <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100" style={{ width }}>
-            <div className="h-[240px] max-w-[320px] relative rounded-sm overflow-hidden" style={{ height }}>
+        <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
+            <div className="h-[240px] w-[320px] relative rounded-sm overflow-hidden flex-shrink-0">
                 <Image
                     src={img}
                     alt=""
@@ -195,7 +195,8 @@ export function CourseHorizontalCard({ width = '260px', height = '190px', course
                 <div className="flex items-center justify-between border-t border-primary-100 pt-[13px]">
                     <Link
                         href="#!"
-                        className="flex items-center gap-[10px] font-medium text-base leading-7 hover:text-accent-600"
+                        className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7
+                        transition-colors cursor-pointer duration-300 hover:text-accent-600"
                     >
                         <span className="font-medium">Enroll Course</span>
                         <GoArrowUpRight />
