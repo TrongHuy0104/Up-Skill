@@ -69,7 +69,7 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                     {options.map((option) => (
                         <li key={option.value}>
                             <button
-                                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${selected === option.label ? 'text-accent-900 bg-gray-50' : ''}`}
+                                className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 ${selected === option.label ? 'text-accent-900 bg-gray-50' : ''}`}
                                 onClick={() => {
                                     setSelected(option.label);
                                     setIsOpen(false);
