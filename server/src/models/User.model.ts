@@ -70,7 +70,7 @@ export const UserSchema: Schema<UserT> = new Schema(
             type: String,
             default: ''
         },
-        position: {
+        profession: {
             type: String,
             trim: true,
             default: ''

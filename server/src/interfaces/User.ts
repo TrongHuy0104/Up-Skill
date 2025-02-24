@@ -7,7 +7,7 @@ export interface UserT extends Document {
     password: string;
     role: string;
     introduce?: string;
-    position: string;
+    profession: string;
     age: number;
     avatar: {
         public_id: string;

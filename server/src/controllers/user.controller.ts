@@ -54,7 +54,7 @@ interface IUpdateUserInfo {
     avatar: string;
     email: string;
     age: number;
-    position: string;
+    profession: string;
     introduce: string;
     address: string;
     phoneNumber: string;
@@ -299,7 +299,7 @@ export const socialAuth = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const updateUserInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { name, avatar, email, introduce, position, age, phoneNumber, address } = req.body as IUpdateUserInfo;
+    const { name, avatar, email, introduce, profession, age, phoneNumber, address } = req.body as IUpdateUserInfo;
     const userId = req.user?._id as RedisKey;
     const user = await UserModel.findById(userId);
 
@@ -319,7 +319,7 @@ export const updateUserInfo = catchAsync(async (req: Request, res: Response, nex
     // Cập nhật các trường khác
     if (name) user.name = name;
     if (introduce) user.introduce = introduce;
-    if (position) user.position = position;
+    if (profession) user.profession = profession;
     if (age) user.age = age;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     if (address) user.address = address;

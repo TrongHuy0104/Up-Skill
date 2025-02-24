@@ -21,7 +21,7 @@ import defaultImage from '@/public/assets/images/avatar/user-3.png';
 
 const formSchema = z.object({
     name: z.string().min(1, { message: 'This field has to be filled.' }),
-    position: z.string().min(1, { message: 'This field has to be filled.' }),
+    profession: z.string().min(1, { message: 'This field has to be filled.' }),
     introduce: z.string().optional(),
     age: z.number().min(0, { message: 'Age must be a positive number' }).optional(),
     address: z.string().min(1, { message: 'This field has to be filled.' }),
@@ -45,7 +45,7 @@ const ProfileInfo = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: user?.name || '',
-            position: user?.position || '',
+            profession: user?.profession || '',
             introduce: user?.introduce || '',
             age: user?.age || undefined,
             address: user?.address || '',
@@ -86,7 +86,7 @@ const ProfileInfo = () => {
         console.log('Form values: ', values);
         let data: {
             name: string;
-            position?: string;
+            profession?: string;
             introduce?: string;
             age?: number;
             avatar?: any;
@@ -94,7 +94,7 @@ const ProfileInfo = () => {
             phoneNumber?: string;
         } = {
             name: values.name,
-            position: values.position,
+            profession: values.profession,
             introduce: values.introduce,
             age: values.age,
             address: values.address,
@@ -104,7 +104,7 @@ const ProfileInfo = () => {
             data = {
                 name: values.name,
                 avatar: avatarImage,
-                position: values.position,
+                profession: values.profession,
                 introduce: values.introduce,
                 age: values.age,
                 phoneNumber: values.phoneNumber,
@@ -195,7 +195,7 @@ const ProfileInfo = () => {
 
                     <FormField
                         control={form.control}
-                        name="position"
+                        name="profession"
                         render={({ field }) => (
                             <FormItem className="py-1">
                                 <FormControl>
@@ -204,7 +204,7 @@ const ProfileInfo = () => {
                                         <FormLabel
                                             className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
                                         >
-                                            Position
+                                            Profession
                                         </FormLabel>
                                     </fieldset>
                                 </FormControl>
