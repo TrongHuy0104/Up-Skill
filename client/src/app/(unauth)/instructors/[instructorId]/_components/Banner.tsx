@@ -4,12 +4,12 @@ import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import lessionsIcon from '@/public/assets/icons/lession.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
-import Banner from '@/components/ui/Banner';
+import InstructorDetailBanner from './InstructorDetailBanner';
 
-const InstructorSingleBanner = async () => {
+const Banner = async () => {
     const breadcrumbs = [{ href: '/', text: 'Home' }, { text: 'Instructor' }];
     return (
-        <Banner
+        <InstructorDetailBanner
             contentAlignment="left"
             breadcrumbs={breadcrumbs}
             background="https://creativelayers.net/themes/upskill-html/images/page-title/inner-page.png" // Hình nền
@@ -69,8 +69,8 @@ const InstructorSingleBanner = async () => {
                     </div>
                 </div>
             </div>
-        </Banner>
+        </InstructorDetailBanner>
     );
 };
 
-export default InstructorSingleBanner;
+export default Banner;
