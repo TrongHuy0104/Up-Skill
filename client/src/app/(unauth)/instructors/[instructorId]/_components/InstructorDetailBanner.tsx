@@ -39,7 +39,7 @@ export default function InstructorDetailBanner({
         <div className={`relative w-full overflow-hidden ${backgroundColor}`}>
             {background && (
                 <div
-                    className="absolute inset-0 w-full h-full bg-cover bg-center -z-10"
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url(${background})` }}
                 />
             )}
