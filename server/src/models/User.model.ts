@@ -75,6 +75,16 @@ export const UserSchema: Schema<UserT> = new Schema(
             trim: true,
             default: ''
         },
+        phoneNumber: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        address: {
+            type: String,
+            trim: true,
+            default: ''
+        },
         age: {
             type: Number,
             min: [0, 'Age must be a positive number'],

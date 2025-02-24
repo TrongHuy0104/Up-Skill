@@ -19,6 +19,9 @@ export interface UserT extends Document {
         linkedin?: string;
         instagram?: string;
     };
+    address: string;
+    phoneNumber: string;
+
     purchasedCourses: mongoose.Schema.Types.ObjectId[];
     uploadedCourses: mongoose.Schema.Types.ObjectId[];
     isVerified: boolean;

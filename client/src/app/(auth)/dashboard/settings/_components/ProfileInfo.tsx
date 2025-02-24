@@ -23,7 +23,13 @@ const formSchema = z.object({
     name: z.string().min(1, { message: 'This field has to be filled.' }),
     position: z.string().min(1, { message: 'This field has to be filled.' }),
     introduce: z.string().optional(),
-    age: z.number().min(0, { message: 'Age must be a positive number' }).optional()
+    age: z.number().min(0, { message: 'Age must be a positive number' }).optional(),
+    address: z.string().min(1, { message: 'This field has to be filled.' }),
+    phoneNumber: z
+        .string()
+        .min(1, { message: 'This field has to be filled.' })
+        .max(15, { message: 'Phone number must be at most 15 digits.' })
+        .regex(/^\+?[0-9]{10,15}$/, { message: 'Phone number must contain only numbers.' })
 });
 
 const ProfileInfo = () => {
@@ -41,7 +47,9 @@ const ProfileInfo = () => {
             name: user?.name || '',
             position: user?.position || '',
             introduce: user?.introduce || '',
-            age: user?.age || undefined
+            age: user?.age || undefined,
+            address: user?.address || '',
+            phoneNumber: user?.phoneNumber || ''
         }
     });
 
@@ -76,11 +84,21 @@ const ProfileInfo = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log('Form values: ', values);
-        let data: { name: string; position?: string; introduce?: string; age?: number; avatar?: any } = {
+        let data: {
+            name: string;
+            position?: string;
+            introduce?: string;
+            age?: number;
+            avatar?: any;
+            address?: string;
+            phoneNumber?: string;
+        } = {
             name: values.name,
             position: values.position,
             introduce: values.introduce,
-            age: values.age
+            age: values.age,
+            address: values.address,
+            phoneNumber: values.phoneNumber
         };
         if (avatarImage) {
             data = {
@@ -88,7 +106,9 @@ const ProfileInfo = () => {
                 avatar: avatarImage,
                 position: values.position,
                 introduce: values.introduce,
-                age: values.age
+                age: values.age,
+                phoneNumber: values.phoneNumber,
+                address: values.address
             };
         }
         console.log('Data to send: ', data);
@@ -130,7 +150,7 @@ const ProfileInfo = () => {
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="py-1">
                                 <FormControl>
                                     <fieldset className={formStyles.fieldset}>
                                         <Input {...field} type="text" className={formStyles.textInput} />
@@ -150,7 +170,7 @@ const ProfileInfo = () => {
                         control={form.control}
                         name="age"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="py-1">
                                 <FormControl>
                                     <fieldset className={formStyles.fieldset}>
                                         <Input
@@ -177,7 +197,7 @@ const ProfileInfo = () => {
                         control={form.control}
                         name="position"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="py-1">
                                 <FormControl>
                                     <fieldset className={formStyles.fieldset}>
                                         <Input {...field} type="text" className={formStyles.textInput} />
@@ -192,11 +212,52 @@ const ProfileInfo = () => {
                             </FormItem>
                         )}
                     />
+
+                    <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                            <FormItem className="py-1">
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input {...field} type="text" className={formStyles.textInput} />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Address
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="phoneNumber"
+                        render={({ field }) => (
+                            <FormItem className="py-1">
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input {...field} type="text" className={formStyles.textInput} />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Phone Number
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
                     <FormField
                         control={form.control}
                         name="introduce"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="py-1">
                                 <FormControl>
                                     <fieldset className={formStyles.fieldset}>
                                         <textarea
@@ -204,7 +265,7 @@ const ProfileInfo = () => {
                                             className={`${formStyles.textInput} p-2  w-full h-24 mb-4`}
                                         />
                                         <FormLabel
-                                            className={`-z-2 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : 'translate-y-[-60px]'}`}
+                                            className={`-z-2  ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : 'translate-y-[-60px]'}`}
                                         >
                                             Introduce
                                         </FormLabel>

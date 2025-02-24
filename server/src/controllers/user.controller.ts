@@ -56,6 +56,8 @@ interface IUpdateUserInfo {
     age: number;
     position: string;
     introduce: string;
+    address: string;
+    phoneNumber: string;
 }
 
 interface IUpdatePassword {
@@ -297,7 +299,7 @@ export const socialAuth = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const updateUserInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { name, avatar, email, introduce, position, age } = req.body as IUpdateUserInfo;
+    const { name, avatar, email, introduce, position, age, phoneNumber, address } = req.body as IUpdateUserInfo;
     const userId = req.user?._id as RedisKey;
     const user = await UserModel.findById(userId);
 
@@ -316,9 +318,11 @@ export const updateUserInfo = catchAsync(async (req: Request, res: Response, nex
 
     // Cập nhật các trường khác
     if (name) user.name = name;
-    if (introduce) user.introduce = introduce; // Giả sử skill là một mảng hoặc string
+    if (introduce) user.introduce = introduce;
     if (position) user.position = position;
     if (age) user.age = age;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if (address) user.address = address;
 
     // Cập nhật avatar nếu có
     if (avatar) {
