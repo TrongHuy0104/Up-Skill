@@ -8,8 +8,8 @@ export default function Page() {
     return (
         <div>
             <InstructorSingleBanner />
-            <div className="relative w-full flex flex-col md:flex-row pl-4 md:pl-5 lg:pl-10 xl:pl-20">
-                <div className="mt-5 md:mt-6 lg:mt-8 w-[900px] max-w-full mx-auto">
+            <div className="relative w-full flex flex-col md:flex-row">
+                <div className="mt-5 md:mt-6 lg:mt-8 w-[730px] max-w-full mx-auto">
                     <InstructorInfo />
                     <CoursesList />
                     <Review />
