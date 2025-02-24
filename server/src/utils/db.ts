@@ -42,7 +42,7 @@ export const connectDB = (MONGODB_URI: any) => {
         setTimeout(() => {
             mongoose.connect(MONGODB_URI, {
                 socketTimeoutMS: 3000,
-                connectTimeoutMS: 3000,
+                connectTimeoutMS: 3000
                 // useNewUrlParser: true,
                 // useUnifiedTopology: true
                 // useFindAndModify: true,
