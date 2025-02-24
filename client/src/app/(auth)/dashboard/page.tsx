@@ -11,21 +11,22 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 20;
 
+  //Pagination handle
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-    // Here you would typically fetch data for the new page
   };
 
+  //Edit course handle
   const handleEditCourse = (courseId: number) => {
-    // Implement edit course functionality
     console.log('Editing course:', courseId);
   };
 
+  //Delete course handle
   const handleDeleteCourse = (courseId: number) => {
-    // Implement delete course functionality
     console.log('Deleting course:', courseId);
   };
 
+  //Fake stats 
   const stats = [
     { title: "Total Course", value: 90, icon: "/assets/icons/total-course.svg" },
     { title: "Published Course", value: 48, icon: "/assets/icons/published-course.svg" },
@@ -38,6 +39,7 @@ const Dashboard = () => {
     { title: "Completed Courses", value: 12, icon: "/assets/icons/certificate.svg" }
   ];
 
+  //Fake best selling courses
   const courses = [
     { id: 1, name: "Building Scalable APIs with GraphQL", sales: 54, amount: "$214,478", image: "/assets/images/courses/courses-01.jpg" },
     { id: 2, name: "HTML5 Web Front-End Development", sales: 54, amount: "$214,478", image: "/assets/images/courses/courses-01.jpg" },
