@@ -13,6 +13,7 @@ import NotificationModel from '@/models/Notification.model';
 import axios from 'axios';
 
 export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
     const data = req.body;
 
     const thumbnail = data.thumbnail;
@@ -25,6 +26,8 @@ export const uploadCourse = catchAsync(async (req: Request, res: Response, next:
             url: myCloud.secure_url
         };
     }
+    // await redis.del(`allCourses ${req.user?._id}`);
+    // await redis.del(`allCourses undefined`);
     createCourse(data, req, res, next);
 });
 // export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
