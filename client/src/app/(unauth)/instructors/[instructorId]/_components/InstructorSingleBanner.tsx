@@ -33,7 +33,7 @@ export default function InstructorSingleBanner({
     children,
     button,
     buttonPosition = 'right'
-}: BannerProps) {
+}: Readonly<BannerProps>) {
     const alignmentClass = getAlignmentClass(contentAlignment);
 
     return (
