@@ -2,14 +2,14 @@ import Breadcrumb from '@/components/ui/Breadcrumb';
 import React from 'react';
 
 
-interface Breadcrumb {
+interface BannerBreadcrumb {
     href?: string;
     text: string;
 }
 
 interface BannerProps {
     title?: string;
-    breadcrumbs?: Breadcrumb[];
+    breadcrumbs?: BannerBreadcrumb[];
     contentAlignment?: 'center' | 'left' | 'right';
     backgroundColor?: string; // Màu nền
     background?: string; // Hình nền (URL hoặc gradient)
