@@ -5,7 +5,7 @@ export default function CoursesList() {
     return (
         <div className="mb-[61px] w-[9000px]">
             <h2 className="text-2xl font-bold mb-4 font-cardo">My courses (29)</h2>
-            <div className="flex gap-7">
+            <div className="flex gap-14">
                 <CourseVerticalCard />
                 <CourseVerticalCard />
                 <CourseVerticalCard />

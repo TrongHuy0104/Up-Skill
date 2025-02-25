@@ -3,7 +3,7 @@
 const InstructorInfo = () => {
     return (
         <div className="w-full text-primary-800 mt-6">
-            <div className="pb-[61px] leading-7 w-[900px]">
+            <div className="pb-[61px] leading-7 w-full">
                 <h2 className="text-2xl font-bold mb-4 font-cardo">About Me</h2>
 
                 <div>

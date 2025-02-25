@@ -9,8 +9,8 @@ export default function Page() {
     return (
         <div className="max-w-[2500px] mx-auto">
             <Banner />
-            <div className="relative w-full flex flex-col md:flex-row gap-52">
-                <div className="mt-5 md:mt-6 lg:mt-8 w-full md:w-[1000px] mx-auto pl-[20px] md:pl-[100px] lg:pl-[200px]">
+            <div className="relative w-[900px] flex flex-col md:flex-row gap-28">
+                <div className="mt-5 md:mt-6 lg:mt-8 w-full md:w-[1000px] mx-auto pl-[10px] md:pl-[75px] lg:pl-[100px]">
                     <InstructorInfo />
                     <CoursesDetailLine />
                     <CoursesList />

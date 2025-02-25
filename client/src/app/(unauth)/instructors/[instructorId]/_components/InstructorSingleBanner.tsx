@@ -47,7 +47,7 @@ export default function InstructorSingleBanner({
             )}
 
             {/* Nội dung */}
-            <div className="tf-container w-[1428px] pl-[20px] md:pl-[100px] lg:pl-[200px]">
+            <div className="tf-container w-[1428px] pl-[10px] md:pl-[75px] lg:pl-[100px]">
                 <div
                     className={`flex ${buttonPosition === 'left' ? 'flex-row-reverse' : 'flex-row'} justify-between items-center gap-8`}
                 >
