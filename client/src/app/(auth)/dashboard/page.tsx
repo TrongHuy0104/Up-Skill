@@ -12,47 +12,80 @@ interface Course {
   name: string;
   isPublished: boolean;
   price?: number;
+  purchased: number;
+  thumbnail?: {url: string}; 
 }
 
 const Dashboard = () => {
 
-  // const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
     totalCourses: 0,
     publishedCourses: 0,
-    pendingCourses: 0
+    pendingCourses: 0,
+    totalStudent:0,
+    // studentCompleted:0,
+    // studentInprogress:0,
+    // courseEnrolled: 0,
+    // courseActive: 0,
+    // courseCompleted: 0
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 20;
+  const [bestSellingCourses, setBestSellingCourses] = useState<Course[]>([]);
+
+  const totalPages = Math.ceil(bestSellingCourses.length / 4);
 
   useEffect(() => {
     const fetchCourseStats = async () => {
       try {
-        // setLoading(true);
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_SERVER_URI}/courses`,
-          { withCredentials: true }
-        );
-        
-        if (response.data.success) {
-          const courses: Course[] = response.data.courses;
-
-        setStats({
-          totalCourses: courses.length,
-          publishedCourses: courses.filter((course: Course) => course.isPublished).length,
-          pendingCourses: courses.filter((course: Course) => !course.isPublished).length
-        });
-        }
+          const response = await axios.get(
+              `${process.env.NEXT_PUBLIC_SERVER_URI}/courses`,
+              { withCredentials: true }
+          );
+  
+          if (response.data.success) {
+              const courses: Course[] = response.data.courses;
+  
+              const publishedCourses = courses.filter((course: Course) => course.isPublished);
+              const totalStudent = publishedCourses.reduce((sum, course) => sum + (course.purchased || 0), 0);
+  
+              setStats({
+                  totalCourses: courses.length,
+                  publishedCourses: publishedCourses.length,
+                  pendingCourses: courses.length - publishedCourses.length,
+                  totalStudent: totalStudent,
+              });
+          }
       } catch (error) {
-        console.error("Error fetching courses:", error);
-      } finally {
-        // setLoading(false);
+          console.error("Error fetching courses:", error);
       }
-    };
+  };
+  
 
-    fetchCourseStats();
-  }, []);
+    const fetchBestSellingCourses = async () => {
+      try {
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses`, {
+              withCredentials: true,
+          });
+  
+          if (response.data.success) {
+              const courses = response.data.courses;
+  
+              const bestSellingCourses = courses
+                  .filter((course: Course) => course.isPublished)
+                  .sort((a: Course, b: Course) => (b.purchased || 0) - (a.purchased || 0));
+  
+              setBestSellingCourses(bestSellingCourses);
+          }
+      } catch (error) {
+          console.error("Error fetching best selling courses:", error);
+      }
+  };
+  
+
+  fetchCourseStats();
+  fetchBestSellingCourses();
+}, []);
 
   //Pagination handle
   const handlePageChange = (pageNumber: number) => {
@@ -60,34 +93,26 @@ const Dashboard = () => {
   };
 
   //Edit course handle
-  const handleEditCourse = (courseId: number) => {
-    console.log('Editing course:', courseId);
-  };
+  // const handleEditCourse = (courseId: number) => {
+  //   console.log('Editing course:', courseId);
+  // };
 
   //Delete course handle
-  const handleDeleteCourse = (courseId: number) => {
-    console.log('Deleting course:', courseId);
-  };
+  // const handleDeleteCourse = (courseId: number) => {
+  //   console.log('Deleting course:', courseId);
+  // };
 
-  //Fake stats 
+  //Stats 
   const statsConfig = [
     { title: "Total Course", value: stats.totalCourses, icon: "/assets/icons/total-course.svg" },
     { title: "Published Course", value: stats.publishedCourses, icon: "/assets/icons/published-course.svg" },
     { title: "Pending Course", value: stats.pendingCourses, icon: "/assets/icons/pending-course.svg" },
-    { title: "Total Student", value: 78, icon: "/assets/icons/student-total.svg" },
-    { title: "Student Completed", value: 54, icon: "/assets/icons/student-completed.svg" },
-    { title: "Student In-progress", value: 54, icon: "/assets/icons/student-inprogress.svg" },
-    { title: "Enrolled Courses", value: 22, icon: "/assets/icons/play-content.svg" },
-    { title: "Active Courses", value: 10, icon: "/assets/icons/check-icon.svg" },
-    { title: "Completed Courses", value: 12, icon: "/assets/icons/certificate.svg" }
-  ];
-
-  //Fake best selling courses
-  const courses = [
-    { id: 1, name: "Building Scalable APIs with GraphQL", sales: 54, amount: "$214,478", image: "/assets/images/courses/courses-01.jpg" },
-    { id: 2, name: "HTML5 Web Front-End Development", sales: 54, amount: "$214,478", image: "/assets/images/courses/courses-01.jpg" },
-    { id: 3, name: "Learn JavaScript Courses from Scratch", sales: 54, amount: "$214,478", image: "/assets/images/courses/courses-01.jpg" },
-    { id: 4, name: "Get Started: React Js Courses", sales: 54, amount: "$214,478", image: "/assets/images/courses/courses-01.jpg" },
+    { title: "Total Student", value: stats.totalStudent, icon: "/assets/icons/student-total.svg" },
+    { title: "Student Completed", value: 0, icon: "/assets/icons/student-completed.svg" },
+    { title: "Student In-progress", value: 0, icon: "/assets/icons/student-inprogress.svg" },
+    { title: "Enrolled Courses", value: 0, icon: "/assets/icons/play-content.svg" },
+    { title: "Active Courses", value: 0, icon: "/assets/icons/check-icon.svg" },
+    { title: "Completed Courses", value: 0, icon: "/assets/icons/certificate.svg" }
   ];
 
   return (
@@ -125,28 +150,27 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {courses.map((course) => (
-                <tr key={course.id} className="border-b border-primary-100">
+            {bestSellingCourses.slice((currentPage - 1) * 4, currentPage * 4).map((course) => (
+                <tr key={course._id} className="border-b border-primary-100">
                   <td className="py-5 pl-6">
                     <div className="flex items-center">
                       <div className="relative w-100 h-100">
                         <Image 
-                          src={course.image} 
+                          src={course.thumbnail?.url || "/assets/images/courses/courses-01.jpg"} 
                           alt={course.name} 
                           width={100} 
                           height={80} 
-                          className=""
                         />
                       </div>
                       <span className="text-[15px] text-primary-800 font-medium pl-[30px]">{course.name}</span>
                     </div>
                   </td>
-                  <td className="text-[15px] text-primary-800 font-medium pl-8">{course.sales}</td>
-                  <td className="text-[15px] text-primary-800 font-medium pl-10">{course.amount}</td>
+                  <td className="text-[15px] text-primary-800 font-medium pl-8">{course.purchased}</td>
+                  <td className="text-[15px] text-primary-800 font-medium pl-10">${course.price?.toLocaleString() || "N/A"}</td>
                   <td className="py-4 pl-6">
                     <div className="flex items-center space-x-3">
                       <button 
-                        onClick={() => handleEditCourse(course.id)}
+                        // onClick={() => handleEditCourse(course._id)}
                         className="p-2 rounded-xl group border border-primary-100 bg-accent-100 hover:bg-primary-800 transition-colors duration-200"
                       >
                         <div className="relative w-4 h-4">
@@ -159,7 +183,7 @@ const Dashboard = () => {
                         </div>
                       </button>
                       <button 
-                        onClick={() => handleDeleteCourse(course.id)}
+                        // onClick={() => handleDeleteCourse(course.id)}
                         className="p-2 rounded-xl group border border-primary-100 hover:bg-accent-900 transition-colors duration-200"
                       >
                         <div className="relative w-4 h-4">
