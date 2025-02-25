@@ -1,15 +1,58 @@
 "use client"
 
-import React, { useState } from "react";import Image from "next/image";
+import React, { useEffect, useState } from "react";import Image from "next/image";
 import PaginationComponent from "@/components/custom/PaginationComponent";
 import { HiArrowUpRight } from "react-icons/hi2";
 import editIcon from "@/public/assets/icons/edit.svg";
 import deleteIcon from "@/public/assets/icons/delete.svg";
+import axios from "axios";
+
+interface Course {
+  _id: string;
+  name: string;
+  isPublished: boolean;
+  price?: number;
+}
 
 const Dashboard = () => {
 
+  // const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    totalCourses: 0,
+    publishedCourses: 0,
+    pendingCourses: 0
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 20;
+
+  useEffect(() => {
+    const fetchCourseStats = async () => {
+      try {
+        // setLoading(true);
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/courses`,
+          { withCredentials: true }
+        );
+        
+        if (response.data.success) {
+          const courses: Course[] = response.data.courses;
+
+        setStats({
+          totalCourses: courses.length,
+          publishedCourses: courses.filter((course: Course) => course.isPublished).length,
+          pendingCourses: courses.filter((course: Course) => !course.isPublished).length
+        });
+        }
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchCourseStats();
+  }, []);
 
   //Pagination handle
   const handlePageChange = (pageNumber: number) => {
@@ -27,10 +70,10 @@ const Dashboard = () => {
   };
 
   //Fake stats 
-  const stats = [
-    { title: "Total Course", value: 90, icon: "/assets/icons/total-course.svg" },
-    { title: "Published Course", value: 48, icon: "/assets/icons/published-course.svg" },
-    { title: "Pending Course", value: 48, icon: "/assets/icons/pending-course.svg" },
+  const statsConfig = [
+    { title: "Total Course", value: stats.totalCourses, icon: "/assets/icons/total-course.svg" },
+    { title: "Published Course", value: stats.publishedCourses, icon: "/assets/icons/published-course.svg" },
+    { title: "Pending Course", value: stats.pendingCourses, icon: "/assets/icons/pending-course.svg" },
     { title: "Total Student", value: 78, icon: "/assets/icons/student-total.svg" },
     { title: "Student Completed", value: 54, icon: "/assets/icons/student-completed.svg" },
     { title: "Student In-progress", value: 54, icon: "/assets/icons/student-inprogress.svg" },
@@ -51,7 +94,7 @@ const Dashboard = () => {
     <div className="container mx-auto pl-10">
       {/* Statistics Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-        {stats.map((stat, index) => (
+        {statsConfig.map((stat, index) => (
           <div key={index} className="w-[320px] h-[150px] bg-primary-50 rounded-lg p-9 flex items-center space-x-6 border border-primary-100">
             <div className="bg-accent-100 p-5 rounded-full">
             <Image src={stat.icon} alt={stat.title} width={30} height={30} />
