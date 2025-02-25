@@ -30,7 +30,7 @@ export default function page() {
                 <Review />
             </div>
             <div className="right-content w-full md:w-1/3 ">
-                <div className="sticky top-0">
+                <div className="sticky top-[20px]">
                     <Sidebar />
                 </div>
             </div>
