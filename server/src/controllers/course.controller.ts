@@ -25,6 +25,8 @@ export const uploadCourse = catchAsync(async (req: Request, res: Response, next:
             url: myCloud.secure_url
         };
     }
+    await redis.del(`allCourses ${req.user?._id}`);
+    await redis.del('allCourses undefined');
     createCourse(data, req, res, next);
 });
 // export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

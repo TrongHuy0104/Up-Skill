@@ -53,7 +53,7 @@ export default function Banner({
                     {/* Content section */}
                     <div className={`flex-1 ${alignmentClass}`}>
                         {breadcrumbs && <Breadcrumb breadcrumbs={breadcrumbs} alignment={contentAlignment} />}
-                        {title && <h2 className="text-[42px] mb-4 font-bold leading-[56px] font-cardo">{title}</h2>}
+                        {title && <h2 className="text-[36px] mb-4 font-bold leading-[56px] font-cardo">{title}</h2>}
                         {children}
                     </div>
 
