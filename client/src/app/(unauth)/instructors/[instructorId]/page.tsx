@@ -10,14 +10,14 @@ export default function Page() {
         <div className="max-w-[2500px] mx-auto">
             <Banner />
             <div className="relative w-full flex flex-col md:flex-row gap-8">
-                <div className="mt-5 md:mt-6 lg:mt-8 w-full md:w-2/3 mx-auto pl-[20px] md:pl-[100px] lg:pl-[200px]">
+                <div className="mt-5 md:mt-6 lg:mt-8 w-full md:w-[1200px] mx-auto pl-[20px] md:pl-[100px] lg:pl-[200px]">
                     <InstructorInfo />
                     <CoursesDetailLine />
                     <CoursesList />
                     <CoursesDetailLine />
                     <Review />
                 </div>
-                <div className="relative -mt-[50px] md:-mt-[100px] lg:-mt-[150px] w-full md:w-1/3">
+                <div className="relative -mt-[50px] md:-mt-[100px] lg:-mt-[150px] w-full ">
                     <div className="sticky top-[20px]">
                         <Sidebar />
                     </div>
