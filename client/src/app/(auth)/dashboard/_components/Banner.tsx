@@ -12,6 +12,7 @@ import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
 import { Button } from '@/components/ui/Button';
+import defaultImage from '@/public/assets/images/avatar/user-3.png';
 
 const InstructorDashboardBanner = async () => {
     const cookieStore = await cookies();
@@ -35,7 +36,7 @@ const InstructorDashboardBanner = async () => {
                 <div className={`${layoutStyles.row} items-center`}>
                     <div className="w-2/3">
                         <div className="flex items-center justify-start gap-[30px]">
-                            <Avatar size={120} avatar={user?.avatar?.url} />
+                            <Avatar size={120} avatar={user?.avatar?.url || defaultImage} />
                             <div>
                                 <h2 className="text-[42px] leading-[56px] mb-2 font-bold font-cardo">
                                     Welcome, <span>{user?.name}</span>

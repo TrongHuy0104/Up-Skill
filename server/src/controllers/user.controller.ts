@@ -58,6 +58,8 @@ interface IUpdateUserInfo {
     introduce: string;
     address: string;
     phoneNumber: string;
+    rating: number;
+    student: number;
 }
 
 interface IUpdatePassword {

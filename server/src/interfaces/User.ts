@@ -21,6 +21,8 @@ export interface UserT extends Document {
     };
     address: string;
     phoneNumber: string;
+    rating: number;
+    student: number;
 
     purchasedCourses: mongoose.Schema.Types.ObjectId[];
     uploadedCourses: mongoose.Schema.Types.ObjectId[];

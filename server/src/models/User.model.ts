@@ -90,7 +90,14 @@ export const UserSchema: Schema<UserT> = new Schema(
             min: [0, 'Age must be a positive number'],
             default: null
         },
-
+        rating: {
+            type: Number,
+            default: null
+        },
+        student: {
+            type: Number,
+            default: null
+        },
         socialLinks: {
             facebook: { type: String, default: '' },
             twitter: { type: String, default: '' },

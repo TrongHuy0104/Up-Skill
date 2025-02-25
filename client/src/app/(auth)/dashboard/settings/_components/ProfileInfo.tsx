@@ -17,7 +17,6 @@ import { useUpdateUserInfoMutation } from '@/lib/redux/features/user/userApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import { useToast } from '@/hooks/use-toast';
-import defaultImage from '@/public/assets/images/avatar/user-3.png';
 
 const formSchema = z.object({
     name: z.string().min(1, { message: 'This field has to be filled.' }),
@@ -119,7 +118,7 @@ const ProfileInfo = () => {
             <div className="relative flex items-center gap-[30px] pb-[38px] mb-[30px] border-b border-primary-100">
                 <div className="relative flex items-center justify-center p-[2px] bg-gradient-to-br from-[hsl(308,98%,60%)] to-[hsl(25,100%,55%)] rounded-full w-[120px] h-[120px]">
                     <Image
-                        src={imagePreview || user?.avatar?.url || defaultImage}
+                        src={imagePreview || user?.avatar?.url}
                         alt="Avatar"
                         width={120}
                         height={120}
