@@ -1,11 +1,42 @@
+'use client'
+
 import { layoutStyles } from '@/styles/styles';
-import { CarouselSpacing } from '../custom/CustomCarousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { TfiArrowTopRight } from 'react-icons/tfi';
 import CourseVerticalCard from '../custom/CourseCard';
 
 function TopCourses() {
+    const [topCourses, setTopCourses] = useState<any[]>([]);  
+    const [loading, setLoading] = useState<boolean>(true); 
+
+    useEffect(() => {
+        const fetchTopCourses = async () => {
+            try {
+                const res = await fetch('http://localhost:8000/api/courses/top-courses', {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to fetch top courses');
+                }
+
+                const data = await res.json(); 
+                console.log(data);
+
+                setTopCourses(data.topCourses); 
+                setLoading(false); 
+            } catch (error) {
+                console.error('Error fetching top courses:', error);
+                setLoading(false); 
+            }
+        };
+
+        fetchTopCourses(); 
+    }, []);
+
     return (
         <section className="border-top border-primary-100 pb-[64px] pt-[80px]">
             <div className={layoutStyles.container}>
@@ -24,9 +55,37 @@ function TopCourses() {
                                     Show More Courses <TfiArrowTopRight className="relative top-[1px]" />
                                 </Link>
                             </div>
+
                             <div className="mt-6">
-                                <CarouselSpacing component={<CourseVerticalCard />} />
+                                {loading ? (
+                                    <p>Loading top courses...</p>  // Loading state message
+                                ) : (
+                                    <Carousel className="w-full">
+                                        <CarouselContent className="-ml-1">
+                                            {topCourses.map((course) => (
+                                                <CarouselItem key={course._id} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
+                                                    <div className="p-1">
+                                                        <CourseVerticalCard
+                                                            key={course._id}
+                                                            imageUrl={course?.thumbnail?.url}
+                                                            title={course.name}
+                                                            lessonsCount={course.courseData?.length || 0}
+                                                            duration={course.duration || 'N/A'}
+                                                            rating={course.rating || 0}
+                                                            reviewsCount={course.reviews?.length || 0}
+                                                            instructorName={course.authorId?.name || 'Unknown Instructor'}
+                                                            price={course.price || 0}
+                                                        />
+                                                    </div>
+                                                </CarouselItem>
+                                            ))}
+                                        </CarouselContent>
+                                        <CarouselPrevious />
+                                        <CarouselNext />
+                                    </Carousel>
+                                )}
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -36,3 +95,4 @@ function TopCourses() {
 }
 
 export default TopCourses;
+

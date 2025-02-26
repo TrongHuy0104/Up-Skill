@@ -476,3 +476,65 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
         message: 'Password has been reset successfully'
     });
 });
+
+export const getTopInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const topInstructors = await UserModel.aggregate([
+        { $match: { role: 'instructor' } },
+
+        {
+            $lookup: {
+                from: 'courses',
+                localField: 'uploadedCourses',
+                foreignField: '_id',
+                as: 'uploadedCoursesData'
+            }
+        },
+
+        {
+            $addFields: {
+                totalStudents: {
+                    $sum: {
+                        $map: {
+                            input: '$uploadedCoursesData',
+                            as: 'course',
+                            in: { $ifNull: ['$$course.purchased', 0] }
+                        }
+                    }
+                },
+                averageRating: {
+                    $avg: {
+                        $map: {
+                            input: '$uploadedCoursesData',
+                            as: 'course',
+                            in: { $ifNull: ['$$course.rating', 0] }
+                        }
+                    }
+                }
+            }
+        },
+
+        { $sort: { totalStudents: -1, averageRating: -1 } },
+
+        { $limit: 10 },
+
+        {
+            $project: {
+                name: 1,
+                email: 1,
+                avatar: 1,
+                totalStudents: 1,
+                averageRating: 1,
+                uploadedCoursesCount: { $size: '$uploadedCoursesData' }
+            }
+        }
+    ]);
+
+    if (!topInstructors || topInstructors.length === 0) {
+        return next(new ErrorHandler('No instructors found', 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        topInstructors
+    });
+});

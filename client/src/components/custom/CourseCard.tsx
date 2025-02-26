@@ -3,7 +3,7 @@ import { GoArrowUpRight } from 'react-icons/go';
 import Link from 'next/link';
 import { FaRegHeart } from 'react-icons/fa';
 
-import img from '@/public/assets/images/courses/courses-01.jpg';
+import defaultImage from '@/public/assets/images/courses/courses-01.jpg';
 import timeTableIcon from '@/public/assets/icons/timetable.svg';
 import hourIcon from '@/public/assets/icons/hour.svg';
 import studentsIcon from '@/public/assets/icons/students.svg';
@@ -15,27 +15,44 @@ interface CourseVerticalCardProps {
     readonly progress?: number; // Progress percentage (0-100)
     readonly width?: string; // Custom width
     readonly height?: string; // Custom height
-}
-
-interface CourseHorizontalCard {
-    readonly width?: string; // Custom width
-    readonly height?: string; // Custom height
+    readonly imageUrl?: string; // URL of the course image
+    readonly title?: string; // Course title
+    readonly lessonsCount?: number; // Number of lessons
+    readonly duration?: string; // Course duration
+    readonly rating?: number; // Course rating
+    readonly reviewsCount?: number; // Number of reviews
+    readonly instructorName?: string; // Name of the instructor
+    readonly price?: number; // Course price
+    readonly isEnrolled?: boolean; // Whether the user is enrolled
 }
 
 export default function CourseVerticalCard({
     isProgress = false,
     progress = 0,
+    imageUrl = defaultImage.src,
     width = '260px',
-    height = '190px'
+    height = '190px',
+    title = 'Become a Certified Web Developer: HTML, CSS and JavaScript',
+    lessonsCount = 11,
+    duration = '16 hours',
+    rating = 4.9,
+    reviewsCount = 230,
+    instructorName = 'Carolyn Welborn',
+    price = 89.29,
+    isEnrolled = false,
 }: CourseVerticalCardProps) {
+
     return (
         <div className="group shrink-0 h-full relative transition-transform" style={{ width }}>
             <div className="relative rounded-sm overflow-hidden" style={{ height }}>
+
                 <Image
-                    src={img}
-                    alt=""
+                    src={imageUrl || defaultImage}
+                    alt={title}
                     className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
                         group-hover:scale-110 group-hover:transition-all group-hover:duration-1000 group-hover:ease-in-out"
+                    width={parseInt(width, 10)}
+                    height={parseInt(height, 10)}
                 />
                 <div
                     className="absolute top-[10px] right-[10px] flex items-center justify-center w-[35px] h-[35px] rounded-full
@@ -51,34 +68,36 @@ export default function CourseVerticalCard({
                         className='pr-[10px] relative flex items-center justify-start gap-[7px]
                         after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
                     >
-                        <Image src={timeTableIcon} alt="" />
-                        <p>11 Lessons</p>
+                        <Image src={timeTableIcon} alt="Lessons" />
+                        <p>{lessonsCount} Lessons</p>
                     </div>
                     <div className="pr-[10px] relative flex items-center justify-start gap-[7px]">
-                        <Image src={hourIcon} alt="" />
-                        <p>16 hours</p>
+                        <Image src={hourIcon} alt="Duration" />
+                        <p>{duration}</p>
                     </div>
                 </div>
-                <h6 className="mb-[10px] line-clamp-2 font-medium text-base leading-7">
+                <h6 className="mb-[10px] line-clamp-1 font-medium text-base leading-7">
                     <Link
                         href="#!"
                         className="bg-no-repeat bg-[length:0_100%] bg-[position-y:0px] bg-gradient-to-b from-transparent 
                     from-[calc(100%-1px)] to-current to-[1px] transition-all duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] 
                     backface-hidden group-hover:bg-[length:100%_100%] group-hover:delay-300 hover:text-accent-600"
                     >
-                        Become a Certified Web Developer: HTML, CSS and JavaScript
+                        {title}
                     </Link>
                 </h6>
                 <div className="mb-[8px] flex items-center gap-[7px]">
-                    <span>4.9</span>
+                    <span>{rating.toFixed(1)}</span>
                     <div className="flex items-center relative gap-[6px] pb-[2px]">
-                        <Image src={starIcon} alt="" />
-                        <Image src={starIcon} alt="" />
-                        <Image src={starIcon} alt="" />
-                        <Image src={starIcon} alt="" />
-                        <Image src={starOutlineIcon} alt="" />
+                        {[...Array(5)].map((_, index) => (
+                            <Image
+                                key={index}
+                                src={index < Math.floor(rating) ? starIcon : starOutlineIcon}
+                                alt={index < Math.floor(rating) ? 'Filled Star' : 'Outline Star'}
+                            />
+                        ))}
                     </div>
-                    <span>(230)</span>
+                    <span>({reviewsCount})</span>
                 </div>
                 {/* Conditional Progress Bar */}
                 {isProgress && (
@@ -97,17 +116,17 @@ export default function CourseVerticalCard({
                         <div className="text-primary-600 mb-[13px]">
                             By:{' '}
                             <Link href="#!" className="hover:text-accent-600 transition-colors duration-300">
-                                Carolyn Welborn
+                                {instructorName}
                             </Link>
                         </div>
                         <div className="flex items-center justify-between border-t border-primary-100 pt-[13px]">
-                            <h6 className="text-accent-600 font-medium text-base leading-7">$89.29</h6>
+                            <h6 className="text-accent-600 font-medium text-base leading-7">${price.toFixed(2)}</h6>
                             <Link
                                 href="#!"
                                 className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7
                                             transition-colors cursor-pointer duration-300 hover:text-accent-600"
                             >
-                                <span className="font-medium">Enroll Course</span>
+                                <span className="font-medium">{isEnrolled ? 'Continue' : 'Enroll Course'}</span>
                                 <GoArrowUpRight />
                             </Link>
                         </div>
@@ -118,15 +137,44 @@ export default function CourseVerticalCard({
     );
 }
 
-export function CourseHorizontalCard() {
+interface CourseHorizontalCardProps {
+    readonly width?: string; // Custom width
+    readonly height?: string; // Custom height
+    readonly imageUrl?: string; // URL of the course image
+    readonly title?: string; // Course title
+    readonly lessonsCount?: number; // Number of lessons
+    readonly studentsCount?: number; // Number of students
+    readonly duration?: string; // Course duration
+    readonly rating?: number; // Course rating
+    readonly reviewsCount?: number; // Number of reviews
+    readonly instructorName?: string; // Name of the instructor
+    readonly price?: number; // Course price
+    readonly description?: string; // Course description
+}
+
+export function CourseHorizontalCard({
+    width = '320px',
+    height = '240px',
+    title = 'Become a Certified Web Developer: HTML, CSS and JavaScript',
+    lessonsCount = 11,
+    studentsCount = 229,
+    duration = '16 hours',
+    rating = 4.9,
+    reviewsCount = 230,
+    instructorName = 'Carolyn Welborn',
+    price = 89.29,
+    description = 'Become a Full-Stack Web Developer with just ONE course. HTML, CSS, Javascript, Node, React, PostgreSQL, Web3 and DApps',
+}: CourseHorizontalCardProps) {
     return (
         <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
             <div className="h-[240px] w-[320px] relative rounded-sm overflow-hidden flex-shrink-0">
                 <Image
-                    src={img}
-                    alt=""
+                    src={defaultImage}
+                    alt={title}
                     className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
                         group-hover:scale-110 group-hover:transition-all group-hover:duration-1000 group-hover:ease-in-out"
+                    width={parseInt(width, 10)}
+                    height={parseInt(height, 10)}
                 />
                 <div
                     className="absolute top-[10px] right-[10px] flex items-center justify-center w-[35px] h-[35px] rounded-full
@@ -143,22 +191,22 @@ export function CourseHorizontalCard() {
                             className='pr-[10px] relative flex items-center justify-start gap-[7px]
                             after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
                         >
-                            <Image src={timeTableIcon} className="relative bottom-[1px]" alt="" />
-                            <p>11 Lessons</p>
+                            <Image src={timeTableIcon} className="relative bottom-[1px]" alt="Lessons" />
+                            <p>{lessonsCount} Lessons</p>
                         </div>
                         <div
                             className='pr-[10px] relative flex items-center justify-start gap-[7px]
                             after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
                         >
-                            <Image src={studentsIcon} className="relative bottom-[1px]" alt="" />
-                            <p>229 Students</p>
+                            <Image src={studentsIcon} className="relative bottom-[1px]" alt="Students" />
+                            <p>{studentsCount} Students</p>
                         </div>
                         <div className="pr-[10px] relative flex items-center justify-start gap-[7px]">
-                            <Image src={hourIcon} className="relative bottom-[1px]" alt="" />
-                            <p>16 hours</p>
+                            <Image src={hourIcon} className="relative bottom-[1px]" alt="Duration" />
+                            <p>{duration}</p>
                         </div>
                     </div>
-                    <div className="text-accent-600 font-medium text-lg leading-7">$89.29</div>
+                    <div className="text-accent-600 font-medium text-lg leading-7">${price.toFixed(2)}</div>
                 </div>
                 <h6 className="mb-[10px] line-clamp-2 font-medium text-base leading-7">
                     <Link
@@ -167,28 +215,27 @@ export function CourseHorizontalCard() {
                     from-[calc(100%-1px)] to-current to-[1px] transition-all duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] 
                     backface-hidden group-hover:bg-[length:100%_100%] group-hover:delay-300 hover:text-accent-600"
                     >
-                        Become a Certified Web Developer: HTML, CSS and JavaScript
+                        {title}
                     </Link>
                 </h6>
-                <p className="mb-[10px] text-sm leading-7 max-w-[80%]">
-                    Become a Full-Stack Web Developer with just ONE course. HTML, CSS, Javascript, Node, React,
-                    PostgreSQL, Web3 and DApps
-                </p>
+                <p className="mb-[10px] text-sm leading-7 max-w-[80%]">{description}</p>
                 <div className="mb-[8px] flex items-center gap-[7px]">
-                    <span>4.9</span>
+                    <span>{rating.toFixed(1)}</span>
                     <div className="flex items-center relative gap-[7px] pb-[2px]">
-                        <Image src={starIcon} alt="" />
-                        <Image src={starIcon} alt="" />
-                        <Image src={starIcon} alt="" />
-                        <Image src={starIcon} alt="" />
-                        <Image src={starOutlineIcon} alt="" />
+                        {[...Array(5)].map((_, index) => (
+                            <Image
+                                key={index}
+                                src={index < Math.floor(rating) ? starIcon : starOutlineIcon}
+                                alt={index < Math.floor(rating) ? 'Filled Star' : 'Outline Star'}
+                            />
+                        ))}
                     </div>
-                    <span>(230)</span>
+                    <span>({reviewsCount})</span>
                 </div>
                 <div className="text-primary-600 mb-[13px]">
                     By:{' '}
                     <Link href="#!" className="hover:text-accent-600 transition-colors duration-300">
-                        Carolyn Welborn
+                        {instructorName}
                     </Link>
                 </div>
                 <div className="flex items-center justify-between border-t border-primary-100 pt-[13px]">

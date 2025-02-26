@@ -25,6 +25,8 @@ export const uploadCourse = catchAsync(async (req: Request, res: Response, next:
             url: myCloud.secure_url
         };
     }
+    await redis.del('allCourses ${req.user?._id}');
+    await redis.del('allCourses undefined');
     createCourse(data, req, res, next);
 });
 // export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -413,4 +415,22 @@ export const generateVideoUrl = catchAsync(async (req: Request, res: Response, n
         }
     );
     res.json(response.data);
+});
+
+export const getTopCourses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const topCourses = await CourseModel.find({ isPublished: true })
+        .sort({ rating: -1, purchased: -1 })
+        .limit(10)
+        .populate('authorId', 'name email')
+        .populate('category', 'name')
+        .select('-courseData -reviews -benefits -prerequisites -tags');
+
+    if (!topCourses || topCourses.length === 0) {
+        return next(new ErrorHandler('No courses found', 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        topCourses
+    });
 });

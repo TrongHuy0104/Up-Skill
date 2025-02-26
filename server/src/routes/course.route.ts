@@ -12,6 +12,7 @@ import {
     getAllCoursesWithoutPurchase,
     getPurchasedCourseByUser,
     getSingleCourse,
+    getTopCourses,
     updateCourse,
     uploadCourse
 } from '@/controllers/course.controller';
@@ -22,6 +23,8 @@ const router = express.Router();
 router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
 router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
+
+router.get('/top-courses', getTopCourses);
 
 router.get('/:id', getSingleCourse);
 
