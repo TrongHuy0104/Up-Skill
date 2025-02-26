@@ -212,6 +212,9 @@ interface CourseFilter {
     category?: mongoose.Types.ObjectId;
     subCategory?: mongoose.Types.ObjectId;
     authorId?: mongoose.Types.ObjectId;
+    rating?: number;
+    language?: string;
+    price?: any;
 }
 
 export const addAnswer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -437,6 +440,28 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
         if (authorDoc) filter.authorId = authorDoc._id;
     }
 
+    // Filter rating
+    if (req.query.rating) {
+        const rating = parseInt(req.query.rating as string, 10);
+        if (!isNaN(rating) && rating >= 1 && rating <= 5) {
+            filter.rating = rating;
+        }
+    }
+
+    // Filter language
+    if (req.query.language) {
+        filter.language = req.query.language as string;
+    }
+
+    // Filter price (Free or Paid)
+    if (req.query.price) {
+        if (req.query.price === 'Free') {
+            filter.price = 0;
+        } else if (req.query.price === 'Paid') {
+            filter.price = { $gt: 0 };
+        }
+    }
+
     const courses = await CourseModel.find(filter)
         .select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')
         .skip(skip)
@@ -453,6 +478,7 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
         courses
     });
 });
+
 // generate video url
 export const generateVideoUrl = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { videoId } = req.body;
@@ -469,4 +495,87 @@ export const generateVideoUrl = catchAsync(async (req: Request, res: Response, n
         }
     );
     res.json(response.data);
+});
+// get courses statistics
+export const getCourseStatistics = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const courses = await CourseModel.find()
+        .populate('category', 'title')
+        .populate('subCategory', 'title')
+        .populate('authorId', 'name')
+        .populate('level', 'name');
+
+    const formatCategoryData = () => ({
+        title: 'Categories',
+        data: courses.reduce((acc, course) => {
+            const categoryLabel = course.category?.title || 'Unknown';
+            const subCategoryLabel = course.subCategory?.title || 'Unknown';
+
+            let categoryItem = acc.find((item: any) => item.label === categoryLabel);
+            if (!categoryItem) {
+                categoryItem = { label: categoryLabel, count: 0, subCategories: [] };
+                acc.push(categoryItem);
+            }
+
+            categoryItem.count += 1;
+
+            const subCategoryItem = categoryItem.subCategories.find((sub: any) => sub.label === subCategoryLabel);
+            if (subCategoryItem) {
+                subCategoryItem.count += 1;
+            } else {
+                categoryItem.subCategories.push({ label: subCategoryLabel, count: 1 });
+            }
+
+            return acc;
+        }, [])
+    });
+
+    const formatData = (field: string, title: string) => ({
+        title,
+        data: courses.reduce((acc, course) => {
+            const fieldValue = course[field]?.title || course[field]?.name || course[field] || 'Unknown';
+            const existing = acc.find((item: any) => item.label === fieldValue);
+            if (existing) {
+                existing.count += 1;
+            } else {
+                acc.push({ label: fieldValue, count: 1 });
+            }
+            return acc;
+        }, [])
+    });
+
+    const formatRatingData = () => ({
+        title: 'Rating',
+        data: [
+            { label: '1', min: 0, max: 1 },
+            { label: '2', min: 1, max: 2 },
+            { label: '3', min: 2, max: 3 },
+            { label: '4', min: 3, max: 4 },
+            { label: '5', min: 4, max: 5 }
+        ].map(({ label, min, max }) => ({
+            label,
+            count: courses.filter((course) => course.rating > min && course.rating <= max).length
+        }))
+    });
+
+    const formatPriceData = () => ({
+        title: 'Price',
+        data: [
+            { label: 'Free', count: courses.filter((course) => course.price === 0).length },
+            { label: 'Paid', count: courses.filter((course) => course.price > 0).length }
+        ]
+    });
+
+    const data = {
+        categories: formatCategoryData(),
+        authors: formatData('authorId', 'Author'),
+        levels: formatData('level', 'Level'),
+        ratings: formatRatingData(),
+        price: formatPriceData(),
+        languages: formatData('language', 'Language')
+    };
+
+    res.status(200).json({
+        success: true,
+        data
+    });
 });

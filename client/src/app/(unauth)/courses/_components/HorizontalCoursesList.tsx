@@ -46,9 +46,10 @@ export type Course = {
 
 interface HorizontalCoursesListProps {
     readonly courses: Course[];
+    readonly totalPages: number;
 }
 
-export default function HorizontalCoursesList({ courses }: HorizontalCoursesListProps) {
+export default function HorizontalCoursesList({ courses, totalPages }: HorizontalCoursesListProps) {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
     const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
     const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ modal
@@ -101,7 +102,11 @@ export default function HorizontalCoursesList({ courses }: HorizontalCoursesList
 
             {/* Pagination */}
             <div className="p-5">
-                <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />
+                <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </div>
     );

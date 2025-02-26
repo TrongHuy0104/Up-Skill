@@ -14,7 +14,8 @@ import {
     getPurchasedCourseByUser,
     getSingleCourse,
     updateCourse,
-    uploadCourse
+    uploadCourse,
+    getCourseStatistics
 } from '@/controllers/course.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
@@ -25,6 +26,8 @@ router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
 
 router.get('/pagination', getCoursesLimitWithPagination);
+
+router.get('/count', getCourseStatistics);
 
 router.get('/:id', getSingleCourse);
 

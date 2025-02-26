@@ -1,10 +1,11 @@
 import FilterCoursesList from '@/app/(unauth)/courses/_components/FilterCoursesList';
+import { FilterResponse } from '@/types/Course';
 import React from 'react';
 
-export default function FilterCourses() {
+export default function FilterCourses({ filterData }: { filterData: FilterResponse }) {
     return (
         <div className="">
-            <FilterCoursesList />
+            <FilterCoursesList filterData={filterData} />
         </div>
     );
 }
