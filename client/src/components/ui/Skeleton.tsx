@@ -18,3 +18,22 @@ export function AuthBtnsSkeleton() {
         </div>
     );
 }
+
+export const CourseVerticalSkeleton = () => {
+    return (
+        <div className="space-y-2 px-2">
+            <Skeleton className="h-48 w-full rounded-lg" />
+            <div className="flex gap-4">
+                <Skeleton className="h-4 w-20 rounded" />
+                <Skeleton className="h-4 w-20 rounded" />
+            </div>
+            <Skeleton className="h-6 w-1/2 rounded" />
+            <Skeleton className="h-4 w-24 rounded" />
+            <Skeleton className="h-4 w-16 rounded" />
+            <div className="flex justify-between">
+                <Skeleton className="h-6 w-16 rounded" />
+                <Skeleton className="h-6 w-24 rounded" />
+            </div>
+        </div>
+    );
+};

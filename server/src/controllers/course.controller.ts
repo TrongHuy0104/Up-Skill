@@ -418,19 +418,44 @@ export const generateVideoUrl = catchAsync(async (req: Request, res: Response, n
 });
 
 export const getTopCourses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    // Fetch top 10 published courses, sorted by rating (descending) and purchased (descending)
     const topCourses = await CourseModel.find({ isPublished: true })
         .sort({ rating: -1, purchased: -1 })
         .limit(10)
         .populate('authorId', 'name email')
         .populate('category', 'name')
-        .select('-courseData -reviews -benefits -prerequisites -tags');
+        .lean(); // Sử dụng .lean() để tránh cache của Mongoose
 
+    // If no courses are found, return a 404 error
     if (!topCourses || topCourses.length === 0) {
         return next(new ErrorHandler('No courses found', 404));
     }
 
+    // Map through the courses and calculate duration and lessonsCount
+    const coursesWithDetails = topCourses.map((course) => {
+        const lessonsCount = course.courseData?.length || 0; // Calculate lessonsCount
+
+        // Calculate total duration in minutes
+        const duration =
+            course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
+                return acc + (curr.videoLength || 0);
+            }, 0) || 0;
+
+        // Convert total minutes to decimal hours (e.g., 2.7 hours)
+        const durationInHours = (duration / 60).toFixed(1); // Round to 1 decimal place
+
+        return {
+            ...course, // Sử dụng course trực tiếp vì đã dùng .lean()
+            lessonsCount,
+            duration: `${durationInHours} hours` // Display duration in decimal hours
+        };
+    });
+
+    // Send the response with the top courses
     res.status(200).json({
         success: true,
-        topCourses
+        data: {
+            topCourses: coursesWithDetails
+        }
     });
 });
