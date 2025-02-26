@@ -56,8 +56,8 @@ const Dashboard = () => {
                 publishedCourses: publishedCourses.length,
                 pendingCourses: courses.length - publishedCourses.length,
                 totalStudent: totalStudent,
-                // studentCompleted:0,
-                // studentInprogress:0,
+                studentCompleted:0,
+                studentInprogress: totalStudent - 0,
                 courseEnrolled: courses.length,
                 // courseActive: 0,
                 // courseCompleted: 0
@@ -123,7 +123,7 @@ const Dashboard = () => {
     { title: "Pending Courses", value: stats.pendingCourses, icon: "/assets/icons/pending-course.svg" },
     { title: "Total Students", value: stats.totalStudent, icon: "/assets/icons/student-total.svg" },
     { title: "Students Completed", value: 0, icon: "/assets/icons/student-completed.svg" },
-    { title: "Students In-progress", value: 0, icon: "/assets/icons/student-inprogress.svg" },
+    { title: "Students In-progress", value: stats.studentInprogress, icon: "/assets/icons/student-inprogress.svg" },
     { title: "Enrolled Courses", value: stats.courseEnrolled, icon: "/assets/icons/play-content.svg" },
     { title: "Active Courses", value: 0, icon: "/assets/icons/check-icon.svg" },
     { title: "Completed Courses", value: 0, icon: "/assets/icons/certificate.svg" }
