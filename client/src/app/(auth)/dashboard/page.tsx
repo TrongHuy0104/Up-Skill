@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";import Image from "next/image";
 import PaginationComponent from "@/components/custom/PaginationComponent";
-import { HiArrowUpRight } from "react-icons/hi2";
+// import { HiArrowUpRight } from "react-icons/hi2";
 import editIcon from "@/public/assets/icons/edit.svg";
 import deleteIcon from "@/public/assets/icons/delete.svg";
 import axios from "axios";
@@ -23,11 +23,11 @@ const Dashboard = () => {
     publishedCourses: 0,
     pendingCourses: 0,
     totalStudent:0,
-    // studentCompleted:0,
-    // studentInprogress:0,
-    // courseEnrolled: 0,
-    // courseActive: 0,
-    // courseCompleted: 0
+    studentCompleted:0,
+    studentInprogress:0,
+    courseEnrolled: 0,
+    courseActive: 0,
+    courseCompleted: 0
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,45 +46,59 @@ const Dashboard = () => {
           if (response.data.success) {
               const courses: Course[] = response.data.courses;
   
+              //Course Stats
               const publishedCourses = courses.filter((course: Course) => course.isPublished);
               const totalStudent = publishedCourses.reduce((sum, course) => sum + (course.purchased || 0), 0);
+
+              setStats((prevStats) => ({
+                ...prevStats,
+                totalCourses: courses.length,
+                publishedCourses: publishedCourses.length,
+                pendingCourses: courses.length - publishedCourses.length,
+                totalStudent: totalStudent,
+                // studentCompleted:0,
+                // studentInprogress:0,
+                courseEnrolled: courses.length,
+                // courseActive: 0,
+                // courseCompleted: 0
+            })) ;
+
+              //Best Selling Course
+              const bestSellingCourses = courses
+                  .filter((course: Course) => course.isPublished)
+                  .sort((a: Course, b: Course) => (b.purchased || 0) - (a.purchased || 0));
   
-              setStats({
-                  totalCourses: courses.length,
-                  publishedCourses: publishedCourses.length,
-                  pendingCourses: courses.length - publishedCourses.length,
-                  totalStudent: totalStudent,
-              });
+              setBestSellingCourses(bestSellingCourses);
+
           }
       } catch (error) {
           console.error("Error fetching courses:", error);
       }
   };
   
+  
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
+        withCredentials: true,
+      });
 
-    const fetchBestSellingCourses = async () => {
-      try {
-          const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses`, {
-              withCredentials: true,
-          });
-  
-          if (response.data.success) {
-              const courses = response.data.courses;
-  
-              const bestSellingCourses = courses
-                  .filter((course: Course) => course.isPublished)
-                  .sort((a: Course, b: Course) => (b.purchased || 0) - (a.purchased || 0));
-  
-              setBestSellingCourses(bestSellingCourses);
-          }
-      } catch (error) {
-          console.error("Error fetching best selling courses:", error);
+      if (response.data.success) {
+        const user = response.data.user;
+        const courseEnrolled = user.purchasedCourses.length;
+
+        setStats((prevStats) => ({
+          ...prevStats,
+          courseEnrolled: courseEnrolled,
+        }));
       }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
   };
-  
 
   fetchCourseStats();
-  fetchBestSellingCourses();
+  fetchUserData();
 }, []);
 
   //Pagination handle
@@ -104,13 +118,13 @@ const Dashboard = () => {
 
   //Stats 
   const statsConfig = [
-    { title: "Total Course", value: stats.totalCourses, icon: "/assets/icons/total-course.svg" },
-    { title: "Published Course", value: stats.publishedCourses, icon: "/assets/icons/published-course.svg" },
-    { title: "Pending Course", value: stats.pendingCourses, icon: "/assets/icons/pending-course.svg" },
-    { title: "Total Student", value: stats.totalStudent, icon: "/assets/icons/student-total.svg" },
-    { title: "Student Completed", value: 0, icon: "/assets/icons/student-completed.svg" },
-    { title: "Student In-progress", value: 0, icon: "/assets/icons/student-inprogress.svg" },
-    { title: "Enrolled Courses", value: 0, icon: "/assets/icons/play-content.svg" },
+    { title: "Total Courses", value: stats.totalCourses, icon: "/assets/icons/total-course.svg" },
+    { title: "Published Courses", value: stats.publishedCourses, icon: "/assets/icons/published-course.svg" },
+    { title: "Pending Courses", value: stats.pendingCourses, icon: "/assets/icons/pending-course.svg" },
+    { title: "Total Students", value: stats.totalStudent, icon: "/assets/icons/student-total.svg" },
+    { title: "Students Completed", value: 0, icon: "/assets/icons/student-completed.svg" },
+    { title: "Students In-progress", value: 0, icon: "/assets/icons/student-inprogress.svg" },
+    { title: "Enrolled Courses", value: stats.courseEnrolled, icon: "/assets/icons/play-content.svg" },
     { title: "Active Courses", value: 0, icon: "/assets/icons/check-icon.svg" },
     { title: "Completed Courses", value: 0, icon: "/assets/icons/certificate.svg" }
   ];
@@ -120,7 +134,7 @@ const Dashboard = () => {
       {/* Statistics Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
         {statsConfig.map((stat, index) => (
-          <div key={index} className="w-[320px] h-[150px] bg-primary-50 rounded-lg p-9 flex items-center space-x-6 border border-primary-100">
+          <div key={index} className="whitespace-nowrap w-[320px] h-[150px] bg-primary-50 rounded-lg p-9 flex items-center space-x-6 border border-primary-100">
             <div className="bg-accent-100 p-5 rounded-full">
             <Image src={stat.icon} alt={stat.title} width={30} height={30} />
             </div>
@@ -136,8 +150,8 @@ const Dashboard = () => {
       <div className="bg-primary-50 rounded-lg p-[34px] border border-primary-100">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-[22px] text-primary-800 font-medium">Best Selling Courses</h2>
-          <a href="#" className="text-[16px] text-primary-800 font-medium flex justify-center items-center hover:text-accent-900">
-            View All <HiArrowUpRight className="text-[16px] ml-2"/></a>
+          {/* <a href="#" className="text-[16px] text-primary-800 font-medium flex justify-center items-center hover:text-accent-900">
+            View All <HiArrowUpRight className="text-[16px] ml-2"/></a> */}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -162,7 +176,7 @@ const Dashboard = () => {
                           height={80} 
                         />
                       </div>
-                      <span className="text-[15px] text-primary-800 font-medium pl-[30px]">{course.name}</span>
+                      <span className="truncate w-[400px] text-[15px] text-primary-800 font-medium pl-[30px]">{course.name}</span>
                     </div>
                   </td>
                   <td className="text-[15px] text-primary-800 font-medium pl-8">{course.purchased}</td>
