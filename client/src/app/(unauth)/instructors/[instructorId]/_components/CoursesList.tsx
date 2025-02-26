@@ -3,9 +3,9 @@ import React from 'react';
 
 export default function CoursesList() {
     return (
-        <div className="mb-[61px] w-[9000px]">
-            <h2 className="text-2xl font-bold mb-4 font-cardo">My courses (29)</h2>
-            <div className="flex gap-14">
+        <div className="mb-[61px] w-[900px]">
+            <h2 className="text-2xl font-bold mb-4">More Course By Theresa Edin</h2>
+            <div className="flex gap-7">
                 <CourseVerticalCard />
                 <CourseVerticalCard />
                 <CourseVerticalCard />

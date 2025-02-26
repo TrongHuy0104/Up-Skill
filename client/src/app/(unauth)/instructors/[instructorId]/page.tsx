@@ -7,18 +7,22 @@ import Sidebar from './_components/SideBar';
 
 export default function Page() {
     return (
-        <div className="max-w-[2500px] mx-auto">
+        <div className="relative">
             <Banner />
-            <div className="relative w-[900px] flex flex-col md:flex-row gap-28">
-                <div className="mt-5 md:mt-6 lg:mt-8 w-full md:w-[1000px] mx-auto pl-[10px] md:pl-[75px] lg:pl-[100px]">
-                    <InstructorInfo />
-                    <CoursesDetailLine />
-                    <CoursesList />
-                    <CoursesDetailLine />
-                    <Review />
-                </div>
-                <div className="relative -mt-[50px] md:-mt-[100px] lg:-mt-[150px] w-full">
-                    <div className="sticky top-[20px]">
+            <div className="pt-[61px] flex justify-center">
+                {/* Content container */}
+                <div className="flex max-w-screen-xl w-full px-4">
+                    {/* Content section */}
+                    <div className="mb-4 w-full md:w-3/4">
+                        <InstructorInfo />
+                        <CoursesDetailLine />
+                        <CoursesList />
+                        <CoursesDetailLine />
+                        <Review />
+                    </div>
+
+                    {/* Sidebar with sticky positioning */}
+                    <div className="md:w-[300px] md:-mt-[150px] w-full sticky top-0 self-start">
                         <Sidebar />
                     </div>
                 </div>
