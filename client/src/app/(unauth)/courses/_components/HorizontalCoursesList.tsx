@@ -48,9 +48,17 @@ interface HorizontalCoursesListProps {
     readonly courses: Course[];
     readonly totalPages: number;
     readonly totalCourses: number;
+    readonly limit: number;
+    readonly page: number;
 }
 
-export default function HorizontalCoursesList({ courses, totalPages, totalCourses }: HorizontalCoursesListProps) {
+export default function HorizontalCoursesList({
+    courses,
+    totalPages,
+    totalCourses,
+    limit,
+    page
+}: HorizontalCoursesListProps) {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
     const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
     const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ modal
@@ -75,11 +83,15 @@ export default function HorizontalCoursesList({ courses, totalPages, totalCourse
     if (!isClient) {
         return null; // Không render gì khi chưa ở client
     }
+    const startIndex = totalCourses === 0 ? 0 : (page - 1) * limit + 1;
+    const endIndex = Math.min(page * limit, totalCourses);
 
     return (
         <div className="pl-[28px] relative">
             <div className="flex justify-between items-center pb-8 w-full">
-                <p className="text-primary-800">Showing 1-10 Of {totalCourses} Courses</p>
+                <p className="text-primary-800">
+                    Showing {startIndex}-{endIndex} Of {totalCourses} Courses
+                </p>
                 <div className="flex items-center gap-3">
                     <p className="text-primary-600">Sort by</p>
                     <span className="text-primary-800">{selectedSort}</span> {/* Hiển thị giá trị đã chọn */}
@@ -95,9 +107,11 @@ export default function HorizontalCoursesList({ courses, totalPages, totalCourse
             ))}
 
             {/* Pagination */}
-            <div className="p-5">
-                <PaginationComponent totalPages={totalPages} />
-            </div>
+            {totalCourses > 0 && (
+                <div className="p-5">
+                    <PaginationComponent totalPages={totalPages} />
+                </div>
+            )}
         </div>
     );
 }

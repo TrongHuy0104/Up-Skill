@@ -66,30 +66,42 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
     ) => {
         setSelectedCategories((prev) => {
             const newSet = new Set(prev);
+    
+            if (title === 'Rating') {
+                newSet.clear();
+            }
+    
             if (newSet.has(optionKey)) {
                 newSet.delete(optionKey);
             } else {
                 newSet.add(optionKey);
             }
+    
             return newSet;
         });
-
+    
         const paramKey = isSubCategory ? 'subCategory' : paramMap[title] || 'filter';
-
         const params = new URLSearchParams(searchParams.toString());
-        const existingValues = new Set(params.getAll(paramKey));
-
-        if (existingValues.has(optionKey)) {
-            existingValues.delete(optionKey);
+    
+        if (title === 'Rating') {
+            params.delete(paramKey); 
+            params.set(paramKey, optionKey);
         } else {
-            existingValues.add(optionKey);
+            const existingValues = new Set(params.getAll(paramKey));
+    
+            if (existingValues.has(optionKey)) {
+                existingValues.delete(optionKey);
+            } else {
+                existingValues.add(optionKey);
+            }
+    
+            params.delete(paramKey);
+            existingValues.forEach((val) => params.append(paramKey, val));
         }
-
-        params.delete(paramKey);
-        existingValues.forEach((val) => params.append(paramKey, val));
-
+    
         router.replace(`?${params.toString()}`, { scroll: false });
     };
+    
 
     const renderStars = (rating: number) => (
         <span className="flex items-center gap-1">
