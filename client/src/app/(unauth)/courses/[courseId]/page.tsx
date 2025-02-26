@@ -49,7 +49,7 @@ export default async function page({ params }: any) {
                 <Review />
             </div>
             <div className="right-content w-full md:w-1/3 ">
-                <div className="sticky top-0">
+                <div className="sticky top-[20px]">
                     <CourseSidebar course={course} />
                 </div>
             </div>
