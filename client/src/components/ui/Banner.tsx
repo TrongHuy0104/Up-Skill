@@ -36,7 +36,7 @@ export default function Banner({
     const alignmentClass = getAlignmentClass(contentAlignment);
 
     return (
-        <div className={`page-title py-[54px] flex items-center relative text-primary-800 ${backgroundColor}`}>
+        <div className={`py-[54px] flex items-center relative text-primary-800 ${backgroundColor}`}>
             {/* Overlay hình nền */}
             {background && (
                 <div
@@ -46,7 +46,7 @@ export default function Banner({
             )}
 
             {/* Nội dung */}
-            <div className="tf-container mx-auto w-[1428px] relative z-10">
+            <div className="mx-auto w-[1428px] relative z-10 pl-4 md:pl-5 lg:pl-10 xl:pl-20">
                 <div
                     className={`flex ${buttonPosition === 'left' ? 'flex-row-reverse' : 'flex-row'} justify-between items-center gap-8`}
                 >
