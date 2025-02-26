@@ -32,7 +32,7 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bestSellingCourses, setBestSellingCourses] = useState<Course[]>([]);
 
-  const totalPages = Math.ceil(bestSellingCourses.length / 4);
+  const totalPages = Math.max(1, Math.ceil(bestSellingCourses.length / 4));
 
   useEffect(() => {
     const fetchCourseStats = async () => {
@@ -76,28 +76,31 @@ const Dashboard = () => {
   };
   
   
-  const fetchUserData = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
-        withCredentials: true,
-      });
+  // const fetchUserData = async () => {
+  //   try {
+  //     const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
+  //       withCredentials: true,
+  //     });
 
-      if (response.data.success) {
-        const user = response.data.user;
-        const courseEnrolled = user.purchasedCourses.length;
+  //     if (response.data.success) {
+  //       const user = response.data.user;
+  //       const courseEnrolled = user.purchasedCourses.length;
 
-        setStats((prevStats) => ({
-          ...prevStats,
-          courseEnrolled: courseEnrolled,
-        }));
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
+  //       setStats((prevStats) => ({
+  //         ...prevStats,
+  //         courseEnrolled: courseEnrolled,
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching user data:", error);
+  //   }
+  // };
+
+  const fetchData = async () => {
+    await fetchCourseStats();
+    // await fetchUserData();
   };
-
-  fetchCourseStats();
-  fetchUserData();
+  fetchData();
 }, []);
 
   //Pagination handle
@@ -135,7 +138,7 @@ const Dashboard = () => {
         {statsConfig.map((stat) => (
           <div key={stat.title} className="whitespace-nowrap w-[320px] h-[150px] bg-primary-50 rounded-lg p-9 flex items-center space-x-6 border border-primary-100">
             <div className="bg-accent-100 p-5 rounded-full">
-            <Image src={stat.icon} alt={stat.title} width={30} height={30} />
+            <Image src={stat.icon} alt={stat.title} width={30} height={30} unoptimized/>
             </div>
             <div>
               <p className="text-primary-800 text-base">{stat.title}</p>
@@ -179,7 +182,7 @@ const Dashboard = () => {
                     </div>
                   </td>
                   <td className="text-[15px] text-primary-800 font-medium pl-8">{course.purchased}</td>
-                  <td className="text-[15px] text-primary-800 font-medium pl-10">${course.price?.toLocaleString() || "N/A"}</td>
+                  <td className="text-[15px] text-primary-800 font-medium pl-10">${course.price ? course.price.toLocaleString() : "N/A"}</td>
                   <td className="py-4 pl-6">
                     <div className="flex items-center space-x-3">
                       <button 
