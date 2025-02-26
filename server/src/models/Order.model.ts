@@ -3,12 +3,16 @@ import mongoose, { Schema } from 'mongoose';
 
 const OrderSchema = new Schema<IOrder>(
     {
-        courseId: {
-            type: String,
-            required: true
-        },
+        courseIds: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Course',
+                required: true
+            }
+        ],
         userId: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true
         },
         payment_info: {
