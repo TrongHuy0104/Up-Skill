@@ -31,7 +31,7 @@ export default async function Page({ searchParams = {} }: any) {
     if (!coursesRes.ok) throw new Error(`Failed to fetch courses: ${coursesRes.statusText}`);
     if (!countRes.ok) throw new Error(`Failed to fetch course count: ${countRes.statusText}`);
 
-    const { courses, totalPages } = await coursesRes.json();
+    const { courses, totalPages, totalCourses } = await coursesRes.json();
     const { data } = await countRes.json();
     return (
         <div className="w-full pb-40">
@@ -39,7 +39,7 @@ export default async function Page({ searchParams = {} }: any) {
             <PopularInstructor />
             <div className="flex w-[1400px] mx-auto pt-[54px] relative">
                 <FilterCourses filterData={data} />
-                <HorizontalCoursesList courses={courses} totalPages={totalPages} />
+                <HorizontalCoursesList courses={courses} totalPages={totalPages} totalCourses={totalCourses} />
             </div>
         </div>
     );

@@ -1,3 +1,5 @@
+'use client'; // Nếu bạn đang dùng Next.js App Router
+
 import * as React from 'react';
 import {
     Pagination,
@@ -6,16 +8,22 @@ import {
     PaginationItem,
     PaginationLink,
     PaginationNext,
-    PaginationPrevious,
+    PaginationPrevious
 } from '@/components/ui/Pagination';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface PaginationProps {
-    currentPage: number;
     totalPages: number;
-    onPageChange: (pageNumber: number) => void;
 }
 
-function PaginationComponent({ currentPage, totalPages, onPageChange }: PaginationProps) {
+function PaginationComponent({ totalPages }: PaginationProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Lấy giá trị `page` từ URL, nếu không có thì mặc định là 1
+    const currentPage = Number(searchParams.get('page')) || 1;
+
+    // Hàm tạo danh sách số trang
     const createPageNumbers = (): (number | string)[] => {
         const pages: (number | string)[] = [];
         for (let i = 1; i <= totalPages; i += 1) {
@@ -33,9 +41,12 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
         return pages;
     };
 
+    // Xử lý chuyển trang và cập nhật URL
     const handlePageChange = (page: number): void => {
         if (page !== currentPage && page >= 1 && page <= totalPages) {
-            onPageChange(page);
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('page', page.toString()); // Cập nhật page vào URL
+            router.push(`?${params.toString()}`, { scroll: false }); // Không cuộn lên đầu trang
         }
     };
 
@@ -60,7 +71,9 @@ function PaginationComponent({ currentPage, totalPages, onPageChange }: Paginati
                     if (page === '...') {
                         return (
                             <PaginationEllipsis key={`ellipsis-${index}`}>
-                                <span className="text-primary-800" aria-hidden="true">...</span>
+                                <span className="text-primary-800" aria-hidden="true">
+                                    ...
+                                </span>
                             </PaginationEllipsis>
                         );
                     }

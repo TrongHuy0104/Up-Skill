@@ -15,7 +15,6 @@ const sortOptions = [
 
 export default function Page() {
   // State pagination
-  const [currentPage, setCurrentPage] = useState(1);
   const [loading] = useState(false);
 
   // Fake dữ liệu khóa học
@@ -42,10 +41,6 @@ export default function Page() {
   // Hàm xác định class `justify-content`
   const getRowClass = (length: number) => (length >= 3 ? "justify-between" : "justify-start");
 
-  // Hàm xử lý phân trang
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
   const renderEnrolledCourses = () => {
     if (loading) {
       return <p className="text-center text-primary-600">Loading...</p>;
@@ -151,7 +146,7 @@ export default function Page() {
       </Tabs>
       {/* Pagination */}
       <div className="p-5 mt-10">
-        <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />
+        <PaginationComponent totalPages={10} />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosStar } from 'react-icons/io';
 import Image from 'next/image';
@@ -18,58 +18,78 @@ type FilterBlockProps = {
     type?: 'checkbox' | 'radio';
     name?: string;
 };
-
-const titleToQueryParam = {
-    Categories: 'category',
-    Rating: 'rating',
-    'Sub Categories': 'subCategory',
-    Level: 'level',
-    Price: 'price',
-    Author: 'authorId'
-} as const;
-
 function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockProps) {
     const [isOpen, setIsOpen] = useState(true);
     const [visibleCount, setVisibleCount] = useState(3);
-    const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+    // const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const queryParam = titleToQueryParam[title as keyof typeof titleToQueryParam] || title.toLowerCase();
-
-    // 🔥 Khi component mount, lấy params từ URL để set lại state
     useEffect(() => {
+        setSelectedCategories(getInitialSelectedCategories());
+    }, [searchParams]);
+
+    const paramMap: Record<string, string> = {
+        Categories: 'category',
+        Rating: 'rating',
+        Price: 'price',
+        Level: 'level',
+        Language: 'language',
+        Author: 'authorId'
+    };
+    const getInitialSelectedCategories = () => {
         const params = new URLSearchParams(searchParams.toString());
-        const values = params.getAll(queryParam);
-        setSelectedCategories(new Set(values));
-    }, [searchParams, queryParam]);
+        const selectedSet = new Set<string>();
 
-    // Cập nhật URL khi selectedCategories thay đổi
-    useEffect(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.delete(queryParam);
+        options.forEach((option) => {
+            const paramKey = paramMap[title] || 'filter';
+            if (params.getAll(paramKey).includes(option.label)) {
+                selectedSet.add(option.label);
+            }
+            option.subCategories?.forEach((sub) => {
+                if (params.getAll('subCategory').includes(sub.label)) {
+                    selectedSet.add(sub.label);
+                }
+            });
+        });
 
-        selectedCategories.forEach((key) => params.append(queryParam, key));
-        router.push(`?${params.toString()}`, { scroll: false });
-    }, [selectedCategories, queryParam, router, searchParams]);
+        return selectedSet;
+    };
 
-    const toggleCategory = (categoryKey: string) => {
+    const [selectedCategories, setSelectedCategories] = useState<Set<string>>(getInitialSelectedCategories);
+
+    const toggleCategory = (
+        event: React.ChangeEvent<HTMLInputElement>,
+        optionKey: string,
+        title: string,
+        isSubCategory = false
+    ) => {
         setSelectedCategories((prev) => {
             const newSet = new Set(prev);
-
-            if (queryParam === 'rating') {
-                return new Set([categoryKey]); // Chỉ cho phép chọn 1 rating
-            }
-
-            if (newSet.has(categoryKey)) {
-                newSet.delete(categoryKey);
+            if (newSet.has(optionKey)) {
+                newSet.delete(optionKey);
             } else {
-                newSet.add(categoryKey);
+                newSet.add(optionKey);
             }
-
             return newSet;
         });
+
+        const paramKey = isSubCategory ? 'subCategory' : paramMap[title] || 'filter';
+
+        const params = new URLSearchParams(searchParams.toString());
+        const existingValues = new Set(params.getAll(paramKey));
+
+        if (existingValues.has(optionKey)) {
+            existingValues.delete(optionKey);
+        } else {
+            existingValues.add(optionKey);
+        }
+
+        params.delete(paramKey);
+        existingValues.forEach((val) => params.append(paramKey, val));
+
+        router.replace(`?${params.toString()}`, { scroll: false });
     };
 
     const renderStars = (rating: number) => (
@@ -111,7 +131,8 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                                             name={type === 'radio' ? name : undefined}
                                             className="accent-primary-800 rounded w-4 h-4 cursor-pointer opacity-20 checked:opacity-100"
                                             checked={selectedCategories.has(option.label)}
-                                            onChange={() => toggleCategory(option.label)}
+                                            onChange={(e) => toggleCategory(e, option.label, title)}
+                                            value={option.label}
                                         />
                                         <span>
                                             {title === 'Rating'
@@ -131,7 +152,8 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                                                         type="checkbox"
                                                         className="accent-primary-800 rounded w-4 h-4 cursor-pointer opacity-20 checked:opacity-100"
                                                         checked={selectedCategories.has(sub.label)}
-                                                        onChange={() => toggleCategory(sub.label)}
+                                                        onChange={(e) => toggleCategory(e, sub.label, title, true)}
+                                                        value={sub.label}
                                                     />
                                                     <span>{sub.label}</span>
                                                 </label>
