@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";import Image from "next/image";
 import PaginationComponent from "@/components/custom/PaginationComponent";
-// import { HiArrowUpRight } from "react-icons/hi2";
 import editIcon from "@/public/assets/icons/edit.svg";
 import deleteIcon from "@/public/assets/icons/delete.svg";
 import axios from "axios";
@@ -133,8 +132,8 @@ const Dashboard = () => {
     <div className="container mx-auto pl-10">
       {/* Statistics Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-        {statsConfig.map((stat, index) => (
-          <div key={index} className="whitespace-nowrap w-[320px] h-[150px] bg-primary-50 rounded-lg p-9 flex items-center space-x-6 border border-primary-100">
+        {statsConfig.map((stat) => (
+          <div key={stat.title} className="whitespace-nowrap w-[320px] h-[150px] bg-primary-50 rounded-lg p-9 flex items-center space-x-6 border border-primary-100">
             <div className="bg-accent-100 p-5 rounded-full">
             <Image src={stat.icon} alt={stat.title} width={30} height={30} />
             </div>
