@@ -21,7 +21,6 @@ type FilterBlockProps = {
 function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockProps) {
     const [isOpen, setIsOpen] = useState(true);
     const [visibleCount, setVisibleCount] = useState(3);
-    // const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
     const router = useRouter();
     const searchParams = useSearchParams();

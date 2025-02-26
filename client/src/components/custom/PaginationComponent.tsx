@@ -13,7 +13,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface PaginationProps {
-    totalPages: number;
+    readonly totalPages: number;
 }
 
 function PaginationComponent({ totalPages }: PaginationProps) {
