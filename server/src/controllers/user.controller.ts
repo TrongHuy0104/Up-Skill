@@ -461,8 +461,6 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
         return next(new ErrorHandler('Invalid or expired reset token', 400));
     }
 
-    console.log(decoded.user.email);
-
     const user = await UserModel.findOne({ email: decoded?.user?.email });
     if (!user) {
         return next(new ErrorHandler('User not found', 404));
