@@ -76,29 +76,29 @@ const Dashboard = () => {
   };
   
   
-  // const fetchUserData = async () => {
-  //   try {
-  //     const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
-  //       withCredentials: true,
-  //     });
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
+        withCredentials: true,
+      });
 
-  //     if (response.data.success) {
-  //       const user = response.data.user;
-  //       const courseEnrolled = user.purchasedCourses.length;
+      if (response.data.success) {
+        const user = response.data.user;
+        const courseEnrolled = user.purchasedCourses.length;
 
-  //       setStats((prevStats) => ({
-  //         ...prevStats,
-  //         courseEnrolled: courseEnrolled,
-  //       }));
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching user data:", error);
-  //   }
-  // };
+        setStats((prevStats) => ({
+          ...prevStats,
+          courseEnrolled: courseEnrolled,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const fetchData = async () => {
     await fetchCourseStats();
-    // await fetchUserData();
+    await fetchUserData();
   };
   fetchData();
 }, []);
