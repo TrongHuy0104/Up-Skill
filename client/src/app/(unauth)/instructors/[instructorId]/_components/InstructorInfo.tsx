@@ -10,7 +10,7 @@ const CoursesDetailInfor = () => {
         <div className="w-[900px]  mr-0 text-primary-800 ">
             {/* About This Course */}
             <section className="pb-[61px] leading-7 w-[900px]">
-                <h2 className="text-2xl font-bold mb-4">About This Course</h2>
+                <h2 className="text-2xl font-cardo mb-4">About This Course</h2>
 
                 {/* Nội dung có thể thu gọn */}
                 <div className={`text-primary-800 ${isExpanded ? '' : 'line-clamp-6'}`}>

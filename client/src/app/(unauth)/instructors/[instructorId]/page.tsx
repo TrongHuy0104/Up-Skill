@@ -9,7 +9,7 @@ export default function Page() {
     return (
         <div className="relative">
             <Banner />
-            <div className="pt-[61px] flex justify-center">
+            <div className="pt-[61px] flex  w-[1428px] mx-auto">
                 {/* Content container */}
                 <div className="flex max-w-screen-xl w-full px-4">
                     {/* Content section */}
@@ -22,7 +22,7 @@ export default function Page() {
                     </div>
 
                     {/* Sidebar with sticky positioning */}
-                    <div className="md:w-[300px] md:-mt-[150px] w-full sticky top-0 self-start">
+                    <div className="md:w-[300px] md:-mt-[200px] w-full sticky top-5 self-start pb-12">
                         <Sidebar />
                     </div>
                 </div>
