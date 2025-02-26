@@ -8,7 +8,7 @@ interface FilterOption {
     subCategories?: { label: string; count: number; key: string }[];
 }
 
-function FilterCoursesList({ filterData }: { filterData: FilterResponse }) {
+function FilterCoursesList({ filterData }: { readonly filterData: FilterResponse }) {
     const filtersData = [
         {
             title: filterData?.categories?.title,

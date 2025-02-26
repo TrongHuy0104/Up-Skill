@@ -2,7 +2,7 @@ import FilterCoursesList from '@/app/(unauth)/courses/_components/FilterCoursesL
 import { FilterResponse } from '@/types/Course';
 import React from 'react';
 
-export default function FilterCourses({ filterData }: { filterData: FilterResponse }) {
+export default function FilterCourses({ filterData }: {readonly filterData: FilterResponse }) {
     return (
         <div className="">
             <FilterCoursesList filterData={filterData} />
