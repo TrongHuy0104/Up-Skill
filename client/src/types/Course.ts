@@ -9,6 +9,7 @@ export interface Course {
     estimatedPrice?: number;
     thumbnail?: any;
     authorId: User;
+    nameAuthor: User;
     tags?: string;
     demoUrl?: string;
     benefits: { title: string }[];

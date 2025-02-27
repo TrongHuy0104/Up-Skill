@@ -3,7 +3,7 @@ import cloudinary from 'cloudinary';
 import ejs from 'ejs';
 import { catchAsync } from '@/utils/catchAsync';
 import { NextFunction, Request, Response } from 'express';
-import { createCourse, getAllCoursesService } from '@/services/course.service';
+import { createCourse, getAllCoursesService, getTopRatedCourses } from '@/services/course.service';
 import CourseModel from '@/models/Course.model';
 import ErrorHandler from '@/utils/ErrorHandler';
 import { redis } from '@/utils/redis';
@@ -11,6 +11,69 @@ import path from 'path';
 import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
 import axios from 'axios';
+
+export const getTopRatedCoursesController1 = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const instructorId = req.user?._id; // Lấy instructorId từ thông tin người dùng
+    if (!instructorId) {
+        return next(new ErrorHandler('Instructor not found', 404));
+    }
+
+    try {
+        // Lấy danh sách 3 khóa học có rating cao nhất mà instructor đã đăng
+        const topCourses = await getTopRatedCourses(instructorId);
+        res.status(200).json({
+            success: true,
+            topCourses
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+export const getTopRatedCoursesController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const instructorId = req.user?._id; // Get instructorId from the user information
+
+    if (!instructorId) {
+        return next(new ErrorHandler('Instructor not found', 404));
+    }
+
+    // Find top-rated courses by the instructor, sorted by rating in descending order
+    const topCourses = await CourseModel.find({ instructorId })
+        .sort({ rating: -1 }) // Sort by rating in descending order
+        .limit(10) // Limit to 10 courses
+        .populate('authorId', 'name email') // Populate author details
+        .populate('category', 'name') // Populate category details
+        .lean(); // Convert to plain JavaScript objects
+
+    if (!topCourses || topCourses.length === 0) {
+        return next(new ErrorHandler('No courses found', 404));
+    }
+
+    // Map through the courses to add additional details
+    const coursesWithDetails = topCourses.map((course) => {
+        const lessonsCount = course.courseData?.length || 0;
+
+        const duration =
+            course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
+                return acc + (curr.videoLength || 0);
+            }, 0) || 0;
+
+        const durationInHours = (duration / 60).toFixed(1);
+
+        return {
+            ...course,
+            lessonsCount,
+            duration: `${durationInHours} hours`
+        };
+    });
+
+    res.status(200).json({
+        success: true,
+        data: {
+            topCourses: coursesWithDetails
+        }
+    });
+});
 
 export const getTopCourses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const topCourses = await CourseModel.find({ isPublished: true })

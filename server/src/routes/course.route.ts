@@ -13,6 +13,7 @@ import {
     getPurchasedCourseByUser,
     getSingleCourse,
     getTopCourses,
+    getTopRatedCoursesController,
     updateCourse,
     uploadCourse
 } from '@/controllers/course.controller';
@@ -25,6 +26,8 @@ router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
 
 router.get('/top-courses', getTopCourses);
+
+router.get('/all-courses-by-mysefl', updateAccessToken, isAuthenticated, getTopRatedCoursesController);
 
 router.get('/:id', getSingleCourse);
 
