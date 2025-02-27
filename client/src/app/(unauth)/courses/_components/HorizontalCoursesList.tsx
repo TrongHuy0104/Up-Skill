@@ -5,6 +5,7 @@ import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
 import { CourseHorizontalCard } from '@/components/custom/CourseCard';
 import PaginationComponent from '@/components/custom/PaginationComponent';
 import dynamic from 'next/dynamic';
+import noData from '@/public/assets/images/courses/no-data.jpg';
 
 // Sử dụng dynamic để tắt SSR cho modal
 const Modal = dynamic(() => import('@/app/(unauth)/courses/_components//ModalComponent'), { ssr: false });
@@ -102,9 +103,14 @@ export default function HorizontalCoursesList({
             {/* Dropdown Modal */}
             {isModalOpen && <Modal closeModal={closeModal} onSelectSort={handleSortSelect} />}
 
-            {courses.map((course) => (
-                <CourseHorizontalCard key={course._id} course={course} />
-            ))}
+            {totalCourses === 0 ? (
+                <div className="flex flex-col items-center justify-center w-full h-full">
+                    <Image src={noData} alt="No Courses Found"/>
+                    <p className="text-primary-600 mt-4">No courses found. Please try a different search.</p>
+                </div>
+            ) : (
+                courses.map((course) => <CourseHorizontalCard key={course._id} course={course} />)
+            )}
 
             {/* Pagination */}
             {totalCourses > 0 && (
