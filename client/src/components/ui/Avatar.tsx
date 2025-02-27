@@ -2,8 +2,9 @@
 
 import Image from 'next/image';
 import React from 'react';
-import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { useSelector } from 'react-redux';
+
+import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 
 type Props = {
     size: number;
@@ -23,7 +24,8 @@ const Avatar = ({ size, avatar }: Props) => {
                 width={size}
                 height={size}
                 quality={100}
-                className="w-full h-full rounded-full border-[10px] border-primary-50 bg-primary-50 object-cover"
+                className="w-full h-full rounded-full border-primary-50 bg-primary-50 object-cover"
+                style={{ borderWidth: size / 14 + 'px' }}
             />
         </div>
     );
