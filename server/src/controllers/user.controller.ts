@@ -247,6 +247,7 @@ export const getUserInfo = catchAsync(async (req: Request, res: Response, next: 
     if (!req.user || !req.user._id) {
         return next(new ErrorHandler('User not authenticated', 500));
     }
+
     const userId = req.user._id;
     getUserById(userId, res);
 });
@@ -460,8 +461,6 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
     } catch (error) {
         return next(new ErrorHandler('Invalid or expired reset token', 400));
     }
-
-    console.log(decoded.user.email);
 
     const user = await UserModel.findOne({ email: decoded?.user?.email });
     if (!user) {
