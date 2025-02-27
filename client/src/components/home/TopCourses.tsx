@@ -6,7 +6,7 @@ import Link from 'next/link';
 import React, { Suspense, useEffect, useState } from 'react';
 import { TfiArrowTopRight } from 'react-icons/tfi';
 import CourseVerticalCard from '../custom/CourseCard';
-import { CourseVerticalSkeleton } from '../ui/Skeleton';
+import { VerticalCardSkeleton } from '../ui/Skeleton';
 
 function TopCoursesContent() {
     const [topCourses, setTopCourses] = useState<any[]>([]);
@@ -43,7 +43,7 @@ function TopCoursesContent() {
                     {[...Array(5)].map((_, index) => (
                         <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                             <div className="p-1">
-                                <CourseVerticalSkeleton />
+                                <VerticalCardSkeleton />
                             </div>
                         </CarouselItem>
                     ))}
@@ -93,7 +93,7 @@ function TopCourses() {
                                     [...Array(5)].map((_, index) => (
                                         <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                                             <div className="p-1">
-                                                <CourseVerticalSkeleton />
+                                            <VerticalCardSkeleton/>
                                             </div>
                                         </CarouselItem>
                                     ))

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { TfiArrowTopRight } from 'react-icons/tfi';
 import InstructorCard from '../custom/Instructor';
+import { VerticalCardSkeleton } from '../ui/Skeleton';
 
 function TopInstructors() {
     const [topInstructors, setTopInstructors] = useState<any[]>([]);  
@@ -58,8 +59,20 @@ function TopInstructors() {
 
                             <div className="mt-6">
                                 {loading ? (
-                                    <p>Loading top instructors...</p>  // Loading state message
+                                    // Display skeleton loading state
+                                    <Carousel className="w-full">
+                                        <CarouselContent className="-ml-1">
+                                            {[...Array(5)].map((_, index) => (
+                                                <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
+                                                    <div className="p-1">
+                                                        <VerticalCardSkeleton />
+                                                    </div>
+                                                </CarouselItem>
+                                            ))}
+                                        </CarouselContent>
+                                    </Carousel>
                                 ) : (
+                                    // Display actual data
                                     <Carousel className="w-full">
                                         <CarouselContent className="-ml-1">
                                             {topInstructors.map((instructor) => (
@@ -67,12 +80,7 @@ function TopInstructors() {
                                                     <div className="p-1">
                                                         <InstructorCard
                                                             key={instructor._id}
-                                                            name={instructor.name || 'Unknown Instructor'}
-                                                            jobTitle={instructor.jobTitle || 'Professional Instructor'}
-                                                            rating={instructor.rating || 0}
-                                                            students={instructor.students || 0}
-                                                            courses={instructor.courses || 0}
-                                                            imageUrl={instructor.imageUrl || '/default-instructor.jpg'} // Fallback image
+                                                            instructor={instructor}
                                                         />
                                                     </div>
                                                 </CarouselItem>
@@ -83,7 +91,6 @@ function TopInstructors() {
                                     </Carousel>
                                 )}
                             </div>
-
                         </div>
                     </div>
                 </div>

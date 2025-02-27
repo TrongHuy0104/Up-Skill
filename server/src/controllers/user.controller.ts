@@ -480,7 +480,6 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
 export const getTopInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const topInstructors = await UserModel.aggregate([
         { $match: { role: 'instructor' } },
-
         {
             $lookup: {
                 from: 'courses',
@@ -489,7 +488,6 @@ export const getTopInstructors = catchAsync(async (req: Request, res: Response, 
                 as: 'uploadedCoursesData'
             }
         },
-
         {
             $addFields: {
                 totalStudents: {
@@ -509,22 +507,25 @@ export const getTopInstructors = catchAsync(async (req: Request, res: Response, 
                             in: { $ifNull: ['$$course.rating', 0] }
                         }
                     }
-                }
+                },
+                uploadedCoursesCount: { $size: '$uploadedCoursesData' }
             }
         },
-
         { $sort: { totalStudents: -1, averageRating: -1 } },
-
         { $limit: 10 },
-
         {
             $project: {
+                _id: 1,
                 name: 1,
                 email: 1,
+                role: 1,
                 avatar: 1,
+                uploadedCourses: 1,
                 totalStudents: 1,
                 averageRating: 1,
-                uploadedCoursesCount: { $size: '$uploadedCoursesData' }
+                uploadedCoursesCount: 1,
+                createdAt: 1,
+                updatedAt: 1
             }
         }
     ]);

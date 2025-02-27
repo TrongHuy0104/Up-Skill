@@ -19,7 +19,7 @@ export function AuthBtnsSkeleton() {
     );
 }
 
-export const CourseVerticalSkeleton = () => {
+export const VerticalCardSkeleton = () => {
     return (
         <div className="space-y-2 px-2">
             <Skeleton className="h-48 w-full rounded-lg" />
