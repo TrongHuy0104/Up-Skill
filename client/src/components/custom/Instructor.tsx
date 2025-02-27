@@ -26,7 +26,7 @@ interface InstructorCardProps {
 export default function InstructorCard({
     isHorizontal = false,
     width = '260px',
-    instructor = {}, // Default to an empty object
+    instructor = {} // Default to an empty object
 }: InstructorCardProps) {
     // Destructure instructor properties with default values
     const {
@@ -35,7 +35,7 @@ export default function InstructorCard({
         averageRating = 0,
         totalStudents = 0,
         uploadedCoursesCount = 0,
-        imageUrl = img.src, // Default image URL
+        imageUrl = img.src // Default image URL
     } = instructor;
 
     return (
@@ -91,14 +91,14 @@ export default function InstructorCard({
 
                 {/* Rating */}
                 <div className="flex items-center relative gap-[6px] pb-[2px]">
-                <span >{averageRating.toFixed(1)}</span>
-                        {[...Array(5)].map((_, index) => (
-                            <Image
-                                key={index}
-                                src={index < Math.floor(averageRating) ? star : starOutlineIcon}
-                                alt={index < Math.floor(averageRating) ? 'Filled Star' : 'Outline Star'}
-                            />
-                        ))}
+                    <span>{averageRating?.toFixed(1)}</span>
+                    {[...Array(5)].map((_, index) => (
+                        <Image
+                            key={index}
+                            src={index < Math.floor(averageRating) ? star : starOutlineIcon}
+                            alt={index < Math.floor(averageRating) ? 'Filled Star' : 'Outline Star'}
+                        />
+                    ))}
                 </div>
             </div>
         </div>
