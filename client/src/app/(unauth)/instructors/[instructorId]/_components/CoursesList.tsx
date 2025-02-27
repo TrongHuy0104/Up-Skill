@@ -1,5 +1,6 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique key generation
 import CourseVerticalCard from '@/components/custom/CourseCard';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import { VerticalCardSkeleton } from '@/components/ui/Skeleton';
@@ -17,7 +18,7 @@ function TopCoursesContent({
             <Carousel className="w-full">
                 <CarouselContent className="-ml-1">
                     {[...Array(5)].map(() => (
-                        <CarouselItem key={`skeleton-${Math.random()}`} className={`md:basis-1/2 lg:basis-1/3`}>
+                        <CarouselItem key={uuidv4()} className={`md:basis-1/2 lg:basis-1/3`}>
                             <div className="p-1">
                                 <VerticalCardSkeleton />
                             </div>
@@ -78,7 +79,7 @@ export default function CoursesList() {
             <h2 className="text-2xl font-bold mb-4 font-cardo">More Courses</h2>
             <Suspense
                 fallback={[...Array(5)].map(() => (
-                    <CarouselItem key={`skeleton-${Math.random()}`} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
+                    <CarouselItem key={uuidv4()} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                         <div className="p-1">
                             <VerticalCardSkeleton />
                         </div>
