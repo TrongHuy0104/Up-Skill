@@ -464,6 +464,7 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
 
     const courses = await CourseModel.find(filter)
         .select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')
+        .populate('authorId', 'name')
         .skip(skip)
         .limit(limit);
 

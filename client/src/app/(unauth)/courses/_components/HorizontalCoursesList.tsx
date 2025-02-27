@@ -21,16 +21,29 @@ type Prerequisite = {
 };
 
 type CourseData = {
+    _id: string;
     title: string;
     description: string;
-    _id: string;
+    videoSection: string;
+    videoLength: number;
 };
+
+interface Author {
+    _id: string;
+    name: string;
+}
+type Thumbnail = {
+    public_id: string;
+    url: string;
+};
+
 
 export type Course = {
     _id: string;
     name: string;
+    thumnail: Thumbnail;
     description: string;
-    authorId: string;
+    authorId: Author;
     price: number;
     estimatedPrice: number;
     tags: string;
@@ -105,7 +118,7 @@ export default function HorizontalCoursesList({
 
             {totalCourses === 0 ? (
                 <div className="flex flex-col items-center justify-center w-full h-full">
-                    <Image src={noData} alt="No Courses Found"/>
+                    <Image src={noData} alt="No Courses Found" />
                     <p className="text-primary-600 mt-4">No courses found. Please try a different search.</p>
                 </div>
             ) : (

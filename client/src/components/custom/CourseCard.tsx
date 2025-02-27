@@ -16,7 +16,7 @@ interface CourseVerticalCardProps {
     readonly progress?: number; // Progress percentage (0-100)
     readonly width?: string; // Custom width
     readonly height?: string; // Custom height
-    readonly course?: any
+    readonly course?: any;
 }
 
 interface CourseHorizontalCard {
@@ -146,9 +146,9 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
         <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
             {/* Course Image */}
             <div className="h-[240px] w-[320px] relative rounded-sm overflow-hidden flex-shrink-0">
-                <Link href={`/courses/`}>
+                <Link href={`/courses/${course?._id}`}>
                     <Image
-                        src={defaultImage}
+                        src={course?.thumnail?.url || defaultImage}
                         alt={course?.name}
                         className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
                         group-hover:scale-110"
@@ -179,11 +179,16 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                         </div>
                         <div className="pr-[10px] relative flex items-center justify-start gap-[7px] after:absolute after:right-0 after:w-[1px] after:h-4 after:bg-primary-100">
                             <Image src={studentsIcon} className="relative bottom-[1px]" alt="Students" />
-                            <p> Students</p>
+                            <p>{course?.purchased} Students</p>
                         </div>
                         <div className="pr-[10px] relative flex items-center justify-start gap-[7px]">
                             <Image src={hourIcon} className="relative bottom-[1px]" alt="Duration" />
-                            <p></p>
+                            <p>
+                                {(
+                                    course?.courseData?.reduce((total, item) => total + (item.videoLength || 0), 0) / 60
+                                ).toFixed(1)}{' '}
+                                hour
+                            </p>
                         </div>
                     </div>
                     <div className="text-accent-600 font-medium text-lg leading-7">${course?.price}</div>
@@ -207,17 +212,21 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                     <span>{course.rating}</span>
                     <div className="flex items-center relative gap-[7px] pb-[2px]">
                         {[...Array(5)].map((_, index) => (
-                            <Image key={index} src={starIcon} alt={'Filled Star'} />
+                            <Image
+                                key={index}
+                                src={index < Math.round(course?.rating) ? starIcon : starOutlineIcon}
+                                alt={index < Math.round(course?.rating) ? 'Filled Star' : 'Outline Star'}
+                            />
                         ))}
                     </div>
-                    <span>(1)</span>
+                    <span>{`(${course?.reviews?.length})`}</span>
                 </div>
 
                 {/* Instructor Name */}
                 <div className="text-primary-600 mb-[13px]">
                     By:{' '}
                     <Link href="#!" className="hover:text-accent-600 transition-colors duration-300">
-                        {'Unknown Instructor'}
+                        {course?.authorId?.name || 'Unknown Instructor'}
                     </Link>
                 </div>
 
