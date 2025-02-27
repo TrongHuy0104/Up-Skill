@@ -74,7 +74,8 @@ export default function HorizontalCoursesList({
 }: HorizontalCoursesListProps) {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
     const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
-    const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ modal
+    const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ 
+    const [currentPage, setCurrentPage] = useState(page);
 
     useEffect(() => {
         setIsClient(true); // Chỉ chạy sau khi component render trên client
@@ -98,6 +99,10 @@ export default function HorizontalCoursesList({
     }
     const startIndex = totalCourses === 0 ? 0 : (page - 1) * limit + 1;
     const endIndex = Math.min(page * limit, totalCourses);
+
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };    
 
     return (
         <div className="pl-[28px] relative">
@@ -126,9 +131,13 @@ export default function HorizontalCoursesList({
 
             {/* Pagination */}
             {totalCourses > 0 && (
-                <div className="p-5">
-                    <PaginationComponent totalPages={totalPages} />
-                </div>
+            <div className="p-5">
+                <PaginationComponent 
+                    currentPage={currentPage} 
+                    totalPages={totalPages} 
+                    onPageChange={handlePageChange} 
+                />
+            </div>
             )}
         </div>
     );
