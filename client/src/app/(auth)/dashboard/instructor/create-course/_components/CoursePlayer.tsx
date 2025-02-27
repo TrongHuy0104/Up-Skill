@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 type Props = {
-    readonly videoUrl: string;
+    readonly videoUrl?: string;
     readonly title: string;
     readonly width?: number;
 };

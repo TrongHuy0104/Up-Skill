@@ -78,7 +78,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                         <DialogHeader>
                             <DialogTitle className="text-2xl">Course Preview</DialogTitle>
                         </DialogHeader>
-                        <CoursePlayer title="course" videoUrl="ddbab3bf1166474c82bdfc22319c013e" width={60} />
+                        <CoursePlayer title="course" videoUrl={course?.demoUrl} width={60} />
                     </DialogContent>
                 </Dialog>
             </div>

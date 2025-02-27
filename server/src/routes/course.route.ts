@@ -27,7 +27,7 @@ router.get('/:id', getSingleCourse);
 
 router.get('/', getAllCoursesWithoutPurchase);
 
-router.get('/purchased/:id', isAuthenticated, getPurchasedCourseByUser);
+router.get('/purchased/:id', updateAccessToken, isAuthenticated, getPurchasedCourseByUser);
 
 router.put('/add-question', isAuthenticated, addQuestion);
 
