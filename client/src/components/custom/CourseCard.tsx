@@ -148,7 +148,7 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
             <div className="h-[240px] w-[320px] relative rounded-sm overflow-hidden flex-shrink-0">
                 <Link href={`/courses/${course?._id}`}>
                     <Image
-                        src={course?.thumnail?.url || defaultImage}
+                        src={course?.thumbnail?.url || defaultImage}
                         alt={course?.name}
                         className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
                         group-hover:scale-110"
@@ -197,7 +197,7 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                 {/* Course Title */}
                 <h6 className="mb-[10px] line-clamp-2 font-medium text-base leading-7">
                     <Link
-                        href={`/courses/`}
+                        href={`/courses/${course?._id}`}
                         className="text-lg bg-no-repeat bg-[length:0_100%] bg-[position-y:0px] bg-gradient-to-b from-transparent 
                         from-[calc(100%-1px)] to-current to-[1px] transition-all duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] 
                         backface-hidden group-hover:bg-[length:100%_100%] group-hover:delay-300 hover:text-accent-600"
@@ -225,7 +225,10 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                 {/* Instructor Name */}
                 <div className="text-primary-600 mb-[13px]">
                     By:{' '}
-                    <Link href="#!" className="hover:text-accent-600 transition-colors duration-300">
+                    <Link
+                        href={`/instructors/${course?.authorId?._id}`}
+                        className="hover:text-accent-600 transition-colors duration-300"
+                    >
                         {course?.authorId?.name || 'Unknown Instructor'}
                     </Link>
                 </div>
@@ -233,7 +236,7 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                 {/* Enroll Button */}
                 <div className="flex items-center justify-between border-t border-primary-100 pt-[13px]">
                     <Link
-                        href="#!"
+                        href={`/courses/${course?._id}`}
                         className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7
                             transition-colors cursor-pointer duration-300 hover:text-accent-600"
                     >

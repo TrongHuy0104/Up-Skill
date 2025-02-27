@@ -37,11 +37,10 @@ type Thumbnail = {
     url: string;
 };
 
-
 export type Course = {
     _id: string;
     name: string;
-    thumnail: Thumbnail;
+    thumbnail: Thumbnail;
     description: string;
     authorId: Author;
     price: number;
