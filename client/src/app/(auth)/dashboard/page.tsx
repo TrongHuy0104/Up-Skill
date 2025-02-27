@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from "react";import Image from "next/image";
 import PaginationComponent from "@/components/custom/PaginationComponent";
-import editIcon from "@/public/assets/icons/edit.svg";
-import deleteIcon from "@/public/assets/icons/delete.svg";
 import axios from "axios";
 
 interface Course {
@@ -191,7 +189,7 @@ const Dashboard = () => {
                       >
                         <div className="relative w-4 h-4">
                           <Image 
-                            src={editIcon} 
+                            src="/assets/icons/edit.svg" 
                             alt="Edit" 
                             fill
                             className="group-hover:brightness-0 group-hover:invert transition-all duration-200"
@@ -204,7 +202,7 @@ const Dashboard = () => {
                       >
                         <div className="relative w-4 h-4">
                           <Image 
-                            src={deleteIcon} 
+                            src="/assets/icons/delete.svg"
                             alt="Delete" 
                             fill
                             className="group-hover:brightness-0 group-hover:invert transition-all duration-200"
