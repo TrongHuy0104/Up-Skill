@@ -25,7 +25,6 @@ function TopInstructors() {
                 }
 
                 const data = await res.json(); 
-                console.log(data);
 
                 setTopInstructors(data.topInstructors); 
                 setLoading(false); 
