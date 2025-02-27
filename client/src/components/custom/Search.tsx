@@ -109,9 +109,9 @@ export default function Search() {
                         {results.keywords.length > 0 && (
                             <div className="px-2">
                                 <ul>
-                                    {results.keywords.map((keyword, index) => (
+                                    {results.keywords.map((keyword) => (
                                         <li
-                                            key={index}
+                                            key={keyword}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
                                         >
                                             <Image src={searchIcon} alt="Search Icon" className="mr-6 ml-2" />{' '}
