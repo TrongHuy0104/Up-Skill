@@ -145,8 +145,6 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
 
     const course = await CourseModel.findById(courseId);
 
-    // const content = course?.courseData;
-
     res.status(200).json({
         success: true,
         course

@@ -87,11 +87,6 @@ export default function CourseContentList({ data, activeVideo, setActiveVideo }:
                                                 <span className="text-sm text-[#131836]">
                                                     {getMinutes(lessonLength)}
                                                 </span>
-                                                {/* {lecture.preview && (
-                                                        <button className="text-accent-900 border border-acctext-accent-900 px-2 py-1 text-sm rounded">
-                                                            Preview
-                                                        </button>
-                                                    )} */}
                                             </div>
                                         </div>
                                     );

@@ -110,55 +110,53 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo }: Props
                 <TabsContent value="reviews">
                     <div className="w-full">
                         {!isReviewExists && (
-                            <>
-                                <div className="w-full flex">
-                                    <Avatar size={50} avatar={user?.avatar?.url} />
-                                    <div className="w-full">
-                                        <h5 className="pl-3 text-lg font-medium">
-                                            Give a rating <span className="text-red-600">*</span>
-                                        </h5>
-                                        <div className="flex w-full ml-2 pb-3">
-                                            {[1, 2, 3, 4, 5].map((i) =>
-                                                rating >= i ? (
-                                                    <IoStarSharp
-                                                        key={i}
-                                                        className="ml-1 cursor-pointer"
-                                                        color="#f0b510"
-                                                        size={18}
-                                                        onClick={() => setRating(i)}
-                                                    />
-                                                ) : (
-                                                    <IoStarOutline
-                                                        key={i}
-                                                        className="ml-1 cursor-pointer"
-                                                        color="#f0b510"
-                                                        size={18}
-                                                        onClick={() => setRating(i)}
-                                                    />
-                                                )
-                                            )}
-                                        </div>
-                                        <form
-                                            className={`space-comment ml-4 relative overflow-hidden transition-all duration-500 ease-in-out opacity-100 w-full max-h-[500px] scale-100`}
-                                        >
-                                            <textarea
-                                                rows={5}
-                                                className="w-full text-primary-800 text-sm leading-[28px] p-2.5 border border-gray-300 rounded-md resize-none appearance-none outline-none focus:outline-none transition-all duration-300"
-                                                placeholder="Add a question..."
-                                                value={review}
-                                                onChange={(e) => setReview(e.target.value)}
-                                                required
-                                            ></textarea>
-                                            <button
-                                                onClick={onSubmitReview}
-                                                className="absolute flex items-center justify-center h-[50px] w-[50px] cursor-pointer top-[23%] right-[2%] rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all duration-300 hover:scale-110"
-                                            >
-                                                <Image src={arrowRightIcon} alt="arrow right icon" />
-                                            </button>
-                                        </form>
+                            <div className="w-full flex">
+                                <Avatar size={50} avatar={user?.avatar?.url} />
+                                <div className="w-full">
+                                    <h5 className="pl-3 text-lg font-medium">
+                                        Give a rating <span className="text-red-600">*</span>
+                                    </h5>
+                                    <div className="flex w-full ml-2 pb-3">
+                                        {[1, 2, 3, 4, 5].map((i) =>
+                                            rating >= i ? (
+                                                <IoStarSharp
+                                                    key={i}
+                                                    className="ml-1 cursor-pointer"
+                                                    color="#f0b510"
+                                                    size={18}
+                                                    onClick={() => setRating(i)}
+                                                />
+                                            ) : (
+                                                <IoStarOutline
+                                                    key={i}
+                                                    className="ml-1 cursor-pointer"
+                                                    color="#f0b510"
+                                                    size={18}
+                                                    onClick={() => setRating(i)}
+                                                />
+                                            )
+                                        )}
                                     </div>
+                                    <form
+                                        className={`space-comment ml-4 relative overflow-hidden transition-all duration-500 ease-in-out opacity-100 w-full max-h-[500px] scale-100`}
+                                    >
+                                        <textarea
+                                            rows={5}
+                                            className="w-full text-primary-800 text-sm leading-[28px] p-2.5 border border-gray-300 rounded-md resize-none appearance-none outline-none focus:outline-none transition-all duration-300"
+                                            placeholder="Add a question..."
+                                            value={review}
+                                            onChange={(e) => setReview(e.target.value)}
+                                            required
+                                        ></textarea>
+                                        <button
+                                            onClick={onSubmitReview}
+                                            className="absolute flex items-center justify-center h-[50px] w-[50px] cursor-pointer top-[23%] right-[2%] rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all duration-300 hover:scale-110"
+                                        >
+                                            <Image src={arrowRightIcon} alt="arrow right icon" />
+                                        </button>
+                                    </form>
                                 </div>
-                            </>
+                            </div>
                         )}
                     </div>
                 </TabsContent>
