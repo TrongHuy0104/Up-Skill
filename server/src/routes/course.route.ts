@@ -12,6 +12,7 @@ import {
     getAllCoursesWithoutPurchase,
     getPurchasedCourseByUser,
     getSingleCourse,
+    getTopCourses,
     updateCourse,
     uploadCourse
 } from '@/controllers/course.controller';
@@ -23,11 +24,13 @@ router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
 router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
 
+router.get('/top-courses', getTopCourses);
+
 router.get('/:id', getSingleCourse);
 
 router.get('/', getAllCoursesWithoutPurchase);
 
-router.get('/purchased/:id', isAuthenticated, getPurchasedCourseByUser);
+router.get('/purchased/:id', updateAccessToken, isAuthenticated, getPurchasedCourseByUser);
 
 router.put('/add-question', isAuthenticated, addQuestion);
 
