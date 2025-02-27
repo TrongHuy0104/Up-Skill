@@ -3,7 +3,6 @@ import { redis } from '@/utils/redis';
 import { Response } from 'express';
 
 export const getUserById = async (id: string, res: Response) => {
-    // const user = await UserModel.findById(id);
     const userJSON = await redis.get(id);
 
     if (userJSON) {

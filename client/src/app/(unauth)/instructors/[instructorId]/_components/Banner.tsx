@@ -39,7 +39,7 @@ export default async function Banner({ user }: Props) {
                 <p className="text-primary-800 mb-6">Developer and Teacher</p>
                 <div className="flex items-center text-primary-800 mt-2 pb-4">
                     <Image alt="Star Icon" src={star} />
-                    <span className="pl-[6px] pr-6"> {user!.rating.toString()}</span>
+                    <span className="pl-[6px] pr-6"> {user.rating.toString()}</span>
                     <Image alt="Time Table Icon" src={timeTable} width={20} height={20} />
                     <span className="pl-[6px] pr-6"> {uploadedCoursesCount} Lessons</span>
                     <Image alt="Student Icon" src={student} />

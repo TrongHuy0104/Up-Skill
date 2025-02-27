@@ -3,7 +3,7 @@ import cloudinary from 'cloudinary';
 import ejs from 'ejs';
 import { catchAsync } from '@/utils/catchAsync';
 import { NextFunction, Request, Response } from 'express';
-import { createCourse, getAllCoursesService, getTopRatedCourses } from '@/services/course.service';
+import { createCourse, getAllCoursesService } from '@/services/course.service';
 import CourseModel from '@/models/Course.model';
 import ErrorHandler from '@/utils/ErrorHandler';
 import { redis } from '@/utils/redis';
@@ -11,24 +11,6 @@ import path from 'path';
 import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
 import axios from 'axios';
-
-export const getTopRatedCoursesController1 = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const instructorId = req.user?._id; // Lấy instructorId từ thông tin người dùng
-    if (!instructorId) {
-        return next(new ErrorHandler('Instructor not found', 404));
-    }
-
-    try {
-        // Lấy danh sách 3 khóa học có rating cao nhất mà instructor đã đăng
-        const topCourses = await getTopRatedCourses(instructorId);
-        res.status(200).json({
-            success: true,
-            topCourses
-        });
-    } catch (error) {
-        next(error);
-    }
-});
 
 export const getTopRatedCoursesController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const instructorId = req.user?._id; // Get instructorId from the user information

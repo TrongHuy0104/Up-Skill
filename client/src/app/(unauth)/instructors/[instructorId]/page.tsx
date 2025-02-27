@@ -28,7 +28,7 @@ export default async function page() {
                 {/* Content container */}
                 <div className="flex max-w-screen-xl w-full px-4">
                     {/* Content section */}
-                    <div className="mb-4 w-full md:w-3/4">
+                    <div className="mb-4 w-full md:w-3/4 mr-12">
                         <InstructorInfo user={user} />
                         <CoursesDetailLine />
                         {/* Truyền mảng courses vào CoursesList */}
