@@ -247,6 +247,7 @@ export const getUserInfo = catchAsync(async (req: Request, res: Response, next: 
     if (!req.user || !req.user._id) {
         return next(new ErrorHandler('User not authenticated', 500));
     }
+
     const userId = req.user._id;
     getUserById(userId, res);
 });
@@ -461,8 +462,6 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
         return next(new ErrorHandler('Invalid or expired reset token', 400));
     }
 
-    console.log(decoded.user.email);
-
     const user = await UserModel.findOne({ email: decoded?.user?.email });
     if (!user) {
         return next(new ErrorHandler('User not found', 404));
@@ -474,5 +473,68 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
     res.status(200).json({
         success: true,
         message: 'Password has been reset successfully'
+    });
+});
+
+export const getTopInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const topInstructors = await UserModel.aggregate([
+        { $match: { role: 'instructor' } },
+        {
+            $lookup: {
+                from: 'courses',
+                localField: 'uploadedCourses',
+                foreignField: '_id',
+                as: 'uploadedCoursesData'
+            }
+        },
+        {
+            $addFields: {
+                totalStudents: {
+                    $sum: {
+                        $map: {
+                            input: '$uploadedCoursesData',
+                            as: 'course',
+                            in: { $ifNull: ['$$course.purchased', 0] }
+                        }
+                    }
+                },
+                averageRating: {
+                    $avg: {
+                        $map: {
+                            input: '$uploadedCoursesData',
+                            as: 'course',
+                            in: { $ifNull: ['$$course.rating', 0] }
+                        }
+                    }
+                },
+                uploadedCoursesCount: { $size: '$uploadedCoursesData' }
+            }
+        },
+        { $sort: { totalStudents: -1, averageRating: -1 } },
+        { $limit: 10 },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                role: 1,
+                avatar: 1,
+                uploadedCourses: 1,
+                totalStudents: 1,
+                averageRating: 1,
+                uploadedCoursesCount: 1,
+                createdAt: 1,
+                updatedAt: 1
+            }
+        }
+    ]);
+
+    if (!topInstructors || topInstructors.length === 0) {
+        return next(new ErrorHandler('No instructors found', 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        topInstructors
     });
 });

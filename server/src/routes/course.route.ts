@@ -13,6 +13,7 @@ import {
     getCoursesLimitWithPagination,
     getPurchasedCourseByUser,
     getSingleCourse,
+    getTopCourses,
     updateCourse,
     uploadCourse,
     getCourseStatistics
@@ -29,11 +30,13 @@ router.get('/pagination', getCoursesLimitWithPagination);
 
 router.get('/count', getCourseStatistics);
 
+router.get('/top-courses', getTopCourses);
+
 router.get('/:id', getSingleCourse);
 
 router.get('/', getAllCoursesWithoutPurchase);
 
-router.get('/purchased/:id', isAuthenticated, getPurchasedCourseByUser);
+router.get('/purchased/:id', updateAccessToken, isAuthenticated, getPurchasedCourseByUser);
 
 router.put('/add-question', isAuthenticated, addQuestion);
 

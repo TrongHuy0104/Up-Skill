@@ -1,6 +1,6 @@
 const nextConfig = {
     images: {
-        domains: ['res.cloudinary.com'],
+        domains: ['creativelayers.net', 'res.cloudinary.com'],
         remotePatterns: [
             {
                 protocol: 'https',

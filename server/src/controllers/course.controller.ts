@@ -29,6 +29,8 @@ export const uploadCourse = catchAsync(async (req: Request, res: Response, next:
             url: myCloud.secure_url
         };
     }
+    await redis.del(`allCourses ${req.user?._id}`);
+    await redis.del('allCourses undefined');
     createCourse(data, req, res, next);
 });
 // export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -139,7 +141,7 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
     const userCourseList = req.user?.purchasedCourses;
     const courseId = req.params.id;
 
-    const courseExists = userCourseList?.find((c: any) => c._id.toString() === courseId.toString());
+    const courseExists = userCourseList?.find((c: any) => c === courseId.toString());
 
     if (!courseExists) {
         return next(new ErrorHandler('You are not eligible to access this course', 404));
@@ -147,11 +149,9 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
 
     const course = await CourseModel.findById(courseId);
 
-    const content = course?.courseData;
-
     res.status(200).json({
         success: true,
-        content
+        course
     });
 });
 // add question in course
@@ -577,5 +577,42 @@ export const getCourseStatistics = catchAsync(async (req: Request, res: Response
     res.status(200).json({
         success: true,
         data
+    });
+});
+
+export const getTopCourses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const topCourses = await CourseModel.find({ isPublished: true })
+        .sort({ rating: -1, purchased: -1 })
+        .limit(10)
+        .populate('authorId', 'name email')
+        .populate('category', 'name')
+        .lean();
+
+    if (!topCourses || topCourses.length === 0) {
+        return next(new ErrorHandler('No courses found', 404));
+    }
+
+    const coursesWithDetails = topCourses.map((course) => {
+        const lessonsCount = course.courseData?.length || 0;
+
+        const duration =
+            course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
+                return acc + (curr.videoLength || 0);
+            }, 0) || 0;
+
+        const durationInHours = (duration / 60).toFixed(1);
+
+        return {
+            ...course,
+            lessonsCount,
+            duration: `${durationInHours} hours`
+        };
+    });
+
+    res.status(200).json({
+        success: true,
+        data: {
+            topCourses: coursesWithDetails
+        }
     });
 });
