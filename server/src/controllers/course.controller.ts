@@ -37,7 +37,7 @@ export const getTopRatedCoursesController = catchAsync(async (req: Request, res:
 
         const duration =
             course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
-                return acc + (curr.videoLength || 0);
+                return acc + (curr.videoLength ?? 0);
             }, 0) || 0;
 
         const durationInHours = (duration / 60).toFixed(1);

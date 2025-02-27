@@ -5,13 +5,19 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { VerticalCardSkeleton } from '@/components/ui/Skeleton';
 
 // Move TopCoursesContent outside CoursesList
-function TopCoursesContent({ topCourses, isLoading }: { topCourses: any[]; isLoading: boolean }) {
+function TopCoursesContent({
+    topCourses,
+    isLoading
+}: {
+    readonly topCourses: any[]; // Read-only props
+    readonly isLoading: boolean;
+}) {
     if (isLoading) {
         return (
             <Carousel className="w-full">
                 <CarouselContent className="-ml-1">
-                    {[...Array(5)].map((_, index) => (
-                        <CarouselItem key={`skeleton-${index}`} className={`md:basis-1/2 lg:basis-1/3`}>
+                    {[...Array(5)].map(() => (
+                        <CarouselItem key={`skeleton-${Math.random()}`} className={`md:basis-1/2 lg:basis-1/3`}>
                             <div className="p-1">
                                 <VerticalCardSkeleton />
                             </div>
@@ -71,8 +77,8 @@ export default function CoursesList() {
         <div className="mb-[61px] w-[900px]">
             <h2 className="text-2xl font-bold mb-4 font-cardo">More Courses</h2>
             <Suspense
-                fallback={[...Array(5)].map((_, index) => (
-                    <CarouselItem key={`skeleton-${index}`} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
+                fallback={[...Array(5)].map(() => (
+                    <CarouselItem key={`skeleton-${Math.random()}`} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                         <div className="p-1">
                             <VerticalCardSkeleton />
                         </div>
