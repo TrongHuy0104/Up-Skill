@@ -16,13 +16,13 @@ const CoursesDetailInfo = ({ benefits, prerequisites, description }: Props) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        <div className="w-[900px] px-[14px] mr-0 text-primary-800 ">
+        <div className="w-full px-[14px] mr-0 text-primary-800 ">
             {/* What you'll learn */}
-            <section className="mb-[61px] w-[900px]">
+            <section className="mb-[61px] w-full">
                 <h2 className="text-2xl font-bold mb-4 font-cardo">What you will learn</h2>
                 <div className="pb-[61px]">
-                    <div className="space-y-2">
-                        {benefits.map((item, index) => (
+                    <div className="grid md:grid-cols-2 gap-3">
+                        {benefits?.map((item, index) => (
                             <div key={item.title + index} className="flex gap-2">
                                 <Image alt="Check Icon" src={check} />
                                 <p>{item.title}</p>
@@ -36,8 +36,8 @@ const CoursesDetailInfo = ({ benefits, prerequisites, description }: Props) => {
             {/* Requirements */}
             <section className="mb-[61px] w-[900px]">
                 <h2 className="text-2xl font-bold mb-4 font-cardo">Requirements</h2>
-                <ul className="list-disc pl-6 space-y-2 pb-[61px]">
-                    {prerequisites.map((prerequisite, index) => (
+                <ul className="list-disc pl-6 pb-[61px] grid md:grid-cols-2 gap-y-3 gap-x-6">
+                    {prerequisites?.map((prerequisite, index) => (
                         <li key={prerequisite.title + index}>{prerequisite.title}</li>
                     ))}
                 </ul>

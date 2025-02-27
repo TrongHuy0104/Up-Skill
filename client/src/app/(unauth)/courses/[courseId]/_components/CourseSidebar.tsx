@@ -92,7 +92,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             <div>
                 {checkCourseExist() ? (
                     <Link
-                        href={`courses/${course._id}/learn`}
+                        href={`/courses/${course._id}/learn`}
                         className="w-[320px] bg-primary-800 text-primary-50 px-6 py-4 rounded-md hover:bg-accent-900 transition-colors duration-300 flex items-center justify-center gap-2 text-base font-medium m-auto mb-4"
                     >
                         Go To Course <HiArrowUpRight />

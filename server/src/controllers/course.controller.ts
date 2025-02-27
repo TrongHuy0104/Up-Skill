@@ -137,7 +137,7 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
     const userCourseList = req.user?.purchasedCourses;
     const courseId = req.params.id;
 
-    const courseExists = userCourseList?.find((c: any) => c._id.toString() === courseId.toString());
+    const courseExists = userCourseList?.find((c: any) => c === courseId.toString());
 
     if (!courseExists) {
         return next(new ErrorHandler('You are not eligible to access this course', 404));
@@ -145,11 +145,9 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
 
     const course = await CourseModel.findById(courseId);
 
-    const content = course?.courseData;
-
     res.status(200).json({
         success: true,
-        content
+        course
     });
 });
 // add question in course
