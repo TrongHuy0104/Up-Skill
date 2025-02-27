@@ -168,12 +168,13 @@ const Dashboard = () => {
                 <tr key={course._id} className="border-b border-primary-100">
                   <td className="py-5 pl-6">
                     <div className="flex items-center">
-                      <div className="relative w-100 h-100">
+                      <div className="relative">
                         <Image 
                           src={course.thumbnail?.url || "/assets/images/courses/courses-01.jpg"} 
                           alt={course.name} 
                           width={100} 
                           height={80} 
+                          className="w-[100px] h-[80px] object-contain"
                         />
                       </div>
                       <span className="truncate w-[400px] text-[15px] text-primary-800 font-medium pl-[30px]">{course.name}</span>
