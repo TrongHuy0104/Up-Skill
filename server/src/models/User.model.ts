@@ -65,7 +65,45 @@ export const UserSchema: Schema<UserT> = new Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Course' // add relationship
             }
-        ]
+        ],
+        introduce: {
+            type: String,
+            default: ''
+        },
+        profession: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        phoneNumber: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        address: {
+            type: String,
+            trim: true,
+            default: ''
+        },
+        age: {
+            type: Number,
+            min: [0, 'Age must be a positive number'],
+            default: null
+        },
+        rating: {
+            type: Number,
+            default: null
+        },
+        student: {
+            type: Number,
+            default: null
+        },
+        socialLinks: {
+            facebook: { type: String, default: '' },
+            twitter: { type: String, default: '' },
+            linkedin: { type: String, default: '' },
+            instagram: { type: String, default: '' }
+        }
     },
     {
         timestamps: true,

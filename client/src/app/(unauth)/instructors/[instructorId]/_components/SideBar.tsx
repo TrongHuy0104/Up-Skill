@@ -1,14 +1,18 @@
 import InstructorSidebar from '@/components/custom/InstructorSideBar';
+import { User } from '@/types/User';
+interface Props {
+    readonly user: User;
+}
 
-const Sidebar = () => {
+export default async function Sidebar({ user }: Props) {
+    console.log('socialLinks', user.socialLinks);
+
     return (
         <InstructorSidebar
-            address={'PO Box 16122 Collins Street West'}
-            email={'info@upskill.com'}
-            phoneNumber={'0362028005'}
-            web="www.alitfn.com"
+            address={user.address}
+            email={user.email}
+            phoneNumber={user.phoneNumber}
+            socialLinks={user.socialLinks}
         />
     );
-};
-
-export default Sidebar;
+}
