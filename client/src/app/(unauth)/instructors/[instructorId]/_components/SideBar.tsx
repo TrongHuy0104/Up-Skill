@@ -5,8 +5,6 @@ interface Props {
 }
 
 export default async function Sidebar({ user }: Props) {
-    console.log('socialLinks', user.socialLinks);
-
     return (
         <InstructorSidebar
             avatar={user?.avatar?.url || '/assets/images/courses/courses-03.jpg'}

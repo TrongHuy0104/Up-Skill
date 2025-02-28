@@ -3,7 +3,7 @@ import Image from 'next/image';
 import star from '@/public/assets/icons/star-outline.svg';
 import timeTable from '@/public/assets/icons/timetable.svg';
 import student from '@/public/assets/icons/students.svg';
-import Bannerr from '@/components/ui/Banner';
+import BannerFromUI from '@/components/ui/Banner';
 import { User } from '@/types/User';
 import { cookies } from 'next/headers';
 interface Props {
@@ -11,7 +11,6 @@ interface Props {
 }
 
 export default async function Banner({ user }: Props) {
-    console.log('user,', user);
     const cookieStore = await cookies();
     const cookie = cookieStore.toString();
 
@@ -27,7 +26,7 @@ export default async function Banner({ user }: Props) {
 
     return (
         <div>
-            <Bannerr
+            <BannerFromUI
                 title={`Hi, I Am ${user.name}`}
                 breadcrumbs={[
                     { href: '/', text: 'Development' },
@@ -45,7 +44,7 @@ export default async function Banner({ user }: Props) {
                     <Image alt="Student Icon" src={student} />
                     <span className="pl-[6px] pr-6"> 229 Students</span>
                 </div>
-            </Bannerr>
+            </BannerFromUI>
         </div>
     );
 }

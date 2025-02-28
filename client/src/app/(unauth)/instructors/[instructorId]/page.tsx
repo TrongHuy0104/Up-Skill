@@ -19,7 +19,6 @@ export default async function page() {
     });
 
     const { user } = await res.json();
-    console.log('user:', user);
 
     return (
         <div className="relative">
