@@ -47,11 +47,17 @@ export default function Search() {
         setSearchValue(value);
 
         if (value) {
-            const filteredCourses = courses.filter(
-                (course) =>
+            const filteredCourses = courses.filter((course) => {
+                // Tìm người dùng tương ứng với authorId
+                const author = users.find((user) => user._id === course?.authorId?.toString());
+
+                // Kiểm tra điều kiện lọc
+                return (
                     course?.name?.toLowerCase().includes(value.toLowerCase()) ||
-                    course?.description?.toLowerCase().includes(value.toLowerCase())
-            );
+                    course?.description?.toLowerCase().includes(value.toLowerCase()) ||
+                    author?.name?.toLowerCase().includes(value.toLowerCase()) // Lọc theo tên người đăng
+                );
+            });
 
             const filteredUsers = users.filter((user) => user?.name?.toLowerCase().includes(value.toLowerCase()));
 
@@ -121,11 +127,17 @@ export default function Search() {
                                             </Link>
                                             <div>
                                                 <div className="font-medium">{course?.name}</div>
-                                                <p className="text-sm text-primary-500">
-                                                    {course?.description?.length > 50
-                                                        ? course.description.slice(0, 50) + '...'
-                                                        : course.description}
-                                                </p>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="text-sm text-black w-[110px]">
+                                                        {users.find((user) => user._id === course?.authorId?.toString())
+                                                            ?.name || 'Unknown Author'}
+                                                    </div>
+                                                    <p className="text-sm text-primary-500">
+                                                        {course?.description?.length > 50
+                                                            ? course.description.slice(0, 50) + '...'
+                                                            : course.description}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </li>
                                     ))}
