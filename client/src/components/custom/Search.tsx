@@ -105,69 +105,62 @@ export default function Search() {
             </form>
             {results.keywords.length > 0 || results.courses.length > 0 || results.users.length > 0 ? (
                 <div className="absolute z-20 w-full mt-2 bg-white border border-primary-100 rounded shadow-lg">
-                    <div className="py-2">
+                    <div className="p-2">
                         {results.keywords.length > 0 && (
-                            <div className="px-2">
-                                <ul>
-                                    {results.keywords.map((keyword) => (
-                                        <li
-                                            key={keyword}
-                                            className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
-                                        >
-                                            <Image src={searchIcon} alt="Search Icon" className="mr-6 ml-2" />{' '}
-                                            {keyword}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <ul>
+                                {results.keywords.map((keyword) => (
+                                    <li
+                                        key={keyword}
+                                        className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
+                                    >
+                                        <Image src={searchIcon} alt="Search Icon" className="mr-6 ml-2" /> {keyword}
+                                    </li>
+                                ))}
+                            </ul>
                         )}
                         {results.courses.length > 0 && (
-                            <div className="px-2">
-                                <ul>
-                                    {results.courses.map((course) => (
-                                        <li
-                                            key={course.id}
-                                            className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
-                                        >
-                                            <Image
-                                                src={course.image}
-                                                alt="Course Image"
-                                                width={40}
-                                                height={40}
-                                                className="rounded mr-2"
-                                            />
-                                            <div>
-                                                <div className="font-medium">{course.title}</div>
-                                                <div className="text-sm text-primary-500">{course.description}</div>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <ul>
+                                {results.courses.map((course) => (
+                                    <li
+                                        key={course.id}
+                                        className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
+                                    >
+                                        <Image
+                                            src={course.image}
+                                            alt="Course Image"
+                                            width={40}
+                                            height={40}
+                                            className="rounded mr-2"
+                                        />
+                                        <div>
+                                            <div className="font-medium">{course.title}</div>
+                                            <div className="text-sm text-primary-500">{course.description}</div>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         )}
                         {results.users.length > 0 && (
-                            <div className="px-2">
-                                <ul>
-                                    {results.users.map((user) => (
-                                        <li
-                                            key={user.id}
-                                            className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
-                                        >
-                                            <Image
-                                                src={user.avatar}
-                                                alt="User Avatar"
-                                                width={40}
-                                                height={40}
-                                                className="rounded-full mr-2"
-                                            />
-                                            <div>
-                                                <div className="font-medium">{user.name}</div>
-                                                <div className="text-sm text-primary-500">{user.role}</div>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <ul>
+                                {results.users.map((user) => (
+                                    <li
+                                        key={user.id}
+                                        className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
+                                    >
+                                        <Image
+                                            src={user.avatar}
+                                            alt="User Avatar"
+                                            width={40}
+                                            height={40}
+                                            className="rounded-full mr-2"
+                                        />
+                                        <div>
+                                            <div className="font-medium">{user.name}</div>
+                                            <div className="text-sm text-primary-500">{user.role}</div>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
                         )}
                     </div>
                 </div>
