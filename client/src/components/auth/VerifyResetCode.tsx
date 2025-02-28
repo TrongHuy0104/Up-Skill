@@ -63,7 +63,6 @@ export default function VerifyResetCode({ handleDialogChange }: Props) {
     });
     const verificationHandler = async () => {
         const verificationNumber = Object.values(verifyNumber).join('');
-        console.log('Sending Token:', token);
         if (verificationNumber.length !== 4) {
             setInvalidError(true);
             return;

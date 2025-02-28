@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HiArrowLeft, HiArrowRight } from 'react-icons/hi';
 import { IoStarSharp, IoStarOutline } from 'react-icons/io5';
 import Image from 'next/image';
+import { format } from 'date-fns';
+import { FaRegMessage } from 'react-icons/fa6';
 
 import CoursePlayer from '@/app/(auth)/dashboard/instructor/create-course/_components/CoursePlayer';
 import { Button } from '@/components/ui/Button';
@@ -9,25 +11,96 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import CoursesDetailInfo from '../../_components/CoursesDetailInfo';
 import Avatar from '@/components/ui/Avatar';
 import arrowRightIcon from '@/public/assets/icons/arrow-right.svg';
+import { toast } from '@/hooks/use-toast';
+import { useAddAnswerInQuestionMutation, useAddNewQuestionMutation } from '@/lib/redux/features/course/courseApi';
+import SpinnerMini from '@/components/custom/SpinnerMini';
 
 type Props = {
     readonly course: any;
     readonly user: any;
     readonly activeVideo: number;
     setActiveVideo(value: number): void;
+    refetch: any;
 };
 
-function CourseContentMedia({ course, user, activeVideo, setActiveVideo }: Props) {
+function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch }: Props) {
     const content = course?.courseData;
     const [question, setQuestion] = useState('');
+    const [answer, setAnswer] = useState('');
+    const [questionId, setQuestionId] = useState('');
     const [review, setReview] = useState('');
     const [rating, setRating] = useState(0);
+
+    const [addNewQuestion, { isSuccess, error, isLoading: isCreateQuestionLoading }] = useAddNewQuestionMutation();
+    const [addAnswerInQuestion, { isSuccess: isAnswerSuccess, error: answerError, isLoading: isAddAnswerLoading }] =
+        useAddAnswerInQuestionMutation();
 
     const isReviewExists = content?.reviews?.find((item: any) => item.user._id === user._id);
 
     const onSubmitQuestion = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
+
+        if (question.trim().length === 0) {
+            toast({
+                variant: 'destructive',
+                title: 'Question can not be empty.'
+            });
+        } else {
+            addNewQuestion({ question, contentId: content?.[activeVideo]._id, courseId: course?._id });
+        }
     };
+
+    useEffect(() => {
+        if (isSuccess) {
+            setQuestion('');
+            refetch();
+            toast({
+                variant: 'success',
+                title: 'Question create successfully.'
+            });
+        }
+        if (isAnswerSuccess) {
+            setAnswer('');
+            refetch();
+            toast({
+                variant: 'success',
+                title: 'Question reply create successfully.'
+            });
+        }
+        if (error) {
+            if ('data' in error) {
+                const errorMessage = error as any;
+                toast({
+                    variant: 'destructive',
+                    title: errorMessage.data.message
+                });
+            }
+        }
+        if (answerError) {
+            if ('data' in answerError) {
+                const errorMessage = answerError as any;
+                toast({
+                    variant: 'destructive',
+                    title: errorMessage.data.message
+                });
+            }
+        }
+    }, [isSuccess, error, refetch, answerError, isAnswerSuccess]);
+
+    const handleAnswerSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        if (answer.trim().length === 0) {
+            setAnswer('');
+            toast({
+                variant: 'destructive',
+                title: 'Question reply can not be empty.'
+            });
+        } else {
+            addAnswerInQuestion({ answer, questionId, contentId: content?.[activeVideo]._id, courseId: course?._id });
+        }
+    };
+
     const onSubmitReview = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
     };
@@ -49,7 +122,6 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo }: Props
                     className={content && content.length - 1 === activeVideo ? '!cursor-no-drop opacity-80' : ''}
                     onClick={() => {
                         setActiveVideo(activeVideo === content.length - 1 ? 0 : activeVideo + 1);
-                        console.log(activeVideo);
                     }}
                 >
                     Next Lesson
@@ -100,11 +172,29 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo }: Props
                             ></textarea>
                             <button
                                 onClick={onSubmitQuestion}
+                                disabled={isCreateQuestionLoading}
                                 className="absolute flex items-center justify-center h-[50px] w-[50px] cursor-pointer top-[23%] right-[2%] rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all duration-300 hover:scale-110"
                             >
-                                <Image src={arrowRightIcon} alt="arrow right icon" />
+                                {isCreateQuestionLoading ? (
+                                    <SpinnerMini />
+                                ) : (
+                                    <Image src={arrowRightIcon} alt="arrow right icon" />
+                                )}
                             </button>
                         </form>
+                        <br />
+                        <br />
+                    </div>
+                    <div>
+                        <CommentReply
+                            content={content}
+                            activeVideo={activeVideo}
+                            answer={answer}
+                            setAnswer={setAnswer}
+                            handleAnswerSubmit={handleAnswerSubmit}
+                            setQuestionId={setQuestionId}
+                            isAddAnswerLoading={isAddAnswerLoading}
+                        />
                     </div>
                 </TabsContent>
                 <TabsContent value="reviews">
@@ -166,3 +256,102 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo }: Props
 }
 
 export default CourseContentMedia;
+
+const CommentReply = ({
+    content,
+    activeVideo,
+    answer,
+    setAnswer,
+    handleAnswerSubmit,
+    setQuestionId,
+    isAddAnswerLoading
+}: any) => {
+    return (
+        <div className="w-full my-3">
+            {content[activeVideo].questions.map((item: any, index: number) => (
+                <CommentItem
+                    key={index + item?._id}
+                    item={item}
+                    answer={answer}
+                    setAnswer={setAnswer}
+                    setQuestionId={setQuestionId}
+                    handleAnswerSubmit={handleAnswerSubmit}
+                    isAddAnswerLoading={isAddAnswerLoading}
+                />
+            ))}
+        </div>
+    );
+};
+
+const CommentItem = ({ item, answer, setAnswer, handleAnswerSubmit, setQuestionId, isAddAnswerLoading }: any) => {
+    const [replyActive, setReplyActive] = useState(false);
+    return (
+        <div className="my-4">
+            <div className="flex mb-2">
+                <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                <div className="w-full">
+                    <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                    <p className="pl-3">{item?.question}</p>
+                    <small className="pl-3 text-primary-500">
+                        {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                    </small>
+                </div>
+            </div>
+            <div className="w-full flex">
+                <button
+                    className="md:pl-[60px] cursor-pointer mr-2"
+                    onClick={() => {
+                        setReplyActive(!replyActive);
+                        setQuestionId(item?._id);
+                    }}
+                >
+                    {!replyActive
+                        ? item?.questionReplies.length !== 0
+                            ? 'All replies'
+                            : 'Add a reply'
+                        : 'Hide replies'}
+                </button>
+                <FaRegMessage size={18} className="cursor-pointer relative top-[1px]" />
+                <span className="pl-1 cursor-pointer">{item?.questionReplies.length}</span>
+            </div>
+
+            {replyActive && (
+                <>
+                    {item?.questionReplies.map((item: any, index: number) => (
+                        <div key={item?._id + index} className="w-full md:ml-16 flex my-5">
+                            <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                            <div className="w-full">
+                                <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                <p className="pl-3">{item?.answer}</p>
+                                <small className="pl-3 text-primary-500">
+                                    {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                </small>
+                            </div>
+                        </div>
+                    ))}
+                    <div className="w-full flex relative">
+                        <input
+                            type="text"
+                            placeholder="Enter your answer..."
+                            value={answer}
+                            onChange={(e) => setAnswer(e.target.value)}
+                            className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
+                        />
+                        <button
+                            onClick={handleAnswerSubmit}
+                            className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
+                            cursor-pointer rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all duration-300 hover:scale-110"
+                            disabled={isAddAnswerLoading}
+                        >
+                            {isAddAnswerLoading ? (
+                                <SpinnerMini />
+                            ) : (
+                                <Image src={arrowRightIcon} alt="arrow right icon" />
+                            )}
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+};
