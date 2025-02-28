@@ -5,6 +5,7 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
 interface InstructorSidebarProps {
+    avatar: string;
     address: string;
     email: string;
     phoneNumber: string;
@@ -16,18 +17,12 @@ interface InstructorSidebarProps {
     };
 }
 
-const InstructorSidebar: React.FC<InstructorSidebarProps> = ({ address, email, phoneNumber, socialLinks }) => {
+const InstructorSidebar: React.FC<InstructorSidebarProps> = ({ avatar, address, email, phoneNumber, socialLinks }) => {
     const { facebook, twitter, instagram, linkedIn } = socialLinks;
     return (
         <div className="w-[400px] rounded-2xl bg-primary-50 border p-4">
             <div className="relative w-full h-[360px] flex justify-center items-center">
-                <Image
-                    src="/assets/images/instructors/instructors-03.jpg"
-                    alt="Instructor Thumbnail"
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-lg"
-                />
+                <Image src={avatar} alt="Instructor Thumbnail" layout="fill" objectFit="cover" className="rounded-lg" />
             </div>
             <div className="px-5 py-8 border-b">
                 <div className="flex justify-between items-center mb-[25px]">

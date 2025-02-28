@@ -9,6 +9,7 @@ export default async function Sidebar({ user }: Props) {
 
     return (
         <InstructorSidebar
+            avatar={user?.avatar?.url || '/assets/images/courses/courses-03.jpg'}
             address={user.address}
             email={user.email}
             phoneNumber={user.phoneNumber}
