@@ -23,3 +23,32 @@ export interface Course {
     courseData?: any[];
     updatedAt: string;
 }
+
+//filter data
+export interface SubCategory {
+    label: string;
+    count: number;
+}
+
+export interface Category {
+    label: string;
+    count: number;
+    subCategories: SubCategory[];
+}
+
+export interface FilterData {
+    title: string;
+    data: { label: string; count: number }[];
+}
+
+export interface FilterResponse {
+    categories: {
+        title: string;
+        data: Category[];
+    };
+    authors: FilterData;
+    levels: FilterData;
+    ratings: FilterData;
+    price: FilterData;
+    languages: FilterData;
+}

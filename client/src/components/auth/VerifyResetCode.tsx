@@ -63,7 +63,6 @@ export default function VerifyResetCode({ handleDialogChange }: Props) {
     });
     const verificationHandler = async () => {
         const verificationNumber = Object.values(verifyNumber).join('');
-        console.log('Sending Token:', token);
         if (verificationNumber.length !== 4) {
             setInvalidError(true);
             return;
@@ -124,12 +123,12 @@ export default function VerifyResetCode({ handleDialogChange }: Props) {
             <br />
             <h5 className="text-center pt-4 text-sm text-primary-800 font-medium leading-7">
                 Go back to sign in?
-                <span
+                <button
                     onClick={() => handleDialogChange('login')}
                     className="font-medium leading-7 text-accent-900 cursor-pointer"
                 >
                     {' ' + 'Sign in'}
-                </span>
+                </button>
             </h5>
         </div>
     );

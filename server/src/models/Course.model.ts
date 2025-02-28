@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IComment, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
+import { IComment, ICommentReply, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
 
 const ReviewSchema = new Schema<IReview>({
     user: Object,
@@ -16,11 +16,22 @@ const LinkSchema = new Schema<ILink>({
     url: String
 });
 
-const CommentSchema = new Schema<IComment>({
-    user: Object,
-    question: String,
-    questionReplies: [Object]
-});
+const CommentReplySchema = new Schema<ICommentReply>(
+    {
+        user: Object,
+        answer: String
+    },
+    { timestamps: true }
+);
+
+const CommentSchema = new Schema<IComment>(
+    {
+        user: Object,
+        question: String,
+        questionReplies: [CommentReplySchema]
+    },
+    { timestamps: true }
+);
 
 const CourseDataSchema = new Schema<ICourseData>({
     title: String,
