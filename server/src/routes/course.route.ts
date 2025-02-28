@@ -10,11 +10,13 @@ import {
     generateVideoUrl,
     getAllCourses,
     getAllCoursesWithoutPurchase,
+    getCoursesLimitWithPagination,
     getPurchasedCourseByUser,
     getSingleCourse,
     getTopCourses,
     updateCourse,
-    uploadCourse
+    uploadCourse,
+    getCourseStatistics
 } from '@/controllers/course.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
@@ -23,6 +25,10 @@ const router = express.Router();
 router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
 router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
+
+router.get('/pagination', getCoursesLimitWithPagination);
+
+router.get('/count', getCourseStatistics);
 
 router.get('/top-courses', getTopCourses);
 
