@@ -29,6 +29,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     const [stripePromise, setStripePromise] = useState<any>(null);
 
     const createPayment = async () => {
+        if (!user) redirect('/');
         const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
         setStripePromise(stripe);
         const amount = Math.round(course.price * 100);
