@@ -56,7 +56,7 @@ export default function Search() {
             const filteredUsers = users.filter((user) => user?.name?.toLowerCase().includes(value.toLowerCase()));
 
             setResults({ courses: filteredCourses, users: filteredUsers });
-            setShowResults(true); // ✅ Hiện modal khi có kết quả
+            setShowResults(true);
         } else {
             setResults({ courses: [], users: [] });
             setShowResults(false);
@@ -64,12 +64,12 @@ export default function Search() {
     };
 
     const handleSelectResult = () => {
-        setShowResults(false); // ✅ Ẩn modal khi click vào kết quả
+        setShowResults(false);
     };
 
     const handleClickOutside = (event: MouseEvent) => {
         if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-            setShowResults(false); // ✅ Ẩn modal khi click ra ngoài
+            setShowResults(false);
         }
     };
 
@@ -108,7 +108,7 @@ export default function Search() {
                                         <li
                                             key={course?._id}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
-                                            onClick={handleSelectResult} // ✅ Click vào là đóng modal
+                                            onClick={handleSelectResult}
                                         >
                                             <Link href={`/courses/${course?._id}`}>
                                                 <Image
@@ -139,7 +139,7 @@ export default function Search() {
                                         <li
                                             key={user._id}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
-                                            onClick={handleSelectResult} // ✅ Click vào là đóng modal
+                                            onClick={handleSelectResult}
                                         >
                                             <Link href={`/instructors/${user?._id}`}>
                                                 <Image
