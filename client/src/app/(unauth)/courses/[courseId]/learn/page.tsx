@@ -3,8 +3,6 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import CourseContent from './_components/CourseContent';
 
-export const revalidate = 0;
-
 export default async function Page({ params }: any) {
     const { courseId } = await params;
 
