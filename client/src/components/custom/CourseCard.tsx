@@ -205,8 +205,10 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                         {course?.name}
                     </Link>
                 </h6>
-                <p className="mb-[10px] text-sm leading-7 max-w-[80%]">
-                    {course?.description?.length > 100 ? course.description.slice(0, 100) + '...' : course.description}
+                <p className="mb-[10px] text-sm leading-7 max-w-[80%] break-all">
+                    {course?.description
+                        ? course.description.slice(0, 100) + (course.description.length > 100 ? '...' : '')
+                        : ''}
                 </p>
                 <div className="mb-[8px] flex items-center gap-[7px]">
                     <span>{course.rating}</span>
