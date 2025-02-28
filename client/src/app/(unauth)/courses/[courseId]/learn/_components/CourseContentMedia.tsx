@@ -298,7 +298,7 @@ const CommentItem = ({ item, answer, setAnswer, handleAnswerSubmit, setQuestionI
                 </div>
             </div>
             <div className="w-full flex">
-                <span
+                <button
                     className="md:pl-[60px] cursor-pointer mr-2"
                     onClick={() => {
                         setReplyActive(!replyActive);
@@ -310,7 +310,7 @@ const CommentItem = ({ item, answer, setAnswer, handleAnswerSubmit, setQuestionI
                             ? 'All replies'
                             : 'Add a reply'
                         : 'Hide replies'}
-                </span>
+                </button>
                 <FaRegMessage size={18} className="cursor-pointer relative top-[1px]" />
                 <span className="pl-1 cursor-pointer">{item?.questionReplies.length}</span>
             </div>
