@@ -538,3 +538,13 @@ export const getTopInstructors = catchAsync(async (req: Request, res: Response, 
         topInstructors
     });
 });
+
+export const getAllInstructor = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const instructors = await UserModel.find({ role: 'instructor' }).select('-password -email -createdAt -updatedAt');
+    redis.set(`allInstructors ${req.user?._id}`, JSON.stringify(instructors));
+
+    res.status(200).json({
+        success: true,
+        instructors
+    });
+});

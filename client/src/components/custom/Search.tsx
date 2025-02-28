@@ -115,7 +115,6 @@ export default function Search() {
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
                                         >
                                             <Image src={searchIcon} alt="Search Icon" className="mr-6 ml-2" />{' '}
-                                            {/* Biểu tượng tìm kiếm */}
                                             {keyword}
                                         </li>
                                     ))}
