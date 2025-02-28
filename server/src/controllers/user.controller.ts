@@ -7,16 +7,19 @@ import UserModel from '@/models/User.model';
 import { catchAsync } from '@/utils/catchAsync';
 import ErrorHandler from '@/utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
+
 import path from 'path';
 import sendMail from '@/utils/sendMail';
 import { UserT } from '@/interfaces/User';
 import { accessTokenOptions, refreshTokenOptions, sendToken } from '@/utils/jwt';
 import { redis } from '@/utils/redis';
 import {
-    getAllUsersService,
     getUserById,
     getUserUploadedCoursesCount,
-    updateUserRoleService
+    getAllUsersService,
+    getInstructorsWithSortService,
+    updateUserRoleService,
+    getAllInstructorsService
 } from '@/services/user.service';
 
 dotenv.config();
@@ -75,6 +78,29 @@ interface IUpdatePassword {
 interface IProfilePicture {
     avatar: string;
 }
+
+export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+
+    if (!userId) {
+        return next(new ErrorHandler('Please provide a user ID', 400));
+    }
+
+    const user = await UserModel.findById(userId)
+        .populate('uploadedCourses') // Populate uploadedCourses
+        .lean();
+
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        data: {
+            user
+        }
+    });
+});
 
 export const updateUserSocialLinks = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { data } = req.body; // Đảm bảo rằng bạn nhận được đúng đối tượng `socialLinks`
@@ -608,4 +634,11 @@ export const getTopInstructors = catchAsync(async (req: Request, res: Response, 
         success: true,
         topInstructors
     });
+});
+export const getAllInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    getAllInstructorsService(res);
+});
+
+export const getInstructorsWithSort = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    getInstructorsWithSortService(req, res);
 });

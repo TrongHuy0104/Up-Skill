@@ -1,8 +1,10 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import {
     activateUser,
     deleteUser,
+    getAllInstructors,
     getAllUsers,
+    getInstructorsWithSort,
     getUserInfo,
     loginUser,
     logoutUser,
@@ -19,7 +21,7 @@ import {
     refreshToken,
     updateUserSocialLinks,
     getUploadedCoursesCount,
-    getTopInstructors
+    getUser
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -58,9 +60,13 @@ router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialL
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
-router.get('/top-instructors', getTopInstructors);
+router.get('/get-instructors', getAllInstructors);
 
-router.put('/update-role', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateUserRole);
+router.get('/:id', getUser);
+
+router.get('/get-instructors-with-sort', getInstructorsWithSort as RequestHandler);
+
+router.put('/update-role', isAuthenticated, authorizeRoles('admin'), updateUserRole);
 
 router.delete('/delete-user:id', isAuthenticated, authorizeRoles('admin'), deleteUser);
 

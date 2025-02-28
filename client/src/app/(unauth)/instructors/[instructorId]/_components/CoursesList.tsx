@@ -3,6 +3,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import CourseVerticalCard from '@/components/custom/CourseCard';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import { VerticalCardSkeleton } from '@/components/ui/Skeleton';
+import { User } from '@/types/User';
 
 // Move TopCoursesContent outside CoursesList
 function TopCoursesContent({
@@ -44,15 +45,17 @@ function TopCoursesContent({
         </Carousel>
     );
 }
-
-export default function CoursesList() {
+interface Props {
+    readonly user: User;
+}
+export default function CoursesList({ user }: Props) {
     const [topCourses, setTopCourses] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchTopCourses = async () => {
             try {
-                const res = await fetch('http://localhost:8000/api/courses/all-courses/me', {
+                const res = await fetch(`http://localhost:8000/api/courses/all-courses/${user._id}`, {
                     method: 'GET',
                     credentials: 'include'
                 });

@@ -6,19 +6,22 @@ import Review from './_components/Review';
 import Sidebar from './_components/SideBar';
 import { cookies } from 'next/headers';
 
-export default async function page() {
+export default async function page({ params }: any) {
+    const { instructorId } = await params;
     const cookieStore = await cookies();
     const cookie = cookieStore.toString();
 
     // Gửi request lấy thông tin user
-    const res = await fetch(`http://localhost:8000/api/user/me`, {
+    const res = await fetch(`http://localhost:8000/api/user/${instructorId}`, {
         credentials: 'include',
         headers: {
             Cookie: cookie // Pass the cookies in the headers
         }
     });
 
-    const { user } = await res.json();
+    const responseData = await res.json();
+
+    const { user } = responseData.data;
 
     return (
         <div className="relative">
@@ -31,7 +34,7 @@ export default async function page() {
                         <InstructorInfo user={user} />
                         <CoursesDetailLine />
                         {/* Truyền mảng courses vào CoursesList */}
-                        <CoursesList />
+                        <CoursesList user={user} />
                         <CoursesDetailLine />
                         <Review />
                     </div>

@@ -43,7 +43,7 @@ export const UserSchema: Schema<UserT> = new Schema(
             type: String,
             trim: true,
             lowercase: true,
-            enum: ['user', 'instructor', 'admin'],
+            enum: ['user', 'admin', 'instructor'],
             default: 'user'
         },
         avatar: {

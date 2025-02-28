@@ -11,6 +11,8 @@ interface Props {
 }
 
 export default async function Banner({ user }: Props) {
+    console.log('u', user);
+
     const cookieStore = await cookies();
     const cookie = cookieStore.toString();
 
