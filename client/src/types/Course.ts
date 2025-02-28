@@ -4,7 +4,7 @@ export interface Course {
     _id?: string;
     name: string;
     subTitle: string;
-    description?: string;
+    description: string;
     price: number;
     estimatedPrice?: number;
     thumbnail?: any;
