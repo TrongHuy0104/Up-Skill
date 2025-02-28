@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IComment, ICommentReply, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
+import { IComment, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
 
 const ReviewSchema = new Schema<IReview>({
     user: Object,
@@ -16,22 +16,11 @@ const LinkSchema = new Schema<ILink>({
     url: String
 });
 
-const CommentReplySchema = new Schema<ICommentReply>(
-    {
-        user: Object,
-        answer: String
-    },
-    { timestamps: true }
-);
-
-const CommentSchema = new Schema<IComment>(
-    {
-        user: Object,
-        question: String,
-        questionReplies: [CommentReplySchema]
-    },
-    { timestamps: true }
-);
+const CommentSchema = new Schema<IComment>({
+    user: Object,
+    question: String,
+    questionReplies: [Object]
+});
 
 const CourseDataSchema = new Schema<ICourseData>({
     title: String,
@@ -42,7 +31,13 @@ const CourseDataSchema = new Schema<ICourseData>({
     videoLength: Number,
     links: [LinkSchema],
     suggestion: String,
-    questions: [CommentSchema]
+    questions: [CommentSchema],
+    quizzes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Quiz'
+        }
+    ]
 });
 
 const CourseSchema = new Schema<ICourse>(
@@ -56,7 +51,6 @@ const CourseSchema = new Schema<ICourse>(
         },
         description: {
             type: String
-            // required: true
         },
         authorId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -65,7 +59,6 @@ const CourseSchema = new Schema<ICourse>(
         },
         price: {
             type: Number
-            // required: true
         },
         estimatedPrice: {
             type: Number
@@ -80,7 +73,6 @@ const CourseSchema = new Schema<ICourse>(
         },
         tags: {
             type: String
-            // required: true
         },
         level: {
             type: mongoose.Schema.Types.ObjectId,
@@ -88,7 +80,6 @@ const CourseSchema = new Schema<ICourse>(
         },
         demoUrl: {
             type: String
-            // required: true
         },
         benefits: [{ title: String }],
         prerequisites: [{ title: String }],

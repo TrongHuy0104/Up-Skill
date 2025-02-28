@@ -34,6 +34,7 @@ export interface ICourseData extends Document {
     links: ILink[];
     suggestion: string;
     questions: IComment[];
+    quizzes: object[];
 }
 
 export interface ICourse extends Document {

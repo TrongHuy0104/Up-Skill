@@ -6,6 +6,7 @@ import notificationRoutes from '@/routes/notification.route';
 import layoutRoutes from '@/routes/layout.route';
 import categoryRoutes from '@/routes/category.route';
 import levelRoutes from '@/routes/level.route';
+import quizRoutes from '@/routes/quiz.route';
 
 const router = express.Router();
 
@@ -22,5 +23,7 @@ router.use('/layout', layoutRoutes);
 router.use('/level', levelRoutes);
 
 router.use('/category', categoryRoutes);
+
+router.use('/quizzes', quizRoutes);
 
 export default router;
