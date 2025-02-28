@@ -37,3 +37,10 @@ export const VerticalCardSkeleton = () => {
         </div>
     );
 };
+export function CourseSideBarSkeleton() {
+    return (
+        <div className="flex items-center space-x-4">
+            <Skeleton className="h-[700px] w-[400px] rounded" />
+        </div>
+    );
+}

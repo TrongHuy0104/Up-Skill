@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import CoursePlayer from '@/app/(auth)/dashboard/instructor/create-course/_components/CoursePlayer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
@@ -16,6 +16,8 @@ import { computeSalePercent } from '@/lib/utils';
 import { Course } from '@/types/Course';
 import { useCreatePaymentIntentMutation } from '@/lib/redux/features/order/orderApi';
 import { orderCreatePaymentIntent } from '@/lib/redux/features/order/orderSlice';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
+import { CourseSideBarSkeleton } from '@/components/ui/Skeleton';
 
 interface CourseSidebarProps {
     course: Course;
@@ -24,7 +26,11 @@ interface CourseSidebarProps {
 const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     const dispatch = useDispatch();
     const [createPaymentIntent, { data: paymentIntentData, isLoading }] = useCreatePaymentIntentMutation();
-    const { user } = useSelector((state: any) => state.auth);
+    const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
+    const [user, setUser] = useState<any>({});
+    useEffect(() => {
+        setUser(userData?.user);
+    }, [isLoadingUser, userData?.user]);
 
     const [stripePromise, setStripePromise] = useState<any>(null);
 
@@ -39,7 +45,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
 
     const checkCourseExist = () => {
         if (user) {
-            return user.purchasedCourses.find((purchasedCourse: any) => purchasedCourse === course._id);
+            return user?.purchasedCourses?.find((purchasedCourse: any) => purchasedCourse === course._id);
         }
         return false;
     };
@@ -49,6 +55,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             redirect(`/checkout/${paymentIntentData?.client_secret}`);
         }
     }, [paymentIntentData, stripePromise, isLoading]);
+    if (isLoadingUser) return <CourseSideBarSkeleton />;
     return (
         <div className="w-[400px] rounded-2xl shadow-lg bg-primary-50 border">
             <div className="relative w-full h-[260px] flex justify-center items-center">
