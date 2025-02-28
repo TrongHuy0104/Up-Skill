@@ -104,7 +104,6 @@ export const updateUserSocialLinks = catchAsync(async (req: Request, res: Respon
     const { data } = req.body; // Đảm bảo rằng bạn nhận được đúng đối tượng `socialLinks`
     const userId = req.user?._id as RedisKey;
     const user = await UserModel.findById(userId);
-    console.log('data', data);
 
     if (!user) {
         return next(new ErrorHandler('User not found', 404));
@@ -115,8 +114,6 @@ export const updateUserSocialLinks = catchAsync(async (req: Request, res: Respon
     if (data.twitter) user.socialLinks.twitter = data.twitter;
     if (data.linkedin) user.socialLinks.linkedin = data.linkedin;
     if (data.instagram) user.socialLinks.instagram = data.instagram;
-
-    console.log('user', user);
 
     // Lưu thông tin vào database
     await user.save();
