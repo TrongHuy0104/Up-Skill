@@ -18,7 +18,8 @@ import {
     resetPassword,
     refreshToken,
     updateUserSocialLinks,
-    getUploadedCoursesCount
+    getUploadedCoursesCount,
+    getTopInstructors
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -56,6 +57,8 @@ router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePi
 router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialLinks);
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
+
+router.get('/top-instructors', getTopInstructors);
 
 router.put('/update-role', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateUserRole);
 

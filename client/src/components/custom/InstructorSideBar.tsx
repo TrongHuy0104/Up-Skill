@@ -6,23 +6,29 @@ import { FaXTwitter } from 'react-icons/fa6';
 
 interface InstructorSidebarProps {
     avatar: string;
-    address: string;
+    address?: string;
     email: string;
-    phoneNumber: string;
+    phoneNumber?: string;
     socialLinks: {
-        twitter: string;
-        facebook: string;
-        instagram: string;
-        linkedIn: string;
+        twitter?: string;
+        facebook?: string;
+        instagram?: string;
+        linkedIn?: string;
     };
 }
 
 const InstructorSidebar: React.FC<InstructorSidebarProps> = ({ avatar, address, email, phoneNumber, socialLinks }) => {
-    const { facebook, twitter, instagram, linkedIn } = socialLinks;
     return (
         <div className="w-[400px] rounded-2xl bg-primary-50 border p-4">
             <div className="relative w-full h-[360px] flex justify-center items-center">
-                <Image src={avatar} alt="Instructor Thumbnail" layout="fill" objectFit="cover" className="rounded-lg" />
+                <Image
+                    src={avatar}
+                    alt="Instructor Thumbnail"
+                    quality={100}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                />
             </div>
             <div className="px-5 py-8 border-b">
                 <div className="flex justify-between items-center mb-[25px]">
@@ -47,25 +53,25 @@ const InstructorSidebar: React.FC<InstructorSidebarProps> = ({ avatar, address, 
                 <p className="text-[16px] font-medium text-primary-800">Follow me</p>
                 <div className="flex justify-center gap-4 mt-4 mb-4">
                     <a
-                        href={facebook}
+                        href={socialLinks?.facebook || '#!'}
                         className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-#E27447] text-sm"
                     >
                         <FaFacebookF />
                     </a>
                     <a
-                        href={twitter}
+                        href={socialLinks?.twitter || '#!'}
                         className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-#E27447] text-sm"
                     >
                         <FaXTwitter />
                     </a>
                     <a
-                        href={instagram}
+                        href={socialLinks?.instagram || '#!'}
                         className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-#E27447] text-sm"
                     >
                         <FaInstagram />
                     </a>
                     <a
-                        href={linkedIn}
+                        href={socialLinks?.linkedIn || '#!'}
                         className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-#E27447] text-sm"
                     >
                         <FaLinkedinIn />

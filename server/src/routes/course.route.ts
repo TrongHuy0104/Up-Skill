@@ -10,12 +10,14 @@ import {
     generateVideoUrl,
     getAllCourses,
     getAllCoursesWithoutPurchase,
+    getCoursesLimitWithPagination,
     getPurchasedCourseByUser,
     getSingleCourse,
     getTopCourses,
     getTopRatedCoursesController,
     updateCourse,
-    uploadCourse
+    uploadCourse,
+    getCourseStatistics
 } from '@/controllers/course.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
@@ -27,21 +29,27 @@ router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCours
 
 router.get('/top-courses', getTopCourses);
 
-router.get('/all-courses-by-mysefl', updateAccessToken, isAuthenticated, getTopRatedCoursesController);
+router.get('/all-courses/me', updateAccessToken, isAuthenticated, getTopRatedCoursesController);
+
+router.get('/pagination', getCoursesLimitWithPagination);
+
+router.get('/count', getCourseStatistics);
+
+router.get('/top-courses', getTopCourses);
 
 router.get('/:id', getSingleCourse);
 
 router.get('/', getAllCoursesWithoutPurchase);
 
-router.get('/purchased/:id', isAuthenticated, getPurchasedCourseByUser);
+router.get('/purchased/:id', updateAccessToken, isAuthenticated, getPurchasedCourseByUser);
 
-router.put('/add-question', isAuthenticated, addQuestion);
+router.put('/add-question', updateAccessToken, isAuthenticated, addQuestion);
 
-router.put('/add-answer', isAuthenticated, addAnswer);
+router.put('/add-answer', updateAccessToken, isAuthenticated, addAnswer);
 
-router.put('/add-review/:id', isAuthenticated, addReview);
+router.put('/add-review/:id', updateAccessToken, isAuthenticated, addReview);
 
-router.put('/add-reply/:id', isAuthenticated, addReplyToReview);
+router.put('/add-reply/:id', updateAccessToken, isAuthenticated, addReplyToReview);
 
 router.get('/top-courses', getTopCourses);
 

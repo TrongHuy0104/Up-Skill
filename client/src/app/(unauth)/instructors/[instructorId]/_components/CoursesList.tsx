@@ -1,6 +1,5 @@
 'use client';
 import React, { Suspense, useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique key generation
 import CourseVerticalCard from '@/components/custom/CourseCard';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import { VerticalCardSkeleton } from '@/components/ui/Skeleton';
@@ -17,8 +16,8 @@ function TopCoursesContent({
         return (
             <Carousel className="w-full">
                 <CarouselContent className="-ml-1">
-                    {[...Array(5)].map(() => (
-                        <CarouselItem key={uuidv4()} className={`md:basis-1/2 lg:basis-1/3`}>
+                    {[...Array(5)].map((i, index) => (
+                        <CarouselItem key={i + index} className={`md:basis-1/2 lg:basis-1/3`}>
                             <div className="p-1">
                                 <VerticalCardSkeleton />
                             </div>
@@ -53,7 +52,7 @@ export default function CoursesList() {
     useEffect(() => {
         const fetchTopCourses = async () => {
             try {
-                const res = await fetch('http://localhost:8000/api/courses/all-courses-by-mysefl', {
+                const res = await fetch('http://localhost:8000/api/courses/all-courses/me', {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -78,8 +77,8 @@ export default function CoursesList() {
         <div className="mb-[61px] w-[900px]">
             <h2 className="text-2xl font-bold mb-4 font-cardo">More Courses</h2>
             <Suspense
-                fallback={[...Array(5)].map(() => (
-                    <CarouselItem key={uuidv4()} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
+                fallback={[...Array(5)].map((i, index) => (
+                    <CarouselItem key={i + index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                         <div className="p-1">
                             <VerticalCardSkeleton />
                         </div>
