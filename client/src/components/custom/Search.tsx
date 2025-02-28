@@ -26,8 +26,8 @@ export default function Search() {
         const fetchData = async () => {
             try {
                 const [coursesRes, usersRes] = await Promise.all([
-                    fetch('http://localhost:8000/api/courses'),
-                    fetch('http://localhost:8000/api/user/instructor')
+                    fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses`),
+                    fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/instructor`)
                 ]);
 
                 const { courses } = await coursesRes.json();
