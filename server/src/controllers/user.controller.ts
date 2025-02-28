@@ -15,7 +15,6 @@ import { accessTokenOptions, refreshTokenOptions, sendToken } from '@/utils/jwt'
 import { redis } from '@/utils/redis';
 import {
     getUserById,
-    getUserUploadedCoursesCount,
     getAllUsersService,
     getInstructorsWithSortService,
     updateUserRoleService,
@@ -86,18 +85,17 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
         return next(new ErrorHandler('Please provide a user ID', 400));
     }
 
-    const user = await UserModel.findById(userId)
-        .populate('uploadedCourses') // Populate uploadedCourses
-        .lean();
+    const user = await UserModel.findById(userId).populate('uploadedCourses'); // Populate uploadedCourses
 
     if (!user) {
         return next(new ErrorHandler('User not found', 404));
     }
-
+    const uploadedCoursesCount = Array.isArray(user.uploadedCourses) ? user.uploadedCourses.length : 0;
     res.status(200).json({
         success: true,
         data: {
-            user
+            user,
+            uploadedCoursesCount
         }
     });
 });
@@ -554,22 +552,6 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
     res.status(200).json({
         success: true,
         message: 'Password has been reset successfully'
-    });
-});
-
-export const getUploadedCoursesCount = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?._id;
-    console.log('User ID from request:', userId);
-    if (!userId) {
-        return next(new ErrorHandler('User not authenticated', 500));
-    }
-
-    // Call the service to get the count of uploaded courses
-    const uploadedCoursesCount = await getUserUploadedCoursesCount(userId);
-
-    res.status(200).json({
-        success: true,
-        uploadedCoursesCount
     });
 });
 

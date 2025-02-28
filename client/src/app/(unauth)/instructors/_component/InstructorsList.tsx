@@ -6,11 +6,12 @@ import React, { useState, useEffect } from 'react';
 interface Instructor {
     _id: string;
     name: string;
-    avatar?: string;
+    avatar?: { url?: string };
     students: number;
     courses: number;
     rating: number;
     profession: string;
+    uploadedCoursesCount: number;
 }
 
 const InstructorList = ({ instructors = [] }: { instructors?: Instructor[] }) => {
@@ -36,7 +37,7 @@ const InstructorList = ({ instructors = [] }: { instructors?: Instructor[] }) =>
 
     return (
         <div>
-            <div className="max-w-[1400px] px-[14px] mx-auto flex flex-wrap justify-start gap-4">
+            <div className="max-w-[1400px]  mx-auto flex flex-wrap justify-start gap-6">
                 {currentInstructors.length > 0 ? (
                     currentInstructors.map((instructor) => (
                         <div key={instructor._id} className="w-[260px] flex-grow-0 flex-shrink-0">

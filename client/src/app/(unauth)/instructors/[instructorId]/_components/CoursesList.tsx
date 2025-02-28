@@ -17,8 +17,8 @@ function TopCoursesContent({
         return (
             <Carousel className="w-full">
                 <CarouselContent className="-ml-1">
-                    {[...Array(5)].map((i, index) => (
-                        <CarouselItem key={i + index} className={`md:basis-1/2 lg:basis-1/3`}>
+                    {[...Array(5)].map((_, index) => (
+                        <CarouselItem key={index} className={`md:basis-1/2 lg:basis-1/3`}>
                             <div className="p-1">
                                 <VerticalCardSkeleton />
                             </div>
@@ -26,6 +26,12 @@ function TopCoursesContent({
                     ))}
                 </CarouselContent>
             </Carousel>
+        );
+    }
+
+    if (topCourses.length === 0) {
+        return (
+            <div className="text-center text-primary-800 font-medium py-6">Instructor has no courses posted yet.</div>
         );
     }
 
@@ -80,8 +86,8 @@ export default function CoursesList({ user }: Props) {
         <div className="mb-[61px] w-[900px]">
             <h2 className="text-2xl font-bold mb-4 font-cardo">More Courses</h2>
             <Suspense
-                fallback={[...Array(5)].map((i, index) => (
-                    <CarouselItem key={i + index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
+                fallback={[...Array(5)].map((_, index) => (
+                    <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                         <div className="p-1">
                             <VerticalCardSkeleton />
                         </div>

@@ -20,7 +20,6 @@ import {
     resetPassword,
     refreshToken,
     updateUserSocialLinks,
-    getUploadedCoursesCount,
     getUser
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
@@ -51,8 +50,6 @@ router.post('/social-auth', socialAuth);
 router.put('/update-user', updateAccessToken, isAuthenticated, updateUserInfo);
 
 router.put('/update-password', updateAccessToken, isAuthenticated, updatePassword);
-
-router.get('/total-upload-courses', updateAccessToken, isAuthenticated, getUploadedCoursesCount);
 
 router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePicture);
 

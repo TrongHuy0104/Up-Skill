@@ -11,12 +11,10 @@ interface Props {
 }
 
 export default async function Banner({ user }: Props) {
-    console.log('u', user);
-
     const cookieStore = await cookies();
     const cookie = cookieStore.toString();
 
-    const res = await fetch(`http://localhost:8000/api/user/total-upload-courses`, {
+    const res = await fetch(`http://localhost:8000/api/user/total-upload-courses/${user._id}`, {
         credentials: 'include',
         headers: {
             Cookie: cookie // Pass the cookies in the headers

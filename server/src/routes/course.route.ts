@@ -29,7 +29,7 @@ router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCours
 
 router.get('/top-courses', getTopCourses);
 
-router.get('/all-courses/me', updateAccessToken, isAuthenticated, getTopRatedCoursesController);
+router.get('/all-courses/:id', updateAccessToken, isAuthenticated, getTopRatedCoursesController);
 
 router.get('/pagination', getCoursesLimitWithPagination);
 

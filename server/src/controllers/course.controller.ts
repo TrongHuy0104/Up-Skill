@@ -17,33 +17,32 @@ import SubCategoryModel from '@/models/SubCategory.model';
 import UserModel from '@/models/User.model';
 
 export const getTopRatedCoursesController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const instructorId = req.user?._id; // Get instructorId from the user information
+    const { id: instructorId } = req.params; // Lấy giá trị `id` từ req.params
 
     if (!instructorId) {
         return next(new ErrorHandler('Instructor not found', 404));
     }
 
-    // Find top-rated courses by the instructor, sorted by rating in descending order
-    const topCourses = await CourseModel.find({ instructorId })
-        .sort({ rating: -1 }) // Sort by rating in descending order
-        .limit(10) // Limit to 10 courses
-        .populate('authorId', 'name email') // Populate author details
-        .populate('category', 'name') // Populate category details
-        .lean(); // Convert to plain JavaScript objects
+    // Find top-rated courses by the specific instructor
+    const topCourses = await CourseModel.find({ authorId: instructorId }) // Lọc đúng instructor
+        .sort({ rating: -1 })
+        .limit(10)
+        .populate('authorId', 'name email')
+        .populate('category', 'name')
+        .lean();
 
     if (!topCourses || topCourses.length === 0) {
         return next(new ErrorHandler('No courses found', 404));
     }
 
-    // Map through the courses to add additional details
+    // Add lesson count and duration
     const coursesWithDetails = topCourses.map((course) => {
         const lessonsCount = course.courseData?.length || 0;
-
         const duration =
-            course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
-                return acc + (curr.videoLength ?? 0);
-            }, 0) || 0;
-
+            course.courseData?.reduce(
+                (acc: number, curr: { videoLength?: number }) => acc + (curr.videoLength ?? 0),
+                0
+            ) || 0;
         const durationInHours = (duration / 60).toFixed(1);
 
         return {
