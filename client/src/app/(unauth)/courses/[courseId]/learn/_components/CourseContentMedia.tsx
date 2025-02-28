@@ -345,74 +345,75 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
                             </div>
                         )}
                         <div className="w-full">
-                            {(course?.reviews && [...course.reviews].reverse()).map((item: any, index: number) => (
-                                <>
-                                    <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
-                                        <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                        <div className="w-full">
-                                            <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                            <div className="ml-[10px]">
-                                                <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
-                                            </div>
-                                            <p className="pl-3">{item?.comment}</p>
-                                            <small className="pl-3 text-primary-500">
-                                                {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                            </small>
-                                        </div>
-                                    </div>
-                                    {user?._id === course?.authorId && (
-                                        <div className="w-full flex">
-                                            <button
-                                                className="md:pl-[60px] cursor-pointer mr-2"
-                                                onClick={() => {
-                                                    setIsReviewReply(!isReviewReply);
-                                                    setReviewId(item._id);
-                                                }}
-                                            >
-                                                {!isReviewReply ? 'Add a reply' : 'Hide replies'}
-                                            </button>
-                                        </div>
-                                    )}
-                                    {isReviewReply && (
-                                        <>
-                                            <div className="w-full flex relative">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Enter your answer..."
-                                                    value={reviewReply}
-                                                    onChange={(e) => setReviewReply(e.target.value)}
-                                                    className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
-                                                />
-                                                <button
-                                                    onClick={handleReviewReply}
-                                                    className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
-                            cursor-pointer rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all duration-300 hover:scale-110"
-                                                    disabled={isReplyReviewLoading}
-                                                >
-                                                    {isReplyReviewLoading ? (
-                                                        <SpinnerMini />
-                                                    ) : (
-                                                        <Image src={arrowRightIcon} alt="arrow right icon" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
+                            {course?.reviews
+                                ? [...course.reviews].reverse().map((item: any, index: number) => (
+                                      <>
+                                          <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
+                                              <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                              <div className="w-full">
+                                                  <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                  <div className="ml-[10px]">
+                                                      <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
+                                                  </div>
+                                                  <p className="pl-3">{item?.comment}</p>
+                                                  <small className="pl-3 text-primary-500">
+                                                      {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                  </small>
+                                              </div>
+                                          </div>
+                                          {user?._id === course?.authorId && (
+                                              <div className="w-full flex">
+                                                  <button
+                                                      className="md:pl-[60px] cursor-pointer mr-2"
+                                                      onClick={() => {
+                                                          setIsReviewReply(!isReviewReply);
+                                                          setReviewId(item._id);
+                                                      }}
+                                                  >
+                                                      {!isReviewReply ? 'Add a reply' : 'Hide replies'}
+                                                  </button>
+                                              </div>
+                                          )}
+                                          {isReviewReply && (
+                                              <div className="w-full flex relative">
+                                                  <input
+                                                      type="text"
+                                                      placeholder="Enter your answer..."
+                                                      value={reviewReply}
+                                                      onChange={(e) => setReviewReply(e.target.value)}
+                                                      className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
+                                                  />
+                                                  <button
+                                                      onClick={handleReviewReply}
+                                                      className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
+                                                    cursor-pointer rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all 
+                                                    duration-300 hover:scale-110"
+                                                      disabled={isReplyReviewLoading}
+                                                  >
+                                                      {isReplyReviewLoading ? (
+                                                          <SpinnerMini />
+                                                      ) : (
+                                                          <Image src={arrowRightIcon} alt="arrow right icon" />
+                                                      )}
+                                                  </button>
+                                              </div>
+                                          )}
 
-                                    {item?.commentReplies.map((i: any, index: number) => (
-                                        <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
-                                            <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                            <div className="w-full">
-                                                <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                                <p className="pl-3">{i?.comment}</p>
-                                                <small className="pl-3 text-primary-500">
-                                                    {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                                </small>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </>
-                            ))}
+                                          {item?.commentReplies.map((i: any, index: number) => (
+                                              <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
+                                                  <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                                  <div className="w-full">
+                                                      <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                      <p className="pl-3">{i?.comment}</p>
+                                                      <small className="pl-3 text-primary-500">
+                                                          {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                      </small>
+                                                  </div>
+                                              </div>
+                                          ))}
+                                      </>
+                                  ))
+                                : null}
                         </div>
                     </div>
                 </TabsContent>
