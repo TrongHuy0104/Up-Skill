@@ -37,8 +37,8 @@ export default function InstructorCard({
         profession = 'Instructor', // Use role as jobTitle
         rating = 0,
         totalStudents = 0,
-        uploadedCoursesCount = instructor?.uploadedCourses?.length || 0,
-        imageUrl = instructor?.avatar?.url || img.src // Default image URL
+        uploadedCoursesCount = instructor?.uploadedCourses?.length ?? 0,
+        imageUrl = instructor?.avatar?.url ?? img.src // Default image URL
     } = instructor;
 
     return (
@@ -55,7 +55,7 @@ export default function InstructorCard({
                         <Image
                             className="object-cover transition duration-1000 group-hover:scale-125"
                             style={{ width }}
-                            src={instructor.imageUrl || imageUrl}
+                            src={instructor.imageUrl ?? imageUrl}
                             alt={name}
                             width={260} // Set appropriate width
                             height={190} // Set appropriate height
