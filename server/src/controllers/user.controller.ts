@@ -16,7 +16,6 @@ import { redis } from '@/utils/redis';
 import {
     getUserById,
     getAllUsersService,
-    getInstructorsWithSortService,
     updateUserRoleService,
     getAllInstructorsService
 } from '@/services/user.service';
@@ -619,5 +618,29 @@ export const getAllInstructors = catchAsync(async (req: Request, res: Response, 
 });
 
 export const getInstructorsWithSort = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    getInstructorsWithSortService(req, res);
+    const { type } = req.query;
+
+    if (!type || (type !== 'recent' && type !== 'oldest')) {
+        return next(new ErrorHandler('Invalid type parameter. Use "recent" or "oldest".', 400));
+    }
+
+    let users;
+
+    if (type === 'recent') {
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setUTCDate(threeDaysAgo.getUTCDate() - 3);
+
+        users = await UserModel.find({ createdAt: { $gte: threeDaysAgo }, role: 'instructor' })
+            .sort({ createdAt: -1 })
+            .limit(3);
+    } else {
+        users = await UserModel.find({ role: 'instructor' })
+            .sort({ createdAt: 1 }) // Sắp xếp tăng dần
+            .limit(10);
+    }
+
+    res.status(200).json({
+        success: true,
+        instructors: users
+    });
 });

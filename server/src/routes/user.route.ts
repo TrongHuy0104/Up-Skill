@@ -64,7 +64,7 @@ router.get('/get-instructors', getAllInstructors);
 
 router.get('/:id', getUser);
 
-router.get('/get-instructors-with-sort', getInstructorsWithSort as RequestHandler);
+router.get('/instructors/sort', getInstructorsWithSort as RequestHandler);
 
 router.put('/update-role', isAuthenticated, authorizeRoles('admin'), updateUserRole);
 

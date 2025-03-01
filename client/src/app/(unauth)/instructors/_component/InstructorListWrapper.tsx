@@ -16,11 +16,11 @@ const InstructorListWrapper = () => {
 
             if (sortType === 'bestselling') sortParam = 'bestselling';
             else if (sortType === 'oldest') sortParam = 'oldest';
-            else if (sortType === '3days') sortParam = '3days';
+            else if (sortType === 'recent') sortParam = 'recent';
 
             let apiUrl = 'http://localhost:8000/api/user/get-instructors'; // API mặc định
             if (sortParam) {
-                apiUrl = `http://localhost:8000/api/user/get-instructors-with-sort?filterType=${sortParam}`;
+                apiUrl = `http://localhost:8000/api/user/instructors/sort?type=${sortParam}`;
             }
 
             try {

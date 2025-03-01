@@ -25,7 +25,7 @@ const socialFormSchema = z.object({
 const UpdateSocial = () => {
     const { toast } = useToast();
     const [loadUser, setLoadUser] = useState(false);
-    useLoadUserQuery(undefined, { skip: loadUser ? false : true });
+    useLoadUserQuery(undefined, { skip: !loadUser });
 
     // Lấy thông tin người dùng từ Redux store
     const { user } = useSelector((state: any) => state.auth);

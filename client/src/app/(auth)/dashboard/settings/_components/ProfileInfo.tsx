@@ -28,7 +28,7 @@ const formSchema = z.object({
         .string()
         .min(1, { message: 'This field has to be filled.' })
         .max(15, { message: 'Phone number must be at most 15 digits.' })
-        .regex(/^\+?[0-9]{10,15}$/, { message: 'Phone number must contain only numbers.' })
+        .regex(/^\+?\d{10,15}$/, { message: 'Phone number must contain only numbers.' })
 });
 
 const ProfileInfo = () => {

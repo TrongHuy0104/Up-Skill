@@ -19,7 +19,7 @@ export default function Sort() {
     const sortDisplayMap: { [key: string]: string } = {
         bestselling: 'Best Selling',
         oldest: 'Oldest',
-        '3days': '3 Days',
+        recent: '3 Days',
         'date-created': 'Date Created' // Default nếu không có giá trị trong URL
     };
 
@@ -46,7 +46,7 @@ export default function Sort() {
         const sortApiMap: { [key: string]: string } = {
             'Best Selling': 'bestselling',
             Oldest: 'oldest',
-            '3 Days': '3days',
+            '3 Days': 'recent',
             'Date Created': 'date-created'
         };
 
@@ -57,7 +57,6 @@ export default function Sort() {
             console.error('❌ Sort mapping failed for:', sortValue);
             return; // Tránh lỗi nếu sortValue không hợp lệ
         }
-
         // **Cập nhật URL query params**
         const params = new URLSearchParams(searchParams.toString());
         params.set('sort', formattedSort);

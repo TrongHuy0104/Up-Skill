@@ -44,19 +44,19 @@ const ModalComponent = ({
             <li
                 className="cursor-pointer hover:bg-gray-200 p-2 rounded"
                 onClick={() => {
-                    onSelectSort('3 days');
+                    onSelectSort('3 Days');
                     closeModal();
                 }}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                        onSelectSort('3 days');
+                        onSelectSort('3 Days');
                         closeModal();
                     }
                 }}
                 tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
                 role="button" // Đảm bảo phần tử <li> được nhận diện là button cho accessibility
             >
-                3 days
+                3 Days
             </li>
         </ul>
     </div>
