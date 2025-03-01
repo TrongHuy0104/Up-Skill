@@ -2,6 +2,9 @@ import mongoose, { Schema } from 'mongoose';
 import { IQuiz, IQuestion } from '@/interfaces/Quiz';
 
 const questionSchema = new Schema<IQuestion>({
+    questionId: {
+        type: mongoose.Schema.Types.ObjectId
+    },
     text: { type: String, required: true },
     type: {
         type: String,
