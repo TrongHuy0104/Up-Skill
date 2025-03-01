@@ -128,9 +128,9 @@ export default function Search() {
                                             <div>
                                                 <div className="font-medium">{course?.name}</div>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="text-sm text-black w-[110px]">
-                                                        {users.find((user) => user._id === course?.authorId?.toString())
-                                                            ?.name || 'Unknown Author'}
+                                                    <div className="text-sm text-black w-[70px]">
+                                                        {users?.find((user) => user?._id === course?.authorId?.toString())
+                                                            ?.name || 'Unknown'}
                                                     </div>
                                                     <p className="text-sm text-primary-500">
                                                         {course?.description?.length > 50
