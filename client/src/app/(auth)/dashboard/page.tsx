@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import PaginationComponent from "@/components/custom/PaginationComponent";
 import axios from "axios";
+import Link from "next/link";
 
 interface Course {
   _id: string;
@@ -133,7 +134,7 @@ const Dashboard = () => {
   return (
     <div className="container mx-auto pl-10">
       {/* Statistics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {statsConfig.map((stat) => (
           <div key={stat.title} className="whitespace-nowrap w-[320px] h-[150px] bg-primary-50 rounded-lg p-9 flex items-center space-x-6 border border-primary-100">
             <div className="bg-accent-100 p-5 rounded-full">
@@ -158,10 +159,10 @@ const Dashboard = () => {
           <table className="w-full">
             <thead>
               <tr className="text-left text-[15px] text-primary-800 bg-accent-100">
-                <th className="px-[30px] py-[26px] rounded-l-lg font-medium">Course Name</th>
+                <th className="px-[30px] py-[26px] rounded-l-xl font-medium">Course Name</th>
                 <th className="py-[26px] font-medium px-8">Sales</th>
                 <th className="py-[26px] font-medium pl-10 pr-6">Amount</th>
-                <th className="py-[26px] font-medium rounded-r-lg pr-8 text-right">Action</th>
+                <th className="py-[26px] font-medium rounded-r-xl pr-8 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -178,7 +179,9 @@ const Dashboard = () => {
                           className="w-[100px] h-[80px] object-contain"
                         />
                       </div>
-                      <span className="truncate w-[400px] text-[15px] text-primary-800 font-medium pl-[30px]">{course.name}</span>
+                      <Link href={`/courses/${course._id}`} className="truncate w-[400px] text-[15px] text-primary-800 font-medium pl-[30px] hover:text-accent-900 transition-colors duration-200">
+                        {course.name}
+                      </Link>
                     </div>
                   </td>
                   <td className="text-[15px] text-primary-800 font-medium pl-8">{course.purchased}</td>
