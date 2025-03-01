@@ -53,6 +53,19 @@ const ProfileInfo = () => {
     });
 
     useEffect(() => {
+        if (user) {
+            form.reset({
+                name: user?.name || '',
+                profession: user?.profession || '',
+                introduce: user?.introduce || '',
+                age: user?.age || undefined,
+                address: user?.address || '',
+                phoneNumber: user?.phoneNumber || ''
+            });
+        }
+    }, [user, form.reset]); // Mỗi khi user thay đổi, reset form với dữ liệu mới
+
+    useEffect(() => {
         if (isSuccess) {
             setLoadUser(true);
             toast({
@@ -111,6 +124,8 @@ const ProfileInfo = () => {
         }
         await updateUserInfo(data);
     }
+
+    if (!user) return <SpinnerMini />;
     return (
         <div>
             <div className="relative flex items-center gap-[30px] pb-[38px] mb-[30px] border-b border-primary-100">

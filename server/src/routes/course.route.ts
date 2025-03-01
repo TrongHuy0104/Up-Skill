@@ -27,8 +27,6 @@ router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
 router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
 
-router.get('/top-courses', getTopCourses);
-
 router.get('/all-courses/:id', updateAccessToken, isAuthenticated, getTopRatedCoursesController);
 
 router.get('/pagination', getCoursesLimitWithPagination);

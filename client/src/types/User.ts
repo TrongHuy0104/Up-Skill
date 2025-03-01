@@ -21,4 +21,5 @@ export interface User extends AuthUser {
         instagram: string;
         linkedIn: string;
     };
+    uploadedCourses: { id: string }[];
 }

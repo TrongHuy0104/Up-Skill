@@ -5,24 +5,12 @@ import timeTable from '@/public/assets/icons/timetable.svg';
 import student from '@/public/assets/icons/students.svg';
 import BannerFromUI from '@/components/ui/Banner';
 import { User } from '@/types/User';
-import { cookies } from 'next/headers';
 interface Props {
     readonly user: User;
 }
 
 export default async function Banner({ user }: Props) {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.toString();
-
-    const res = await fetch(`http://localhost:8000/api/user/total-upload-courses/${user._id}`, {
-        credentials: 'include',
-        headers: {
-            Cookie: cookie // Pass the cookies in the headers
-        }
-    });
-
-    // Đảm bảo tên trường trả về là 'uploadedCoursesCount' thay vì 'count'
-    const { uploadedCoursesCount } = await res.json();
+    const uploadedCoursesCount = user.uploadedCourses.length;
 
     return (
         <div>
@@ -30,7 +18,8 @@ export default async function Banner({ user }: Props) {
                 title={`Hi, I Am ${user.name}`}
                 breadcrumbs={[
                     { href: '/', text: 'Development' },
-                    { href: '/', text: 'Web Development' }
+                    { href: '/instructors', text: 'Instructors' },
+                    { href: '/', text: 'Instructor Detail' }
                 ]}
                 contentAlignment="left"
                 background="https://creativelayers.net/themes/upskill-html/images/page-title/inner-page.png"
@@ -40,7 +29,7 @@ export default async function Banner({ user }: Props) {
                     <Image alt="Star Icon" src={star} />
                     <span className="pl-[6px] pr-6"> {user?.rating?.toString()}</span>
                     <Image alt="Time Table Icon" src={timeTable} width={20} height={20} />
-                    <span className="pl-[6px] pr-6"> {uploadedCoursesCount} Lessons</span>
+                    <span className="pl-[6px] pr-6"> {uploadedCoursesCount || 0} Lessons</span>
                     <Image alt="Student Icon" src={student} />
                     <span className="pl-[6px] pr-6"> 229 Students</span>
                 </div>

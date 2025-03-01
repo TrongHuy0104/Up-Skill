@@ -12,6 +12,7 @@ import SpinnerMini from '@/components/custom/SpinnerMini';
 import { useUpdateLinkMutation } from '@/lib/redux/features/user/userApi';
 import { formStyles } from '@/styles/styles';
 import { useSelector } from 'react-redux';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 
 // Định nghĩa schema cho các trường mạng xã hội
 const socialFormSchema = z.object({
@@ -24,6 +25,7 @@ const socialFormSchema = z.object({
 const UpdateSocial = () => {
     const { toast } = useToast();
     const [loadUser, setLoadUser] = useState(false);
+    useLoadUserQuery(undefined, { skip: loadUser ? false : true });
 
     // Lấy thông tin người dùng từ Redux store
     const { user } = useSelector((state: any) => state.auth);
@@ -66,16 +68,7 @@ const UpdateSocial = () => {
     const onSubmit = async (values: z.infer<typeof socialFormSchema>) => {
         try {
             // Gửi dữ liệu đến backend để cập nhật liên kết xã hội
-            const response = await updateLink({ data: values });
-
-            if (response?.data?.success) {
-                toast({
-                    variant: 'success',
-                    title: 'Social Links Updated Successfully'
-                });
-            } else {
-                throw new Error('Failed to update social links');
-            }
+            await updateLink({ data: values });
         } catch (error) {
             console.error('Error updating social links', error);
             toast({

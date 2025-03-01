@@ -33,7 +33,6 @@ export default function CourseVerticalCard({
     course = {}
 }: CourseVerticalCardProps) {
     const {
-        imageUrl = defaultImage.src,
         name = 'Become a Certified Web Developer: HTML, CSS and JavaScript',
         lessonsCount = 11,
         duration = '16',
@@ -44,13 +43,14 @@ export default function CourseVerticalCard({
         isEnrolled = false,
         _id
     } = course;
+    const thumbnailUrl = course?.thumbnail?.url || defaultImage.src;
 
     return (
         <div className="group shrink-0 h-full relative transition-transform" style={{ width }}>
             <div className="relative rounded-sm overflow-hidden" style={{ height }}>
                 <Link href={`/courses/${_id}`}>
                     <Image
-                        src={imageUrl || defaultImage}
+                        src={thumbnailUrl}
                         alt={name}
                         className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
                         group-hover:scale-110 group-hover:transition-all group-hover:duration-1000 group-hover:ease-in-out"

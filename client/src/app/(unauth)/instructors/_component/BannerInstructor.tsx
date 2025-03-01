@@ -8,8 +8,7 @@ export default function BannerInstructors() {
                 title="Instructor"
                 breadcrumbs={[
                     { text: 'Home', href: '/' },
-                    { text: 'Pages', href: '/pages' },
-                    { text: 'Instructor', href: '/pages/instructor' }
+                    { text: 'Instructors', href: '/pages/instructor' }
                 ]}
                 contentAlignment="center"
                 backgroundColor="bg-accent-100" // Customize background color
