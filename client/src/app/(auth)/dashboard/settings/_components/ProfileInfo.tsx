@@ -82,7 +82,6 @@ const ProfileInfo = () => {
     };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log('Form values: ', values);
         let data: {
             name: string;
             profession?: string;
@@ -110,7 +109,6 @@ const ProfileInfo = () => {
                 address: values.address
             };
         }
-        console.log('Data to send: ', data);
         await updateUserInfo(data);
     }
     return (
