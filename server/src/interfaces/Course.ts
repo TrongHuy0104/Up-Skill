@@ -25,6 +25,7 @@ export interface ILink extends Document {
 }
 
 export interface ICourseData extends Document {
+    order: number;
     title: string;
     description: string;
     videoUrl: string;

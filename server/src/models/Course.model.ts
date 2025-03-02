@@ -23,6 +23,7 @@ const CommentSchema = new Schema<IComment>({
 });
 
 const CourseDataSchema = new Schema<ICourseData>({
+    order: Number,
     title: String,
     description: String,
     videoUrl: String,
