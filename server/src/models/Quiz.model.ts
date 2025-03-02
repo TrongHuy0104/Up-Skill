@@ -6,13 +6,13 @@ const questionSchema = new Schema<IQuestion>({
     type: {
         type: String,
         required: true,
-        enum: ['multiple-choice', 'true/false', 'short-answer']
+        enum: ['single-choice', 'multiple-choice']
     },
     points: { type: Number, required: true },
     options: {
         type: [String],
         required: function () {
-            return (this as any).type === 'multiple-choice';
+            return (this as any).type === 'single-choice' || (this as any).type === 'multiple-choice';
         }
     },
     correctAnswer: {
@@ -20,12 +20,12 @@ const questionSchema = new Schema<IQuestion>({
         required: true,
         validate: {
             validator: function (v: any) {
-                if ((this as any).type === 'multiple-choice') {
+                if ((this as any).type === 'single-choice') {
                     return (this as any).options.includes(v);
-                } else if ((this as any).type === 'true/false') {
-                    return ['true', 'false'].includes(v);
+                } else if ((this as any).type === 'multiple-choice') {
+                    return Array.isArray(v) && v.every((ans: any) => (this as any).options.includes(ans));
                 }
-                return true;
+                return false;
             },
             message: 'Incorrect answer format for this question type'
         }

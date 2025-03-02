@@ -1,6 +1,7 @@
 import { Document, Types } from 'mongoose';
 
 export interface IQuestion {
+    questionId: Types.ObjectId;
     text: string;
     type: 'multiple-choice' | 'true/false' | 'short-answer';
     points: number;
