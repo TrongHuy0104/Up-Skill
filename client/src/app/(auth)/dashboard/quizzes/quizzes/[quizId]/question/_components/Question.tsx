@@ -1,95 +1,133 @@
-import React from 'react';
+'use client';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import arrow from '@/public/assets/icons/arrow-top-right.svg';
-
-interface Answer {
-    text: string;
-    isCorrect: boolean;
-}
+import QuestionModal from './QuestionModal';
 
 interface Question {
-    id: number;
+    _id: string;
     text: string;
-    answers: Answer[];
+    type: string;
+    points: number;
+    options: string[];
+    correctAnswer: string | string[];
 }
 
-const sampleQuestions: Question[] = [
-    {
-        id: 1,
-        text: 'What is the capital of France?',
-        answers: [
-            { text: 'Berlin', isCorrect: false },
-            { text: 'Madrid', isCorrect: false },
-            { text: 'Paris', isCorrect: true },
-            { text: 'Rome', isCorrect: false }
-        ]
-    },
-    {
-        id: 2,
-        text: 'Which planet is known as the Red Planet?',
-        answers: [
-            { text: 'Earth', isCorrect: false },
-            { text: 'Mars', isCorrect: true },
-            { text: 'Jupiter', isCorrect: false },
-            { text: 'Venus', isCorrect: false }
-        ]
-    },
-    {
-        id: 3,
-        text: "Who wrote 'To Kill a Mockingbird'?",
-        answers: [
-            { text: 'Harper Lee', isCorrect: true },
-            { text: 'J.K. Rowling', isCorrect: false },
-            { text: 'Ernest Hemingway', isCorrect: false },
-            { text: 'Mark Twain', isCorrect: false }
-        ]
-    }
-];
-
-const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-    <div className={`border border-gray-300 rounded-lg shadow-md p-4 ${className}`}>{children}</div>
-);
-
-const CardContent: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="p-2">{children}</div>;
-
 export default function QuestionList() {
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+
+    const fetchQuestions = async () => {
+        try {
+            const res = await fetch(`http://localhost:8000/api/quizzes/67c2d95fa2ed5c67af3dc693/questions`);
+            if (!res.ok) throw new Error('Failed to fetch questions');
+            const data = await res.json();
+            console.log('Fetched questions:', data);
+            setQuestions(data.questions);
+        } catch (error) {
+            console.error('Error fetching questions:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchQuestions();
+    }, []);
+
+    const openModal = (question?: Question) => {
+        console.log('Opening modal...', question);
+        setSelectedQuestion(question || null);
+        setModalOpen(true);
+    };
+
+    const handleDelete = async (questionId: string) => {
+        try {
+            const res = await fetch(
+                `http://localhost:8000/api/quizzes/67c2d95fa2ed5c67af3dc693/questions/${questionId}`,
+                {
+                    method: 'DELETE'
+                }
+            );
+            if (!res.ok) throw new Error('Failed to delete question');
+
+            // Cập nhật lại danh sách câu hỏi sau khi xóa
+            setQuestions((prevQuestions) => prevQuestions.filter((q) => q._id !== questionId));
+        } catch (error) {
+            console.error('Error deleting question:', error);
+        }
+    };
+
+    const isCorrectAnswer = (question: Question, option: string) => {
+        if (question.type === 'single-choice') {
+            return option === question.correctAnswer;
+        } else if (question.type === 'multiple-choice') {
+            return Array.isArray(question.correctAnswer) && question.correctAnswer.includes(option);
+        }
+        return false;
+    };
+
     return (
         <div className="w-full max-w-3xl mx-auto px-4 relative">
-            <div className="flex justify-between items-center mb-4 sticky top-0 bg-accent-300  p-3 rounded-lg">
-                <h2 className="text-xl font-semibold text-primary-700">Quiz Questions ({sampleQuestions.length})</h2>
-                <Button
-                    variant="default"
-                    size="sm"
-                    // onClick={handleNext}
-                >
+            <div className="flex justify-between items-center mb-4 sticky top-0 bg-accent-300 p-3 rounded-lg">
+                <h2 className="text-lg text-primary-700">Quiz Questions ({questions.length})</h2>
+                <Button variant="default" size="sm" onClick={() => openModal()}>
                     Add Question
                     <Image src={arrow} alt="Arrow Right" />
                 </Button>
             </div>
             <div className="space-y-4">
-                {sampleQuestions.map((question, index) => (
-                    <Card key={question.id}>
-                        <CardContent>
+                {questions.map((question, index) => (
+                    <div key={question._id} className="border border-gray-300 rounded-lg shadow-md p-4">
+                        <div className="p-2 flex justify-between items-center">
                             <h3 className="text-base font-medium text-primary-800">
-                                {index + 1}. {question.text}
+                                {index + 1}. {question.text} ({question.points} points)
                             </h3>
-                            <ul className="mt-2 space-y-2">
-                                {question.answers.map((answer, i) => (
-                                    <li
-                                        key={i}
-                                        className={`p-2 border rounded-md text-[15px] ${
-                                            answer.isCorrect ? 'border-accent-500 bg-accent-200' : 'border-gray-300'
-                                        }`}
-                                    >
-                                        {answer.text}
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                    </Card>
+                            <div className="space-x-2 flex">
+                                <Button
+                                    variant="outline"
+                                    size="xs"
+                                    className="flex items-center gap-2"
+                                    onClick={() => openModal(question)}
+                                >
+                                    Update
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    size="xs"
+                                    className="flex items-center gap-2"
+                                    onClick={() => handleDelete(question._id)}
+                                >
+                                    Delete
+                                </Button>
+                            </div>
+                        </div>
+                        <ul className="mt-2 space-y-2">
+                            {question.options.map((option, i) => (
+                                <li
+                                    key={i}
+                                    className={`p-2 border rounded-md text-[15px] ${
+                                        isCorrectAnswer(question, option)
+                                            ? 'border-accent-500 bg-accent-200'
+                                            : 'border-gray-300'
+                                    }`}
+                                >
+                                    {option}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 ))}
             </div>
+            {modalOpen && (
+                <QuestionModal
+                    isOpen={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    question={selectedQuestion}
+                    quizId="67c2d95fa2ed5c67af3dc693"
+                    onQuestionUpdated={fetchQuestions}
+                />
+            )}
         </div>
     );
 }
