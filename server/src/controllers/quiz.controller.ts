@@ -188,9 +188,15 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         return next(new ErrorHandler('Please provide all required fields', 400));
     }
 
-    // Kiểm tra options nếu type là multiple-choice
-    if (type === 'multiple-choice' && (!options || options.length === 0)) {
-        return next(new ErrorHandler('Options are required for multiple-choice questions', 400));
+    if (type === 'single-choice' && (!options || !options.includes(correctAnswer))) {
+        return next(new ErrorHandler('Correct answer must be one of the options', 400));
+    }
+
+    if (
+        type === 'multiple-choice' &&
+        (!Array.isArray(correctAnswer) || correctAnswer.some((ans) => !options.includes(ans)))
+    ) {
+        return next(new ErrorHandler('Each correct answer must be in the options', 400));
     }
 
     // Tìm quiz trong database
@@ -204,14 +210,14 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         text,
         type,
         points,
-        options: type === 'multiple-choice' ? options : undefined,
+        options: type === 'single-choice' || type === 'multiple-choice' ? options : undefined,
         correctAnswer
     };
 
     // Thêm câu hỏi vào quiz
     quiz.questions.push(newQuestion);
     await quiz.save(); // Lưu thay đổi vào database
-
+    console.log('Received data:', { text, type, points, options, correctAnswer });
     // Trả về kết quả
     res.status(201).json({
         success: true,
