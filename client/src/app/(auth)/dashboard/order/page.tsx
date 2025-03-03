@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import * as React from "react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableFooter } from "@/components/ui/Table";
@@ -8,53 +8,53 @@ import PaginationComponent from "@/components/custom/PaginationComponent";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// const orders = [
-//   { id: "#405", name: "Building Scalable APIs with GraphQL", date: "April 27, 2024", price: "$100.99" },
-//   { id: "#405", name: "Building Scalable APIs with GraphQL", date: "April 27, 2024", price: "$100.99" },
-//   { id: "#405", name: "Building Scalable APIs with GraphQL", date: "April 27, 2024", price: "$100.99" },
-//   { id: "#405", name: "Building Scalable APIs with GraphQL", date: "April 27, 2024", price: "$100.99" },
-//   { id: "#405", name: "Building Scalable APIs with GraphQL", date: "April 27, 2024", price: "$100.99" },
-//   { id: "#405", name: "Building Scalable APIs with GraphQL", date: "April 27, 2024", price: "$100.99" },
-//   { id: "#405", name: "Building Scalable APIs with GraphQL", date: "April 27, 2024", price: "$100.99" },
-// ];
+interface Course {
+  _id: string;
+  name: string;
+  price?: number;
+}
 
-export default function Order() {
+interface Order {
+  _id: string;
+  courseIds: Course[];
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-    const [orders, setOrders] = useState<any[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalOrders, setTotalOrders] = useState(0);
-    const ordersPerPage = 10;
-    const totalPages = Math.max(1, Math.ceil(totalOrders / ordersPerPage));
+export default function OrderList() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const totalPages = Math.max(1, Math.ceil(totalOrders / 10));
 
-    const fetchOrders = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/orders/user-orders`);
-            setOrders(response.data.orders);
-            setTotalOrders(response.data.total);
-        } catch (error) {
-            console.error("Error fetching orders:", error);
-        } finally {
-        }
-    };
+  // Fetch orders
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/orders/user-orders`, {
+        withCredentials: true,
+      });
+      setOrders(response.data.orders);
+      setTotalOrders(response.data.orders.length);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
 
-    // Fetch orders khi component mount hoặc currentPage thay đổi
-    useEffect(() => {
-        fetchOrders();
-    }, [currentPage]);
+  useEffect(() => {
+    fetchOrders();
+  }, [currentPage]);
 
-
-    //Pagination handle
-    const handlePageChange = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="ml-10 p-6 bg-primary-50 rounded-lg border border-primary-100">
       <h6 className="text-[22px] font-medium text-primary-800 m-4 mb-10 pb-3 border-b">Order History</h6>
 
       <Table className="rounded-lg overflow-hidden">
-        {/* Table Header */}
-        <TableHeader className="mt-10">
+        <TableHeader>
           <TableRow className="bg-accent-100 text-[15px]">
             <TableHead className="py-[26px] px-[30px] text-primary-800 font-medium rounded-l-xl">Order ID</TableHead>
             <TableHead className="py-[26px] text-primary-800 font-medium">Course Name</TableHead>
@@ -64,51 +64,46 @@ export default function Order() {
           </TableRow>
         </TableHeader>
 
-        {/* Table Body */}
         <TableBody>
           {orders.map((order) => (
-            <TableRow key={order.courseIds} className="border-b hover:bg-gray-50">
+            <TableRow key={order._id} className="border-b hover:bg-gray-50">
               <TableCell className="px-[30px] text-primary-800 font-medium">{order._id}</TableCell>
               <TableCell className="text-[15px] text-primary-800 font-medium">
-                <Link 
-                    href={`/courses/${order.courseIds}`}
-                    className="hover:text-accent-900 transition-colors duration-200">
-                    {order.courseName || "Unknown Course"}
-                </Link>
-              </TableCell>
-              <TableCell className="text-[15px] text-primary-800 font-medium">{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-              <TableCell className="text-[15px] text-primary-800 font-medium">{order.price.toFixed(2)}</TableCell>
-              <TableCell className="flex justify-center space-x-3">
-              <Link href={`/orders/${order._id}`}>
-                <button className="p-2 rounded-xl group border border-primary-100 bg-accent-100 hover:bg-primary-800 transition-colors duration-200">
-                    <div className="relative w-4 h-4">
-                        <Image 
-                            src="/assets/icons/eye-icon.svg" 
-                            alt="Edit" 
-                            fill
-                            className="group-hover:brightness-0 group-hover:invert transition-all duration-200"/>
-                    </div>
-                </button>
-              </Link>
-                <button 
-                    // onClick={() => handleDeleteCourse(course.id)}
-                    className="p-2 rounded-xl group border border-primary-100 hover:bg-accent-900 transition-colors duration-200"
+                {order.courseIds.map((course, index) => (
+                    <Link 
+                      key={`${course._id}-${index}`} 
+                      href={`/courses/${course._id}`} 
+                      className="hover:text-accent-900 transition-colors duration-200"
                     >
+                      {course.name}
+                    </Link>
+                  ))}
+              </TableCell>
+              <TableCell className="text-[15px] text-primary-800 font-medium">
+                {new Date(order.createdAt).toLocaleDateString()}
+              </TableCell>
+              <TableCell className="text-[15px] text-primary-800 font-medium">
+                {order.courseIds.map((course) => `$${course.price?.toFixed(2) || "N/A"}`).join(", ")}
+              </TableCell>
+              <TableCell className="flex justify-center space-x-3">
+                <Link href={`/orders/${order._id}`}>
+                  <button className="p-2 rounded-xl group border border-primary-100 bg-accent-100 hover:bg-primary-800 transition-colors duration-200">
                     <div className="relative w-4 h-4">
-                        <Image 
-                        src="/assets/icons/delete.svg"
-                        alt="Delete" 
+                      <Image 
+                        src="/assets/icons/eye-icon.svg" 
+                        alt="View" 
                         fill
                         className="group-hover:brightness-0 group-hover:invert transition-all duration-200"
-                        />
+                      />
                     </div>
-                </button>
+                  </button>
+                </Link>
               </TableCell>
             </TableRow>
           ))}
-        </TableBody>
-          {/* Pagination */}
-          <TableFooter>
+          </TableBody>
+
+        <TableFooter>
           <TableRow>
             <TableCell colSpan={5} className="py-5 text-center">
               <PaginationComponent 
