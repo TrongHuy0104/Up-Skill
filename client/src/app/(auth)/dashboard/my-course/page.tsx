@@ -15,8 +15,13 @@ const sortOptions = [
 
 export default function Page() {
   // State pagination
-  const [currentPage, setCurrentPage] = useState(1);
   const [loading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Hàm xử lý khi đổi trang
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   // Fake dữ liệu khóa học
   const [courses] = useState({
@@ -24,10 +29,10 @@ export default function Page() {
       { id: 1, title: "React for Beginners", progress: 70, instructor: "John Doe", price: 99 },
       { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
       { id: 3, title: "Node.js API Development", progress: 40, instructor: "Michael Brown", price: 79 },
-      { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
-      { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
-      { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
-      { id: 2, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
+      { id: 4, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
+      { id: 5, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
+      { id: 6, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
+      { id: 7, title: "Mastering Tailwind CSS", progress: 85, instructor: "Alice Smith", price: 49 },
 
     ],
     active: [
@@ -42,10 +47,6 @@ export default function Page() {
   // Hàm xác định class `justify-content`
   const getRowClass = (length: number) => (length >= 3 ? "justify-between" : "justify-start");
 
-  // Hàm xử lý phân trang
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
   const renderEnrolledCourses = () => {
     if (loading) {
       return <p className="text-center text-primary-600">Loading...</p>;
@@ -151,7 +152,10 @@ export default function Page() {
       </Tabs>
       {/* Pagination */}
       <div className="p-5 mt-10">
-        <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />
+        <PaginationComponent 
+         currentPage={currentPage} 
+         totalPages={10} 
+         onPageChange={handlePageChange} />
       </div>
     </div>
   );

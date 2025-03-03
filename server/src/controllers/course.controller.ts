@@ -11,6 +11,10 @@ import path from 'path';
 import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
 import axios from 'axios';
+import LevelModel from '@/models/Level.model';
+import CategoryModel from '@/models/Category.model';
+import SubCategoryModel from '@/models/SubCategory.model';
+import UserModel from '@/models/User.model';
 
 export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
@@ -120,7 +124,7 @@ export const getAllCoursesWithoutPurchase = catchAsync(async (req: Request, res:
     if (isCacheExist) {
         courses = JSON.parse(isCacheExist);
     } else {
-        courses = await CourseModel.find().select(
+        const courses = await CourseModel.find().select(
             '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links'
         );
         redis.set(`allCourses ${req.user?._id}`, JSON.stringify(courses));
@@ -203,6 +207,16 @@ interface IAddAnswerData {
     questionId: string;
 }
 
+interface CourseFilter {
+    level?: mongoose.Types.ObjectId;
+    category?: mongoose.Types.ObjectId;
+    subCategory?: mongoose.Types.ObjectId;
+    authorId?: mongoose.Types.ObjectId;
+    rating?: number;
+    language?: string;
+    price?: any;
+}
+
 export const addAnswer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { answer, courseId, contentId, questionId } = req.body as IAddAnswerData;
     const course = await CourseModel.findById(courseId);
@@ -280,7 +294,7 @@ export const addReview = catchAsync(async (req: Request, res: Response, next: Ne
 
     const courseId = req.params.id;
 
-    const courseExists = userCourseList?.some((c: any) => c._id.toString() === courseId.toString());
+    const courseExists = userCourseList?.some((c: any) => c === courseId.toString());
 
     if (!courseExists) {
         return next(new ErrorHandler('You are not eligible to access this course', 404));
@@ -312,6 +326,8 @@ export const addReview = catchAsync(async (req: Request, res: Response, next: Ne
     course.rating = totalRating / course?.reviews.length;
 
     await course.save();
+
+    await redis.set(courseId, JSON.stringify(course), 'EX', 604800);
 
     // create notification
 
@@ -366,6 +382,8 @@ export const addReplyToReview = catchAsync(async (req: Request, res: Response, n
 
     await course.save();
 
+    await redis.set(courseId, JSON.stringify(course), 'EX', 604800);
+
     res.status(200).json({
         success: true,
         course
@@ -397,6 +415,75 @@ export const deleteCourse = catchAsync(async (req: Request, res: Response, next:
     });
 });
 
+//get courses -- pagination
+
+export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    const filter: CourseFilter = {};
+
+    if (req.query.level) {
+        const levelDoc = await LevelModel.findOne({ name: req.query.level as string });
+        if (levelDoc) filter.level = levelDoc._id;
+    }
+
+    if (req.query.category) {
+        const categoryDoc = await CategoryModel.findOne({ title: req.query.category as string });
+        if (categoryDoc) filter.category = categoryDoc._id;
+    }
+
+    if (req.query.subCategory) {
+        const subCategoryDoc = await SubCategoryModel.findOne({ title: req.query.subCategory as string });
+        if (subCategoryDoc) filter.subCategory = subCategoryDoc._id;
+    }
+
+    if (req.query.authorId) {
+        const authorDoc = await UserModel.findOne({ name: req.query.authorId as string });
+        if (authorDoc) filter.authorId = authorDoc._id;
+    }
+
+    // Filter rating
+    if (req.query.rating) {
+        const rating = parseInt(req.query.rating as string, 10);
+        if (!isNaN(rating) && rating >= 1 && rating <= 5) {
+            filter.rating = rating;
+        }
+    }
+
+    // Filter language
+    if (req.query.language) {
+        filter.language = req.query.language as string;
+    }
+
+    // Filter price (Free or Paid)
+    if (req.query.price) {
+        if (req.query.price === 'Free') {
+            filter.price = 0;
+        } else if (req.query.price === 'Paid') {
+            filter.price = { $gt: 0 };
+        }
+    }
+
+    const courses = await CourseModel.find(filter)
+        .select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links')
+        .populate('authorId', 'name')
+        .skip(skip)
+        .limit(limit);
+
+    const totalCourses = await CourseModel.countDocuments(filter);
+
+    res.status(200).json({
+        success: true,
+        page,
+        limit,
+        totalCourses,
+        totalPages: Math.ceil(totalCourses / limit),
+        courses
+    });
+});
+
 // generate video url
 export const generateVideoUrl = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { videoId } = req.body;
@@ -413,6 +500,89 @@ export const generateVideoUrl = catchAsync(async (req: Request, res: Response, n
         }
     );
     res.json(response.data);
+});
+// get courses statistics
+export const getCourseStatistics = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const courses = await CourseModel.find()
+        .populate('category', 'title')
+        .populate('subCategory', 'title')
+        .populate('authorId', 'name')
+        .populate('level', 'name');
+
+    const formatCategoryData = () => ({
+        title: 'Categories',
+        data: courses.reduce((acc, course) => {
+            const categoryLabel = course.category?.title || 'Unknown';
+            const subCategoryLabel = course.subCategory?.title || 'Unknown';
+
+            let categoryItem = acc.find((item: any) => item.label === categoryLabel);
+            if (!categoryItem) {
+                categoryItem = { label: categoryLabel, count: 0, subCategories: [] };
+                acc.push(categoryItem);
+            }
+
+            categoryItem.count += 1;
+
+            const subCategoryItem = categoryItem.subCategories.find((sub: any) => sub.label === subCategoryLabel);
+            if (subCategoryItem) {
+                subCategoryItem.count += 1;
+            } else {
+                categoryItem.subCategories.push({ label: subCategoryLabel, count: 1 });
+            }
+
+            return acc;
+        }, [])
+    });
+
+    const formatData = (field: string, title: string) => ({
+        title,
+        data: courses.reduce((acc, course) => {
+            const fieldValue = course[field]?.title || course[field]?.name || course[field] || 'Unknown';
+            const existing = acc.find((item: any) => item.label === fieldValue);
+            if (existing) {
+                existing.count += 1;
+            } else {
+                acc.push({ label: fieldValue, count: 1 });
+            }
+            return acc;
+        }, [])
+    });
+
+    const formatRatingData = () => ({
+        title: 'Rating',
+        data: [
+            { label: '1', min: 0, max: 1 },
+            { label: '2', min: 1, max: 2 },
+            { label: '3', min: 2, max: 3 },
+            { label: '4', min: 3, max: 4 },
+            { label: '5', min: 4, max: 5 }
+        ].map(({ label, min, max }) => ({
+            label,
+            count: courses.filter((course) => course.rating > min && course.rating <= max).length
+        }))
+    });
+
+    const formatPriceData = () => ({
+        title: 'Price',
+        data: [
+            { label: 'Free', count: courses.filter((course) => course.price === 0).length },
+            { label: 'Paid', count: courses.filter((course) => course.price > 0).length }
+        ]
+    });
+
+    const data = {
+        categories: formatCategoryData(),
+        authors: formatData('authorId', 'Author'),
+        levels: formatData('level', 'Level'),
+        ratings: formatRatingData(),
+        price: formatPriceData(),
+        languages: formatData('language', 'Language')
+    };
+
+    res.status(200).json({
+        success: true,
+        data
+    });
 });
 
 export const getTopCourses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

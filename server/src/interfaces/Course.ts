@@ -7,6 +7,16 @@ export interface IComment extends Document {
     questionReplies: IComment[];
 }
 
+export interface ICommentReply extends Document {
+    user: UserT;
+    answer: string;
+}
+
+export interface IReviewReply extends Document {
+    user: UserT;
+    rating: number;
+    comment: string;
+}
 export interface IReview extends Document {
     user: UserT;
     rating: number;
