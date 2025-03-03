@@ -1,11 +1,10 @@
 import React from 'react';
 import QuizThumb from './QuizThumb';
-import { RiSettingsLine } from "react-icons/ri";
-import { MdOutlineDelete } from "react-icons/md";
-import { BsClockHistory } from "react-icons/bs";
-import { GoQuestion } from "react-icons/go";
-import { GrScorecard } from "react-icons/gr";
-
+import { RiSettingsLine } from 'react-icons/ri';
+import { MdOutlineDelete } from 'react-icons/md';
+import { BsClockHistory } from 'react-icons/bs';
+import { GoQuestion } from 'react-icons/go';
+import { GrScorecard } from 'react-icons/gr';
 
 interface QuizItemProps {
     readonly quiz: any; // Use the Quiz interface
@@ -14,23 +13,19 @@ interface QuizItemProps {
 }
 
 export default function QuizItem({ quiz, isFirst, isLast }: QuizItemProps) {
-    const {
-        questions,
-        duration,
-        passingScore,
-    } = quiz;
+    const { questions, duration, passingScore } = quiz;
 
     return (
         <li
-            className={`group grid grid-cols-10 gap-4 items-baseline ${isFirst ? 'pt-6' : '' // Add padding-top for the first item
-                } ${isLast ? 'border-none' : 'border-b border-gray-200' // Remove border for the last item
-                } my-4 py-4`}
+            className={`group grid grid-cols-10 gap-4 items-baseline ${
+                isFirst ? 'pt-6' : '' // Add padding-top for the first item
+            } ${
+                isLast ? 'border-none' : 'border-b border-gray-200' // Remove border for the last item
+            } my-4 py-4`}
         >
             {/* Quiz Thumbnail and Title (4 parts) */}
             <div className="col-span-4 flex min-w-0">
-                <QuizThumb
-                    quiz={quiz}
-                />
+                <QuizThumb quiz={quiz} />
             </div>
 
             {/* Quiz Metadata (5 parts) */}
@@ -67,5 +62,4 @@ export default function QuizItem({ quiz, isFirst, isLast }: QuizItemProps) {
             </div>
         </li>
     );
-};
-
+}

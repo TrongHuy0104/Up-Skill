@@ -1,5 +1,5 @@
 import React from 'react';
 
-export default function page() {
-    return <div>pagequestions</div>;
+export default async function page() {
+    return <div>dsdấdsaadsa</div>;
 }

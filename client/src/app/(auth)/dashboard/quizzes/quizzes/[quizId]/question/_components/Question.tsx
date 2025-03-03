@@ -21,7 +21,7 @@ export default function QuestionList() {
 
     const fetchQuestions = async () => {
         try {
-            const res = await fetch(`http://localhost:8000/api/quizzes/67b8a4761b64b43f67571c2e/questions`);
+            const res = await fetch(`http://localhost:8000/api/quizzes/67c2d95fa2ed5c67af3dc693/questions`);
             if (!res.ok) throw new Error('Failed to fetch questions');
             const data = await res.json();
             console.log('Fetched questions:', data);
@@ -44,7 +44,7 @@ export default function QuestionList() {
     const handleDelete = async (questionId: string) => {
         try {
             const res = await fetch(
-                `http://localhost:8000/api/quizzes/67b8a4761b64b43f67571c2ea/questions/${questionId}`,
+                `http://localhost:8000/api/quizzes/67c2d95fa2ed5c67af3dc693/questions/${questionId}`,
                 {
                     method: 'DELETE'
                 }

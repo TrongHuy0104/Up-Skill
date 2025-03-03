@@ -6,3 +6,7 @@ export interface Question {
     correctAnswer: string; // Câu trả lời đúng
     options: string[];
 }
+
+export interface Quizzes {
+    _id: string;
+}
