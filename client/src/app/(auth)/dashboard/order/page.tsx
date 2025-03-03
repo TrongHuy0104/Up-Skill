@@ -30,16 +30,19 @@ export default function OrderList() {
 
   // Fetch orders
   const fetchOrders = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/orders/user-orders`, {
-        withCredentials: true,
-      });
-      setOrders(response.data.orders);
-      setTotalOrders(response.data.orders.length);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    }
-  };
+  try {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/orders/user-orders`, {
+      withCredentials: true,
+    });
+
+    console.log("Fetched orders:", response.data.orders);
+
+    setOrders(response.data.orders);
+    setTotalOrders(response.data.orders.length);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+  }
+};
 
   useEffect(() => {
     fetchOrders();
@@ -56,7 +59,7 @@ export default function OrderList() {
       <Table className="rounded-lg overflow-hidden">
         <TableHeader>
           <TableRow className="bg-accent-100 text-[15px]">
-            <TableHead className="py-[26px] px-[30px] text-primary-800 font-medium rounded-l-xl">Order ID</TableHead>
+            <TableHead className="py-[26px] pl-[30px] text-primary-800 font-medium rounded-l-xl">Order ID</TableHead>
             <TableHead className="py-[26px] text-primary-800 font-medium">Course Name</TableHead>
             <TableHead className="py-[26px] text-primary-800 font-medium">Date</TableHead>
             <TableHead className="py-[26px] text-primary-800 font-medium">Price</TableHead>
@@ -65,25 +68,23 @@ export default function OrderList() {
         </TableHeader>
 
         <TableBody>
-          {orders.map((order) => (
-            <TableRow key={order._id} className="border-b hover:bg-gray-50">
-              <TableCell className="px-[30px] text-primary-800 font-medium">{order._id}</TableCell>
+        {orders.flatMap((order) => 
+            order.courseIds.map((course, index) => (
+              <TableRow key={`${order._id}-${course._id}-${index}`} className="border-b hover:bg-gray-50">
+              <TableCell className="pl-[30px] text-[15px] text-primary-800 font-medium">{order._id}</TableCell>
               <TableCell className="text-[15px] text-primary-800 font-medium">
-                {order.courseIds.map((course, index) => (
-                    <Link 
-                      key={`${course._id}-${index}`} 
-                      href={`/courses/${course._id}`} 
-                      className="hover:text-accent-900 transition-colors duration-200"
-                    >
-                      {course.name}
-                    </Link>
-                  ))}
+                <Link 
+                  href={`/courses/${course._id}`} 
+                  className="truncate hover:text-accent-900 transition-colors duration-200"
+                >
+                  {course.name}
+                </Link>
               </TableCell>
               <TableCell className="text-[15px] text-primary-800 font-medium">
-                {new Date(order.createdAt).toLocaleDateString()}
+              {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </TableCell>
               <TableCell className="text-[15px] text-primary-800 font-medium">
-                {order.courseIds.map((course) => `$${course.price?.toFixed(2) || "N/A"}`).join(", ")}
+                ${course.price?.toFixed(2) || "N/A"}
               </TableCell>
               <TableCell className="flex justify-center space-x-3">
                 <Link href={`/orders/${order._id}`}>
@@ -98,9 +99,25 @@ export default function OrderList() {
                     </div>
                   </button>
                 </Link>
+
+                  <button 
+                    // onClick={() => handleDeleteCourse(course.id)}
+                    className="p-2 rounded-xl group border border-primary-100 hover:bg-accent-900 transition-colors duration-200"
+                  >
+                    <div className="relative w-4 h-4">
+                      <Image 
+                        src="/assets/icons/delete.svg"
+                        alt="Delete" 
+                        fill
+                        className="group-hover:brightness-0 group-hover:invert transition-all duration-200"
+                      />
+                    </div>
+                  </button>
+
               </TableCell>
             </TableRow>
-          ))}
+          ))
+        )}
           </TableBody>
 
         <TableFooter>
