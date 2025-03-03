@@ -7,21 +7,21 @@ import { GoQuestion } from 'react-icons/go';
 import { GrScorecard } from 'react-icons/gr';
 
 interface QuizItemProps {
-    readonly quiz: any; // Use the Quiz interface
-    isFirst?: boolean; // Add this prop to handle the first item
-    isLast?: boolean; // Add this prop to handle the last item
+    readonly quiz: any;
+    isFirst?: boolean;
+    isLast?: boolean;
+    onClick: () => void; // Thêm sự kiện onClick
 }
 
-export default function QuizItem({ quiz, isFirst, isLast }: QuizItemProps) {
+export default function QuizItem({ quiz, isFirst, isLast, onClick }: QuizItemProps) {
     const { questions, duration, passingScore } = quiz;
 
     return (
         <li
-            className={`group grid grid-cols-10 gap-4 items-baseline ${
-                isFirst ? 'pt-6' : '' // Add padding-top for the first item
-            } ${
-                isLast ? 'border-none' : 'border-b border-gray-200' // Remove border for the last item
-            } my-4 py-4`}
+            onClick={onClick} // Khi bấm vào item, gọi onClick
+            className={`group grid grid-cols-10 gap-4 items-baseline cursor-pointer hover:bg-gray-100 transition ${
+                isFirst ? 'pt-6' : ''
+            } ${isLast ? 'border-none' : 'border-b border-gray-200'} my-4 py-4`}
         >
             {/* Quiz Thumbnail and Title (4 parts) */}
             <div className="col-span-4 flex min-w-0">
@@ -31,19 +31,14 @@ export default function QuizItem({ quiz, isFirst, isLast }: QuizItemProps) {
             {/* Quiz Metadata (5 parts) */}
             <div className="col-span-5 flex items-center">
                 <div className="grid grid-cols-3 gap-4 md:flex md:items-center md:justify-start md:gap-6">
-                    {/* Number of Questions */}
                     <div className="flex items-center space-x-2">
                         <GoQuestion />
                         <p className="text-sm text-primary-800">{questions.length} Questions</p>
                     </div>
-
-                    {/* Duration */}
                     <div className="flex items-center space-x-2">
                         <BsClockHistory />
                         <p className="text-sm text-primary-800">{duration} Minutes</p>
                     </div>
-
-                    {/* Passing Score */}
                     <div className="flex items-center space-x-2">
                         <GrScorecard />
                         <p className="text-sm text-primary-800">{passingScore}% to Pass</p>

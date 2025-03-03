@@ -14,47 +14,53 @@ interface Question {
     correctAnswer: string | string[];
 }
 
-export default function QuestionList() {
+interface Props {
+    quizId: string;
+}
+
+export default function QuestionList({ quizId }: Props) {
     const [questions, setQuestions] = useState<Question[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
 
+    useEffect(() => {
+        if (!quizId) return;
+        fetchQuestions();
+    }, [quizId]);
+
     const fetchQuestions = async () => {
         try {
-            const res = await fetch(`http://localhost:8000/api/quizzes/67c2d95fa2ed5c67af3dc693/questions`);
+            setLoading(true);
+            const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}/questions`);
             if (!res.ok) throw new Error('Failed to fetch questions');
             const data = await res.json();
-            console.log('Fetched questions:', data);
             setQuestions(data.questions);
         } catch (error) {
             console.error('Error fetching questions:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchQuestions();
-    }, []);
-
     const openModal = (question?: Question) => {
-        console.log('Opening modal...', question);
         setSelectedQuestion(question || null);
         setModalOpen(true);
     };
 
     const handleDelete = async (questionId: string) => {
-        try {
-            const res = await fetch(
-                `http://localhost:8000/api/quizzes/67c2d95fa2ed5c67af3dc693/questions/${questionId}`,
-                {
-                    method: 'DELETE'
-                }
-            );
-            if (!res.ok) throw new Error('Failed to delete question');
+        const confirmDelete = window.confirm('Bạn có chắc muốn xóa câu hỏi này?');
+        if (!confirmDelete) return;
 
-            // Cập nhật lại danh sách câu hỏi sau khi xóa
-            setQuestions((prevQuestions) => prevQuestions.filter((q) => q._id !== questionId));
+        try {
+            const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}/questions/${questionId}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error('Failed to delete question');
+            setQuestions((prev) => prev.filter((q) => q._id !== questionId));
         } catch (error) {
             console.error('Error deleting question:', error);
+            alert('Lỗi khi xóa câu hỏi!');
         }
     };
 
@@ -76,55 +82,61 @@ export default function QuestionList() {
                     <Image src={arrow} alt="Arrow Right" />
                 </Button>
             </div>
-            <div className="space-y-4">
-                {questions.map((question, index) => (
-                    <div key={question._id} className="border border-gray-300 rounded-lg shadow-md p-4">
-                        <div className="p-2 flex justify-between items-center">
-                            <h3 className="text-base font-medium text-primary-800">
-                                {index + 1}. {question.text} ({question.points} points)
-                            </h3>
-                            <div className="space-x-2 flex">
-                                <Button
-                                    variant="outline"
-                                    size="xs"
-                                    className="flex items-center gap-2"
-                                    onClick={() => openModal(question)}
-                                >
-                                    Update
-                                </Button>
-                                <Button
-                                    variant="destructive"
-                                    size="xs"
-                                    className="flex items-center gap-2"
-                                    onClick={() => handleDelete(question._id)}
-                                >
-                                    Delete
-                                </Button>
+
+            {loading ? (
+                <p className="text-center text-gray-500">Đang tải câu hỏi...</p>
+            ) : (
+                <div className="space-y-4">
+                    {questions.map((question, index) => (
+                        <div key={question._id} className="border border-gray-300 rounded-lg shadow-md p-4">
+                            <div className="p-2 flex justify-between items-center">
+                                <h3 className="text-base font-medium text-primary-800">
+                                    {index + 1}. {question.text} ({question.points} điểm)
+                                </h3>
+                                <div className="space-x-2 flex">
+                                    <Button
+                                        variant="outline"
+                                        size="xs"
+                                        className="flex items-center gap-2"
+                                        onClick={() => openModal(question)}
+                                    >
+                                        Update
+                                    </Button>
+                                    <Button
+                                        variant="destructive"
+                                        size="xs"
+                                        className="flex items-center gap-2"
+                                        onClick={() => handleDelete(question._id)}
+                                    >
+                                        Delete
+                                    </Button>
+                                </div>
                             </div>
+                            <ul className="mt-2 space-y-2">
+                                {question.options.map((option, i) => (
+                                    <li
+                                        key={i}
+                                        className={`p-2 border rounded-md text-[15px] ${
+                                            isCorrectAnswer(question, option)
+                                                ? 'border-accent-500 bg-accent-200'
+                                                : 'border-gray-300'
+                                        }`}
+                                    >
+                                        {option}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                        <ul className="mt-2 space-y-2">
-                            {question.options.map((option, i) => (
-                                <li
-                                    key={i}
-                                    className={`p-2 border rounded-md text-[15px] ${
-                                        isCorrectAnswer(question, option)
-                                            ? 'border-accent-500 bg-accent-200'
-                                            : 'border-gray-300'
-                                    }`}
-                                >
-                                    {option}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
+
             {modalOpen && (
                 <QuestionModal
                     isOpen={modalOpen}
                     onClose={() => setModalOpen(false)}
                     question={selectedQuestion}
-                    quizId="67c2d95fa2ed5c67af3dc693"
+                    quizId={quizId}
                     onQuestionUpdated={fetchQuestions}
                 />
             )}
