@@ -179,7 +179,11 @@ const Dashboard = () => {
                           className="w-[100px] h-[80px] object-contain"
                         />
                       </div>
-                      <Link href={`/courses/${course._id}`} className="truncate w-[400px] text-[15px] text-primary-800 font-medium pl-[30px] hover:text-accent-900 transition-colors duration-200">
+                      <Link 
+                        href={`/courses/${course._id}`}
+                        className="truncate w-[400px] text-[15px] text-primary-800 font-medium pl-[30px] hover:text-accent-900 transition-colors duration-200"
+                        title={course.name}
+                        >
                         {course.name}
                       </Link>
                     </div>

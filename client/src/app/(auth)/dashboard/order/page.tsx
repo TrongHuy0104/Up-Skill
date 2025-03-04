@@ -25,8 +25,9 @@ interface Order {
 export default function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalOrders, setTotalOrders] = useState(0);
-  const totalPages = Math.max(1, Math.ceil(totalOrders / 10));
+  const [totalCourses, setTotalCourses] = useState(0);
+
+  const coursesPerPage = 10;
 
   // Fetch orders
   const fetchOrders = async () => {
@@ -38,7 +39,7 @@ export default function OrderList() {
     console.log("Fetched orders:", response.data.orders);
 
     setOrders(response.data.orders);
-    setTotalOrders(response.data.orders.length);
+      setTotalCourses(response.data.orders.reduce((acc: any, order: { courseIds: string | any[]; }) => acc + order.courseIds.length, 0));
   } catch (error) {
     console.error("Error fetching orders:", error);
   }
@@ -46,11 +47,21 @@ export default function OrderList() {
 
   useEffect(() => {
     fetchOrders();
-  }, [currentPage]);
+  }, []);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+
+  // Flatten orders into course list with order reference
+  const flattenedCourses = orders.flatMap(order => 
+    order.courseIds.map(course => ({ ...course, orderId: order._id, createdAt: order.createdAt }))
+  );
+
+  // Pagination logic
+  const startIndex = (currentPage - 1) * coursesPerPage;
+  const paginatedCourses = flattenedCourses.slice(startIndex, startIndex + coursesPerPage);
+  const totalPages = Math.max(1, Math.ceil(totalCourses / coursesPerPage));
 
   return (
     <div className="ml-10 p-6 bg-primary-50 rounded-lg border border-primary-100">
@@ -68,26 +79,27 @@ export default function OrderList() {
         </TableHeader>
 
         <TableBody>
-        {orders.flatMap((order) => 
-            order.courseIds.map((course, index) => (
-              <TableRow key={`${order._id}-${course._id}-${index}`} className="border-b hover:bg-gray-50">
-              <TableCell className="pl-[30px] text-[15px] text-primary-800 font-medium">{order._id}</TableCell>
+        {/* {orders.flatMap((order) =>  */}
+            {paginatedCourses.map((course, index) => (
+              <TableRow key={`${course.orderId}-${course._id}-${index}`} className="border-b hover:bg-gray-50">
+              <TableCell className="pl-[30px] text-[15px] text-primary-800 font-medium">{course.orderId}</TableCell>
               <TableCell className="text-[15px] text-primary-800 font-medium">
-                <Link 
-                  href={`/courses/${course._id}`} 
-                  className="truncate hover:text-accent-900 transition-colors duration-200"
-                >
-                  {course.name}
-                </Link>
+              <Link 
+                href={`/courses/${course._id}`} 
+                className="w-[300px] hover:text-accent-900 transition-colors duration-200 block overflow-hidden whitespace-nowrap text-ellipsis"
+                title={course.name}
+              >
+                {course.name}
+              </Link>
               </TableCell>
               <TableCell className="text-[15px] text-primary-800 font-medium">
-              {new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {new Date(course.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </TableCell>
               <TableCell className="text-[15px] text-primary-800 font-medium">
                 ${course.price?.toFixed(2) || "N/A"}
               </TableCell>
               <TableCell className="flex justify-center space-x-3">
-                <Link href={`/orders/${order._id}`}>
+                <Link href={`/orders/${course.orderId}`}>
                   <button className="p-2 rounded-xl group border border-primary-100 bg-accent-100 hover:bg-primary-800 transition-colors duration-200">
                     <div className="relative w-4 h-4">
                       <Image 
@@ -117,7 +129,7 @@ export default function OrderList() {
               </TableCell>
             </TableRow>
           ))
-        )}
+        }
           </TableBody>
 
         <TableFooter>
