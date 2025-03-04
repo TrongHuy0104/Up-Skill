@@ -115,8 +115,6 @@ export default function Search() {
                                             key={course?._id}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
                                             onClick={handleSelectResult}
-                                            role="button"
-                                            tabIndex={0}
                                         >
                                             <Link href={`/courses/${course?._id}`} legacyBehavior>
                                                 <a className="flex items-center gap-2">
@@ -157,8 +155,6 @@ export default function Search() {
                                             key={user._id}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
                                             onClick={handleSelectResult}
-                                            role="button"
-                                            tabIndex={0}
                                         >
                                             <Link href={`/instructors/${user?._id}`} legacyBehavior>
                                                 <a className="flex items-center gap-2">
