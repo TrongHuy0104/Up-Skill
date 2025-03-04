@@ -2,6 +2,8 @@ import { cookies } from 'next/headers';
 import CreateCourse from './_components/CreateCourse';
 import { Suspense } from 'react';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
+import Link from 'next/link';
 
 export default async function page() {
     const cookieStore = await cookies();
@@ -27,22 +29,35 @@ export default async function page() {
 
     return (
         <div className="pt-8 px-10 pb-10 ml-auto max-w-[1000px] border border-primary-100 rounded-xl">
-            <Suspense fallback={<DashboardSkeleton />}>
-                <CreateCourse
-                    levels={levels.map((level: any) => ({
-                        label: level.name,
-                        value: level._id
-                    }))}
-                    categories={categories.map((category: any) => ({
-                        label: category.title,
-                        value: category._id,
-                        subCategories: category.subCategories.map((subCategory: any) => ({
-                            label: subCategory.title,
-                            value: subCategory._id
-                        }))
-                    }))}
-                />
-            </Suspense>
+
+            <Tabs defaultValue='create-course'>
+                <TabsList>
+                    <TabsTrigger value="create-course">Course</TabsTrigger>
+                    <TabsTrigger value="create-quiz">
+                        <Link href="/dashboard/quizzes/create-quiz">
+                            Quiz
+                        </Link>
+                    </TabsTrigger>
+                </TabsList>
+                <TabsContent value="create-course">
+                    <Suspense fallback={<DashboardSkeleton />}>
+                        <CreateCourse
+                            levels={levels.map((level: any) => ({
+                                label: level.name,
+                                value: level._id
+                            }))}
+                            categories={categories.map((category: any) => ({
+                                label: category.title,
+                                value: category._id,
+                                subCategories: category.subCategories.map((subCategory: any) => ({
+                                    label: subCategory.title,
+                                    value: subCategory._id
+                                }))
+                            }))}
+                        />
+                    </Suspense>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }
