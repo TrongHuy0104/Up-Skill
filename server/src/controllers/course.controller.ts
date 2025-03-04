@@ -16,6 +16,34 @@ import CategoryModel from '@/models/Category.model';
 import SubCategoryModel from '@/models/SubCategory.model';
 import UserModel from '@/models/User.model';
 
+export const getCoursesByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return next(new ErrorHandler('Unauthorized - user not found', 401));
+    }
+
+    // Lấy user để truy cập user.uploadedCourses
+    const user = await UserModel.findById(userId).select('uploadedCourses');
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    // uploadedCourses là mảng ObjectId/string => tìm tất cả các khóa học có _id thuộc mảng này
+    const courses = await CourseModel.find({
+        _id: { $in: user.uploadedCourses }
+    });
+
+    // Nếu muốn bắt lỗi khi không có course nào
+    if (!courses || courses.length === 0) {
+        return next(new ErrorHandler('No courses found for this user', 404));
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: courses
+    });
+});
+
 export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
 
