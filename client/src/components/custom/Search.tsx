@@ -115,30 +115,35 @@ export default function Search() {
                                             key={course?._id}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
                                             onClick={handleSelectResult}
+                                            role="button"
+                                            tabIndex={0}
                                         >
-                                            <Link href={`/courses/${course?._id}`}>
-                                                <Image
-                                                    src={course?.thumbnail?.url || defaultCourseImage}
-                                                    alt="Course Image"
-                                                    width={40}
-                                                    height={40}
-                                                    className="rounded mr-2"
-                                                />
-                                            </Link>
-                                            <div>
-                                                <div className="font-medium">{course?.name}</div>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-sm text-black w-[70px]">
-                                                        {users?.find((user) => user?._id === course?.authorId?.toString())
-                                                            ?.name || 'Unknown'}
+                                            <Link href={`/courses/${course?._id}`} legacyBehavior>
+                                                <a className="flex items-center gap-2">
+                                                    <Image
+                                                        src={course?.thumbnail?.url || defaultCourseImage}
+                                                        alt="Course Image"
+                                                        width={40}
+                                                        height={40}
+                                                        className="rounded mr-2"
+                                                    />
+                                                    <div>
+                                                        <div className="font-medium">{course?.name}</div>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="text-sm text-black w-[70px]">
+                                                                {users?.find(
+                                                                    (user) => user?._id === course?.authorId?.toString()
+                                                                )?.name || 'Unknown'}
+                                                            </div>
+                                                            <p className="text-sm text-primary-500">
+                                                                {course?.description?.length > 50
+                                                                    ? course.description.slice(0, 50) + '...'
+                                                                    : course.description}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-sm text-primary-500">
-                                                        {course?.description?.length > 50
-                                                            ? course.description.slice(0, 50) + '...'
-                                                            : course.description}
-                                                    </p>
-                                                </div>
-                                            </div>
+                                                </a>
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -152,20 +157,24 @@ export default function Search() {
                                             key={user._id}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
                                             onClick={handleSelectResult}
+                                            role="button"
+                                            tabIndex={0}
                                         >
-                                            <Link href={`/instructors/${user?._id}`}>
-                                                <Image
-                                                    src={user?.avatar?.url || defaultInstructorImage}
-                                                    alt="User Avatar"
-                                                    width={40}
-                                                    height={40}
-                                                    className="rounded-full mr-2"
-                                                />
+                                            <Link href={`/instructors/${user?._id}`} legacyBehavior>
+                                                <a className="flex items-center gap-2">
+                                                    <Image
+                                                        src={user?.avatar?.url || defaultInstructorImage}
+                                                        alt="User Avatar"
+                                                        width={40}
+                                                        height={40}
+                                                        className="rounded-full mr-2"
+                                                    />
+                                                    <div>
+                                                        <div className="font-medium">{user.name}</div>
+                                                        <div className="text-sm text-primary-500">{user.role}</div>
+                                                    </div>
+                                                </a>
                                             </Link>
-                                            <div>
-                                                <div className="font-medium">{user.name}</div>
-                                                <div className="text-sm text-primary-500">{user.role}</div>
-                                            </div>
                                         </li>
                                     ))}
                                 </ul>
