@@ -10,7 +10,6 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 
-import CoursePlayer from '@/app/(auth)/dashboard/instructor/create-course/_components/CoursePlayer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import { computeSalePercent } from '@/lib/utils';
 import { Course } from '@/types/Course';
@@ -18,6 +17,7 @@ import { useCreatePaymentIntentMutation } from '@/lib/redux/features/order/order
 import { orderCreatePaymentIntent } from '@/lib/redux/features/order/orderSlice';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import { CourseSideBarSkeleton } from '@/components/ui/Skeleton';
+import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 
 interface CourseSidebarProps {
     course: Course;
@@ -86,7 +86,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                         <DialogHeader>
                             <DialogTitle className="text-2xl">Course Preview</DialogTitle>
                         </DialogHeader>
-                        <CoursePlayer title="course" videoUrl={course?.demoUrl} width={60} />
+                        <VideoPlayer videoUrl={course?.demoUrl?.url || ''} />
                     </DialogContent>
                 </Dialog>
             </div>

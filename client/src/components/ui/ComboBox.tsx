@@ -25,13 +25,13 @@ export function Combobox({ options, value, onChange }: CompoBoxProps) {
                     size="combobox"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[250px] justify-between"
+                    className="w-full justify-between"
                 >
                     {value ? options.find((option) => option.value === value)?.label : 'Select Item...'}
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[250px] p-0">
+            <PopoverContent className="w-full p-0">
                 <Command>
                     <CommandInput placeholder="Search Item..." className="h-9" />
                     <CommandList>
