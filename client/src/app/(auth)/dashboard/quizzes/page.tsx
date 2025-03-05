@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import Question from './quizzes/[quizId]/question/_components/Question';
 import Quiz from './quizzes/[quizId]/_components/Quiz';
+import Practice from './quizzes/[quizId]/question/_components/Practice';
 
 export default function Page() {
     const [activeTab, setActiveTab] = useState<string>('quiz');
@@ -23,12 +24,16 @@ export default function Page() {
                         <TabsTrigger value="question" disabled={!selectedQuizId}>
                             Question
                         </TabsTrigger>
+                        <TabsTrigger value="practice">Practice</TabsTrigger>
                     </TabsList>
                     <TabsContent value="quiz">
                         <Quiz onQuizClick={handleQuizClick} />
                     </TabsContent>
                     <TabsContent value="question">
-                        {selectedQuizId ? <Question quizId={selectedQuizId} /> : <p>Chọn một bài quiz</p>}
+                        {selectedQuizId ? <Question quizId={selectedQuizId} /> : <p>Chosse a quiz</p>}
+                    </TabsContent>
+                    <TabsContent value="practice">
+                        <Practice />
                     </TabsContent>
                 </Tabs>
             </Suspense>

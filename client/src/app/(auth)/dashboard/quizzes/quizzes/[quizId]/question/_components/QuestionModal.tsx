@@ -20,8 +20,6 @@ interface QuestionModalProps {
 }
 
 const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question, quizId, onQuestionUpdated }) => {
-    console.log('Rendering modal, isOpen:', isOpen);
-
     const [formData, setFormData] = useState<Question>(
         question || { text: '', type: 'single-choice', points: 1, options: ['', '', '', ''], correctAnswer: '' }
     );
@@ -29,6 +27,20 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
     useEffect(() => {
         console.log('Form data updated:', formData);
     }, [formData]);
+
+    useEffect(() => {
+        if (formData.type === 'single-choice') {
+            setFormData((prev) => ({
+                ...prev,
+                correctAnswer: Array.isArray(prev.correctAnswer) ? prev.correctAnswer[0] || '' : prev.correctAnswer
+            }));
+        } else if (formData.type === 'multiple-choice') {
+            setFormData((prev) => ({
+                ...prev,
+                correctAnswer: Array.isArray(prev.correctAnswer) ? prev.correctAnswer : [prev.correctAnswer]
+            }));
+        }
+    }, [formData.type]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -53,13 +65,22 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
         }
     };
 
+    const handleAddOption = () => {
+        if (formData.options.length < 4) {
+            // Giới hạn số lượng option tối đa là 4
+            setFormData((prev) => ({
+                ...prev,
+                options: [...prev.options, '']
+            }));
+        }
+    };
+
     const handleSubmit = async () => {
         const url = question?._id
             ? `http://localhost:8000/api/quizzes/${quizId}/questions/${question._id}`
             : `http://localhost:8000/api/quizzes/${quizId}/questions`;
 
         const method = question?._id ? 'PUT' : 'POST';
-        console.log('Submitting question:', formData);
 
         const response = await fetch(url, {
             method,
@@ -138,6 +159,13 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                         )}
                     </div>
                 ))}
+
+                {/* Nút thêm option */}
+                {formData.options.length < 4 && (
+                    <Button onClick={handleAddOption} variant="primary" size="sm">
+                        Add Option
+                    </Button>
+                )}
 
                 {/* Label và input cho Correct Answer (nếu là Single Choice) */}
                 {formData.type === 'single-choice' && (
