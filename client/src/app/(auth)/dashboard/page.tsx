@@ -38,7 +38,7 @@ const Dashboard = () => {
     const fetchCourseStats = async () => {
       try {
           const response = await axios.get(
-              `${process.env.NEXT_PUBLIC_SERVER_URI}/courses`,
+              `${process.env.NEXT_PUBLIC_SERVER_URI}/courses/user-courses`,
               { withCredentials: true }
           );
   

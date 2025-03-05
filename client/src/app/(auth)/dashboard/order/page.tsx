@@ -27,7 +27,7 @@ export default function OrderList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCourses, setTotalCourses] = useState(0);
 
-  const coursesPerPage = 10;
+  const coursesPerPage = 4;
 
   // Fetch orders
   const fetchOrders = async () => {

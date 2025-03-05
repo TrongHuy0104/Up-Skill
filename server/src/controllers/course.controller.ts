@@ -136,6 +136,28 @@ export const getAllCoursesWithoutPurchase = catchAsync(async (req: Request, res:
     });
 });
 
+// get all courses without purchase of user
+export const getAllUserCoursesWithoutPurchase = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const authorId = req.user?._id;
+    const isCacheExist = await redis.get(`allUserCourses ${req.user?._id}`);
+    let courses;
+
+    if (isCacheExist) {
+        courses = JSON.parse(isCacheExist);
+    } else {
+        const courses = await CourseModel.find({authorId}).select(
+            '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links'
+        );
+        redis.set(`allUserCourses ${req.user?._id}`, JSON.stringify(courses));
+    }
+    console.log(req.user?._id);
+
+    res.status(200).json({
+        success: true,
+        courses
+    });
+});
+
 // get course content -- only for valid user
 export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userCourseList = req.user?.purchasedCourses;

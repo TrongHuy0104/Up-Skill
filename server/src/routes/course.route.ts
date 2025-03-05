@@ -16,7 +16,8 @@ import {
     getTopCourses,
     updateCourse,
     uploadCourse,
-    getCourseStatistics
+    getCourseStatistics,
+    getAllUserCoursesWithoutPurchase
 } from '@/controllers/course.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
@@ -31,6 +32,8 @@ router.get('/pagination', getCoursesLimitWithPagination);
 router.get('/count', getCourseStatistics);
 
 router.get('/top-courses', getTopCourses);
+
+router.get('/user-courses', updateAccessToken, isAuthenticated, getAllUserCoursesWithoutPurchase);
 
 router.get('/:id', getSingleCourse);
 
