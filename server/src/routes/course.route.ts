@@ -16,11 +16,14 @@ import {
     getTopCourses,
     updateCourse,
     uploadCourse,
-    getCourseStatistics
+    getCourseStatistics,
+    getCoursesByUser
 } from '@/controllers/course.controller';
-import { updateAccessToken } from '@/controllers/user.controller';
+import { getUserInfo, updateAccessToken } from '@/controllers/user.controller';
 
 const router = express.Router();
+
+router.get('/user-courses', updateAccessToken, isAuthenticated, getCoursesByUser, getUserInfo);
 
 router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 

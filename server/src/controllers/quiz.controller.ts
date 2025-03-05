@@ -55,12 +55,14 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
-        instructorId,
         questions,
         order,
         videoSection,
-        courseId
+        courseId // Get courseId from the request body
     } = req.body;
+
+    // Get instructorId from the authenticated user
+    //   const instructorId = '67a41678bec61d6a748a24fe';
 
     // Validate required fields
     if (
@@ -69,18 +71,12 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         !duration ||
         !passingScore ||
         !maxAttempts ||
-        !instructorId ||
         !questions ||
         !order ||
         !videoSection ||
         !courseId
     ) {
         return next(new ErrorHandler('Missing required fields', 400));
-    }
-
-    // Validate courseId format
-    if (!mongoose.Types.ObjectId.isValid(courseId)) {
-        return next(new ErrorHandler('Invalid course ID format', 400));
     }
 
     // Check if the course exists
@@ -98,7 +94,7 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
-        instructorId,
+        // instructorId,
         questions,
         order,
         videoSection,
@@ -123,11 +119,10 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
     // Save the updated course
     await course.save();
 
-    // Return the created quiz
+    // Send response
     res.status(201).json({
         success: true,
-        message: 'Quiz created successfully',
-        quiz: savedQuiz
+        data: savedQuiz
     });
 });
 
