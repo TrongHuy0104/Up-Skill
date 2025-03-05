@@ -421,22 +421,22 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
     const filter: CourseFilter = {};
 
     if (req.query.level) {
-        const levelDoc = await LevelModel.findOne({ name: req.query.level as string });
+        const levelDoc = await LevelModel.findOne({ name: new RegExp(`^${req.query.level}$`, 'i') });
         if (levelDoc) filter.level = levelDoc._id;
     }
 
     if (req.query.category) {
-        const categoryDoc = await CategoryModel.findOne({ title: req.query.category as string });
+        const categoryDoc = await CategoryModel.findOne({ title: new RegExp(`^${req.query.category}$`, 'i') });
         if (categoryDoc) filter.category = categoryDoc._id;
     }
 
     if (req.query.subCategory) {
-        const subCategoryDoc = await SubCategoryModel.findOne({ title: req.query.subCategory as string });
+        const subCategoryDoc = await SubCategoryModel.findOne({ title: new RegExp(`^${req.query.subCategory}$`, 'i') });
         if (subCategoryDoc) filter.subCategory = subCategoryDoc._id;
     }
 
     if (req.query.authorId) {
-        const authorDoc = await UserModel.findOne({ name: req.query.authorId as string });
+        const authorDoc = await UserModel.findOne({ name: new RegExp(`^${req.query.authorId}$`, 'i') });
         if (authorDoc) filter.authorId = authorDoc._id;
     }
 
