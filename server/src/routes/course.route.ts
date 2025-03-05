@@ -44,7 +44,7 @@ router.put('/add-answer', updateAccessToken, isAuthenticated, addAnswer);
 
 router.put('/add-review/:id', updateAccessToken, isAuthenticated, addReview);
 
-router.put('/add-reply/:id', updateAccessToken, isAuthenticated, addReplyToReview);
+router.put('/add-reply', updateAccessToken, isAuthenticated, addReplyToReview);
 
 router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCourses);
 
