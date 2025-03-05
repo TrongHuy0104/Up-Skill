@@ -3,7 +3,7 @@ import { Suspense, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import Question from './quizzes/[quizId]/question/_components/Question';
-import Quiz from './quizzes/[quizId]/_components/Quiz';
+import Quiz from './quizzes/_components/Quiz';
 
 export default function Page() {
     const [activeTab, setActiveTab] = useState<string>('quiz');

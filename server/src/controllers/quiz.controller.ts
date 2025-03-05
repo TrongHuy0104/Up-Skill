@@ -15,33 +15,61 @@ export const getQuizbyId = catchAsync(async (req: Request, res: Response, next: 
         return next(new ErrorHandler('Please provide a quiz id', 400));
     }
 
-    // Check Redis cache first
-    const isCacheExist = await redis.get(quizId);
-    let quiz;
-
-    if (isCacheExist) {
-        // If cached, parse the data
-        quiz = JSON.parse(isCacheExist);
-    } else {
-        // If not cached, fetch from the database
-        quiz = await Quiz.findById(quizId)
-            .populate('instructorId', 'name email') // Populate instructor details
-            .populate('courseId', 'title')
-            .exec();
-
-        // If quiz not found, return an error
-        if (!quiz) {
-            return next(new ErrorHandler('Quiz not found', 404));
+    // Aggregate pipeline to get quiz details with userScores population
+    const quiz = await Quiz.aggregate([
+        {
+            $match: { _id: new mongoose.Types.ObjectId(quizId) } // Match the quiz by ID
+        },
+        {
+            $lookup: {
+                from: 'users', // The name of the collection where User data is stored
+                localField: 'userScores.user', // The field in `userScores` that references the user
+                foreignField: '_id', // The field in the `users` collection to match
+                as: 'userDetails' // The new field where the populated data will be stored
+            }
+        },
+        {
+            $unwind: {
+                // Unwind userDetails array so that it can be merged properly with each score
+                path: '$userScores',
+                preserveNullAndEmptyArrays: true // Keeps quizzes even if no user is associated with a score
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userScores.user',
+                foreignField: '_id',
+                as: 'userScores.user'
+            }
+        },
+        {
+            $project: {
+                title: 1,
+                description: 1,
+                difficulty: 1,
+                duration: 1,
+                passingScore: 1,
+                maxAttempts: 1,
+                isPublished: 1,
+                order: 1,
+                videoSection: 1,
+                courseId: 1,
+                questions: 1,
+                userScores: 1,
+                userDetails: { name: 1, email: 1, username: 1, profilePicture: 1, role: 1 } // Select the user fields you want
+            }
         }
+    ]);
 
-        // Cache the quiz in Redis
-        await redis.set(quizId, JSON.stringify(quiz), 'EX', 604800); // Cache for 7 days (604800 seconds)
+    if (!quiz || quiz.length === 0) {
+        return next(new ErrorHandler('Quiz not found', 404));
     }
 
-    // Return the quiz
+    // Return the quiz with additional user data
     res.status(200).json({
         success: true,
-        quiz
+        quiz: quiz[0] // Since we used aggregate, the result is an array, so get the first element
     });
 });
 
@@ -58,11 +86,9 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         questions,
         order,
         videoSection,
-        courseId // Get courseId from the request body
+        courseId,
+        instructorId // Get instructorId from the request body
     } = req.body;
-
-    // Get instructorId from the authenticated user
-    //   const instructorId = '67a41678bec61d6a748a24fe';
 
     // Validate required fields
     if (
@@ -74,7 +100,8 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         !questions ||
         !order ||
         !videoSection ||
-        !courseId
+        !courseId ||
+        !instructorId // Ensure instructorId is provided
     ) {
         return next(new ErrorHandler('Missing required fields', 400));
     }
@@ -94,7 +121,7 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
-        // instructorId,
+        instructorId, // Include instructorId in the quiz document
         questions,
         order,
         videoSection,
