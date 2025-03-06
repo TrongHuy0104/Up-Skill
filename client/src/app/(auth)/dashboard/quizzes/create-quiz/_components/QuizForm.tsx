@@ -8,6 +8,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/custom/Input';
 import { useState, useEffect } from 'react';
+import { VideoSectionSelector } from './VideoSectionSelector';
+import { toast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   courseId: z.string().min(1, { message: 'Course is required' }),
@@ -26,7 +28,8 @@ const formSchema = z.object({
 export interface Course {
   _id: string;
   name: string;
-  courseData: Array<{ videoSection: string }>;
+  authorId: string;
+  courseData: Array<{ videoSection: string; title: string; description: string }>;
 }
 
 interface QuizFormProps {
@@ -36,12 +39,12 @@ interface QuizFormProps {
 export const QuizForm = ({ courses }: QuizFormProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [cookie, setCookie] = useState<string | null>(null);  // State to store the cookie value
+  const [cookie, setCookie] = useState<string | null>(null);
 
   // Fetch cookies when the component is mounted
   useEffect(() => {
-    const cookies = document.cookie;  // Access cookies on the client-side
-    setCookie(cookies);  // Set the cookie value in state
+    const cookies = document.cookie;
+    setCookie(cookies);
   }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,20 +64,35 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
     },
   });
 
-  const selectedCourse = courses?.find(course => course._id === form.watch('courseId'));
-  const videoSections = selectedCourse ? [...new Set(selectedCourse.courseData.map(section => section.videoSection))] : [];
+  const selectedCourse = courses?.find((course) => course._id === form.watch('courseId'));
+  const videoSections = selectedCourse
+    ? selectedCourse.courseData.map((section) => ({
+      videoSection: section.videoSection,
+      title: section.title,
+      description: section.description,
+    }))
+    : [];
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
+      // Get the selected course
+      const selectedCourse = courses.find((course) => course._id === data.courseId);
+      if (!selectedCourse) {
+        throw new Error('Course not found');
+      }
+
       // Send POST request with quiz data and cookie in headers
       const response = await fetch('http://localhost:8000/api/quizzes/create-quiz', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Cookie': cookie || '',  // Pass the cookie in headers if it's available
+          'Cookie': cookie || '',
         },
-        body: JSON.stringify(data),  // Send form data in the request body
+        body: JSON.stringify({
+          ...data,
+          instructorId: selectedCourse.authorId, // Set authorId from the selected course
+        }),
       });
 
       if (!response.ok) {
@@ -84,9 +102,18 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
 
       // Redirect to quizzes page after successful quiz creation
       router.push('/dashboard/quizzes/create-quiz');
+      toast({
+        variant: 'success',
+        title: 'Quiz created!'
+    });
     } catch (error) {
       console.error('Error creating quiz:', error);
-      // alert(`Error: ${error.message}`);
+      const errorData = error as any;
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: errorData
+    });
     } finally {
       setIsLoading(false);
     }
@@ -105,8 +132,10 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
               <FormControl>
                 <select className="w-full p-2 border rounded-md" {...field}>
                   <option value="">Select a course</option>
-                  {courses?.map(course => (
-                    <option key={course._id} value={course._id}>{course.name}</option>
+                  {courses?.map((course) => (
+                    <option key={course._id} value={course._id}>
+                      {course.name}
+                    </option>
                   ))}
                 </select>
               </FormControl>
@@ -116,23 +145,9 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
         />
 
         {/* Video Section Selection */}
-        <FormField
-          control={form.control}
-          name="videoSection"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Video Section</FormLabel>
-              <FormControl>
-                <select className="w-full p-2 border rounded-md" {...field} disabled={!selectedCourse}>
-                  <option value="">Select a video section</option>
-                  {videoSections.map(section => (
-                    <option key={section} value={section}>{section}</option>
-                  ))}
-                </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        <VideoSectionSelector
+          videoSections={videoSections}
+          selectedCourse={!!selectedCourse}
         />
 
         {/* Quiz Title */}
@@ -229,21 +244,6 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
           )}
         />
 
-        {/* Publish Checkbox */}
-        {/* <FormField
-          control={form.control}
-          name="isPublished"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <input type="checkbox" {...field} className="w-3 h-3" />
-              </FormControl>
-              <FormLabel>Publish</FormLabel>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
         {/* Submit Button */}
         <Button type="submit" variant="default" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Create Quiz'}
@@ -252,3 +252,5 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
     </Form>
   );
 };
+
+

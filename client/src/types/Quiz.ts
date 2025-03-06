@@ -10,3 +10,47 @@ export interface Question {
 export interface Quizzes {
     _id: string;
 }
+
+export interface IQuestion {
+    questionId: string;
+    text: string;
+    type: 'multiple-choice' | 'true/false' | 'short-answer';
+    points: number;
+    options?: string[];
+    correctAnswer: string | number;
+}
+
+export interface Quiz {
+    _id: string;
+    title: string;
+    description?: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+    duration: number;
+    passingScore: number;
+    maxAttempts: number;
+    isPublished: boolean;
+    instructorId: string;
+    questions: IQuestion[];
+    order: number;
+    videoSection: string;
+    courseId: string;
+    userScores?: {
+        user: {
+          _id: string;
+          name: string;
+          email: string;
+        };
+        score: number;
+        attemptedAt: Date;
+      };
+}
+
+export interface IUserScore {
+    user: {
+        _id: string;
+        name: string;
+        email: string;
+    };
+    score: number;
+    attemptedAt: Date;
+}
