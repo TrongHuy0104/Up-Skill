@@ -5,7 +5,7 @@ import QuizItem from './QuizItem';
 import { QuizItemSkeleton } from '@/components/ui/Skeleton';
 import { toast } from '@/hooks/use-toast';
 
-export default function QuizList({ onQuizClick }: { onQuizClick: (quizId: string) => void }) {
+export default function QuizList({ onQuizClick } : Readonly<{ onQuizClick: (quizId: string) => void }>) {
     const [quizzes, setQuizzes] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -66,7 +66,7 @@ export default function QuizList({ onQuizClick }: { onQuizClick: (quizId: string
         <div className="p-4">
             <ul className="space-y-4">
                 {loading
-                    ? Array.from({ length: 5 }).map((_, index) => <QuizItemSkeleton key={index} />)
+                    ? Array(5).map((_, index) => <QuizItemSkeleton key={index} />)
                     : quizzes?.map((quiz, index) => (
                         <QuizItem
                             key={quiz._id}

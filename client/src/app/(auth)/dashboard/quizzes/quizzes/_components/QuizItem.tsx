@@ -10,13 +10,13 @@ import QuizUpdateModal from './QuizUpdateModal'; // Import the update modal
 import QuizDeleteModal from './QuizDeleteModal'; // Import the delete modal
 
 interface QuizItemProps {
-    quiz: any;
-    isFirst?: boolean;
-    isLast?: boolean;
-    onClick: () => void;
-    userId: string; // Add userId to props
-    onUpdate: (updatedQuiz: any) => void; // Callback to handle quiz updates
-    onDelete: (quizId: string) => void; // Callback to handle quiz delete
+    readonly quiz: any;
+    readonly isFirst?: boolean;
+    readonly isLast?: boolean;
+    readonly onClick: () => void;
+    readonly userId: string; // Add userId to props
+    readonly onUpdate: (updatedQuiz: any) => void; // Callback to handle quiz updates
+    readonly onDelete: (quizId: string) => void; // Callback to handle quiz delete
 }
 
 export default function QuizItem({ quiz, isFirst, isLast, onClick, userId, onUpdate, onDelete }: QuizItemProps) {
@@ -27,10 +27,12 @@ export default function QuizItem({ quiz, isFirst, isLast, onClick, userId, onUpd
 
     return (
         <>
-            <li
+            <div
+                role="button"
                 onClick={onClick}
                 className={`group grid grid-cols-10 gap-4 items-baseline cursor-pointer hover:bg-gray-100 transition ${isFirst ? 'pt-6' : ''
                     } ${isLast ? 'border-none' : 'border-b border-gray-200'} my-4 py-4`}
+                aria-label="Quiz item"
             >
                 {/* Quiz Thumbnail and Title (4 parts) */}
                 <div className="col-span-4 flex min-w-0">
@@ -90,7 +92,7 @@ export default function QuizItem({ quiz, isFirst, isLast, onClick, userId, onUpd
                         <MdOutlineDelete />
                     </button>
                 </div>
-            </li>
+            </div>
 
             {/* Result Modal */}
             {showResultsModal && (

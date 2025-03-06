@@ -32,7 +32,7 @@ export const VideoSectionSelector = ({ videoSections, selectedCourse }: VideoSec
     <FormField
       control={control}
       name="videoSection"
-      render={({  }) => (
+      render={() => (
         <FormItem>
           <FormLabel>Video Section</FormLabel>
           <FormControl>
@@ -49,17 +49,7 @@ export const VideoSectionSelector = ({ videoSections, selectedCourse }: VideoSec
                     {section}
                   </option>
                 ))}
-                {/* <option value="new">+ Create New Section</option> */}
               </select>
-
-              {/* {isNewSection && (
-                <Input
-                  {...field}
-                  placeholder="Enter new section name"
-                  className="w-full p-2 border rounded-md"
-                  disabled={!selectedCourse}
-                />
-              )} */}
             </div>
           </FormControl>
           <FormMessage />

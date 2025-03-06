@@ -4,7 +4,7 @@
 import { Course, QuizForm } from './QuizForm'; // Named import
 
 interface CreateQuizProps {
-  courses: Course[];
+  readonly courses: Course[];
 }
 
 // Default export
