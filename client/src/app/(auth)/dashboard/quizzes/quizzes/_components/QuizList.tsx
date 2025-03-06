@@ -66,7 +66,7 @@ export default function QuizList({ onQuizClick } : Readonly<{ onQuizClick: (quiz
         <div className="p-4">
             <ul className="space-y-4">
                 {loading
-                    ? Array(5).map((_, index) => <QuizItemSkeleton key={index} />)
+                    ? Array(5).map((_, index) => <QuizItemSkeleton key={(index+1)} />)
                     : quizzes?.map((quiz, index) => (
                         <QuizItem
                             key={quiz._id}

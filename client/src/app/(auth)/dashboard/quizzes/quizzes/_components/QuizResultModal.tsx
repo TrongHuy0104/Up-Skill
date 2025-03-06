@@ -7,9 +7,9 @@ import { BsClockHistory } from 'react-icons/bs';
 import { Quiz } from '@/types/Quiz';
 
 interface QuizResultModalProps {
-  quizId: string;
-  userId: string;
-  onClose: () => void;
+  readonly quizId: string;
+  readonly userId: string;
+  readonly onClose: () => void;
 }
 
 export default function QuizResultModal({ quizId, userId, onClose }: QuizResultModalProps) {
