@@ -18,7 +18,7 @@ interface Props {
     quizId: string;
 }
 
-export default function QuestionList({ quizId }: Props) {
+export default function QuestionList({ quizId }: Readonly<Props>) {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -113,9 +113,9 @@ export default function QuestionList({ quizId }: Props) {
                                 </div>
                             </div>
                             <ul className="mt-2 space-y-2">
-                                {question.options.map((option, i) => (
+                                {question.options.map((option) => (
                                     <li
-                                        key={i}
+                                        key={option} // Sử dụng option làm key
                                         className={`p-2 border rounded-md text-[15px] ${
                                             isCorrectAnswer(question, option)
                                                 ? 'border-accent-500 bg-accent-200'

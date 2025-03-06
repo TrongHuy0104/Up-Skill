@@ -322,7 +322,7 @@ export const addReview = catchAsync(async (req: Request, res: Response, next: Ne
 
     const courseId = req.params.id;
 
-    const courseExists = userCourseList?.some((c: any) => c._id.toString() === courseId.toString());
+    const courseExists = userCourseList?.some((c: any) => c === courseId.toString());
 
     if (!courseExists) {
         return next(new ErrorHandler('You are not eligible to access this course', 404));
@@ -354,6 +354,8 @@ export const addReview = catchAsync(async (req: Request, res: Response, next: Ne
     course.rating = totalRating / course?.reviews.length;
 
     await course.save();
+
+    await redis.set(courseId, JSON.stringify(course), 'EX', 604800);
 
     // create notification
 
@@ -407,6 +409,8 @@ export const addReplyToReview = catchAsync(async (req: Request, res: Response, n
     review.commentReplies.push(replyData);
 
     await course.save();
+
+    await redis.set(courseId, JSON.stringify(course), 'EX', 604800);
 
     res.status(200).json({
         success: true,

@@ -20,8 +20,6 @@ interface QuestionModalProps {
 }
 
 const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question, quizId, onQuestionUpdated }) => {
-    console.log('Rendering modal, isOpen:', isOpen);
-
     const [formData, setFormData] = useState<Question>(
         question || { text: '', type: 'single-choice', points: 1, options: ['', '', '', ''], correctAnswer: '' }
     );
@@ -29,6 +27,20 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
     useEffect(() => {
         console.log('Form data updated:', formData);
     }, [formData]);
+
+    useEffect(() => {
+        if (formData.type === 'single-choice') {
+            setFormData((prev) => ({
+                ...prev,
+                correctAnswer: Array.isArray(prev.correctAnswer) ? prev.correctAnswer[0] || '' : prev.correctAnswer
+            }));
+        } else if (formData.type === 'multiple-choice') {
+            setFormData((prev) => ({
+                ...prev,
+                correctAnswer: Array.isArray(prev.correctAnswer) ? prev.correctAnswer : [prev.correctAnswer]
+            }));
+        }
+    }, [formData.type]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -53,13 +65,22 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
         }
     };
 
+    const handleAddOption = () => {
+        if (formData.options.length < 4) {
+            // Giới hạn số lượng option tối đa là 4
+            setFormData((prev) => ({
+                ...prev,
+                options: [...prev.options, '']
+            }));
+        }
+    };
+
     const handleSubmit = async () => {
         const url = question?._id
             ? `http://localhost:8000/api/quizzes/${quizId}/questions/${question._id}`
             : `http://localhost:8000/api/quizzes/${quizId}/questions`;
 
         const method = question?._id ? 'PUT' : 'POST';
-        console.log('Submitting question:', formData);
 
         const response = await fetch(url, {
             method,
@@ -81,8 +102,11 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 <h2 className="text-lg font-bold mb-4">{question ? 'Update Question' : 'Add Question'}</h2>
 
                 {/* Label và input cho Question */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
+                <label htmlFor="question-text" className="block text-sm font-medium text-gray-700 mb-1">
+                    Question
+                </label>
                 <input
+                    id="question-text"
                     type="text"
                     name="text"
                     placeholder="Enter the question"
@@ -92,8 +116,11 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 />
 
                 {/* Label và select cho Type */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <label htmlFor="question-type" className="block text-sm font-medium text-gray-700 mb-1">
+                    Type
+                </label>
                 <select
+                    id="question-type"
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
@@ -104,8 +131,11 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 </select>
 
                 {/* Label và input cho Points */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Points</label>
+                <label htmlFor="question-points" className="block text-sm font-medium text-gray-700 mb-1">
+                    Points
+                </label>
                 <input
+                    id="question-points"
                     type="number"
                     name="points"
                     placeholder="Enter points"
@@ -115,9 +145,11 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 />
 
                 {/* Label và input cho Options */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Options</label>
+                <label htmlFor="options" className="block text-sm font-medium text-gray-700 mb-1">
+                    Options
+                </label>
                 {formData.options.map((option, index) => (
-                    <div key={index} className="mb-2 flex items-center">
+                    <div key={`${formData._id}-${index}`} className="mb-2 flex items-center">
                         <input
                             type="text"
                             placeholder={`Option ${index + 1}`}
@@ -139,18 +171,28 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                     </div>
                 ))}
 
+                {/* Nút thêm option */}
+                {formData.options.length < 4 && (
+                    <Button onClick={handleAddOption} variant="primary" size="sm">
+                        Add Option
+                    </Button>
+                )}
+
                 {/* Label và input cho Correct Answer (nếu là Single Choice) */}
                 {formData.type === 'single-choice' && (
                     <>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Correct Answer</label>
+                        <label htmlFor="correct-answer" className="block text-sm font-medium text-gray-700 mb-1">
+                            Correct Answer
+                        </label>
                         <select
+                            id="correct-answer"
                             name="correctAnswer"
                             value={formData.correctAnswer as string}
                             onChange={handleChange}
                             className="w-full border p-2 rounded mb-4"
                         >
                             {formData.options.map((option, index) => (
-                                <option key={index} value={option}>
+                                <option key={`${formData._id}-${index}`} value={option}>
                                     {option}
                                 </option>
                             ))}

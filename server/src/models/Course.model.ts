@@ -1,15 +1,26 @@
 import mongoose, { Schema } from 'mongoose';
-import { IComment, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
+import { IComment, ICourse, ICourseData, ILink, IReview, IReviewReply } from '@/interfaces/Course';
 
-const ReviewSchema = new Schema<IReview>({
-    user: Object,
-    rating: {
-        type: Number,
-        default: 0
+const ReviewReplySchema = new Schema<IReviewReply>(
+    {
+        user: Object,
+        comment: String
     },
-    comment: String,
-    commentReplies: [Object]
-});
+    { timestamps: true }
+);
+
+const ReviewSchema = new Schema<IReview>(
+    {
+        user: Object,
+        rating: {
+            type: Number,
+            default: 0
+        },
+        comment: String,
+        commentReplies: [ReviewReplySchema]
+    },
+    { timestamps: true }
+);
 
 const LinkSchema = new Schema<ILink>({
     title: String,
