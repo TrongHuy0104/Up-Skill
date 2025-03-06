@@ -102,8 +102,11 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 <h2 className="text-lg font-bold mb-4">{question ? 'Update Question' : 'Add Question'}</h2>
 
                 {/* Label và input cho Question */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
+                <label htmlFor="question-text" className="block text-sm font-medium text-gray-700 mb-1">
+                    Question
+                </label>
                 <input
+                    id="question-text"
                     type="text"
                     name="text"
                     placeholder="Enter the question"
@@ -113,8 +116,11 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 />
 
                 {/* Label và select cho Type */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <label htmlFor="question-type" className="block text-sm font-medium text-gray-700 mb-1">
+                    Type
+                </label>
                 <select
+                    id="question-type"
                     name="type"
                     value={formData.type}
                     onChange={handleChange}
@@ -125,8 +131,11 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 </select>
 
                 {/* Label và input cho Points */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Points</label>
+                <label htmlFor="question-points" className="block text-sm font-medium text-gray-700 mb-1">
+                    Points
+                </label>
                 <input
+                    id="question-points"
                     type="number"
                     name="points"
                     placeholder="Enter points"
@@ -138,7 +147,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 {/* Label và input cho Options */}
                 <label className="block text-sm font-medium text-gray-700 mb-1">Options</label>
                 {formData.options.map((option, index) => (
-                    <div key={index} className="mb-2 flex items-center">
+                    <div key={`${formData._id}-${index}`} className="mb-2 flex items-center">
                         <input
                             type="text"
                             placeholder={`Option ${index + 1}`}
@@ -170,15 +179,18 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 {/* Label và input cho Correct Answer (nếu là Single Choice) */}
                 {formData.type === 'single-choice' && (
                     <>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Correct Answer</label>
+                        <label htmlFor="correct-answer" className="block text-sm font-medium text-gray-700 mb-1">
+                            Correct Answer
+                        </label>
                         <select
+                            id="correct-answer"
                             name="correctAnswer"
                             value={formData.correctAnswer as string}
                             onChange={handleChange}
                             className="w-full border p-2 rounded mb-4"
                         >
                             {formData.options.map((option, index) => (
-                                <option key={index} value={option}>
+                                <option key={`${formData._id}-${index}`} value={option}>
                                     {option}
                                 </option>
                             ))}

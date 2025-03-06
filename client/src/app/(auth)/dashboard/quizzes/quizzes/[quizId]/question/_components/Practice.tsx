@@ -85,9 +85,9 @@ export default function Practice() {
                 <>
                     <h2 className="text-xl font-semibold mb-4">{currentQuestion.text}</h2>
                     <div className="space-y-3">
-                        {currentQuestion.options.map((option, index) => (
+                        {currentQuestion.options.map((option) => (
                             <Button
-                                key={index}
+                                key={option} // Sử dụng option làm key
                                 variant={selectedOption === option ? 'primary' : 'outline'}
                                 size="lg"
                                 className="w-full justify-start"
@@ -113,7 +113,7 @@ export default function Practice() {
                 <div className="text-center">
                     <h2 className="text-2xl font-semibold mb-4">Result</h2>
                     <p className="text-lg mb-4">
-                        You answered correctly points {score}/{totalPoints} points ({percentage.toFixed(2)}%).
+                        You answered correctly {score}/{totalPoints} points ({percentage.toFixed(2)}%).
                     </p>
                     {percentage >= 70 ? (
                         <p className="text-green-600 font-semibold mb-4">Completely!</p>
@@ -121,7 +121,7 @@ export default function Practice() {
                         <p className="text-red-600 font-semibold mb-4">One more time!</p>
                     )}
                     <Button variant="default" size="lg" onClick={handleRestart}>
-                        Agian
+                        Again
                     </Button>
                 </div>
             )}
