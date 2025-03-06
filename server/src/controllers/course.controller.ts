@@ -319,17 +319,42 @@ export const getSingleCourse = catchAsync(async (req: Request, res: Response, ne
         return next(new ErrorHandler('Please provide course id', 400));
     }
 
-    const isCacheExist = await redis.get(courseId);
-    let course;
+    let course = await CourseModel.findById(req.params.id)
+        .populate('authorId')
+        .select('-courseData.suggestion -courseData.questions -courseData.links');
 
-    if (isCacheExist) {
-        course = await JSON.parse(isCacheExist);
-    } else {
-        course = await CourseModel.findById(req.params.id)
-            .populate('authorId')
-            .select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links');
-        redis.set(courseId, JSON.stringify(course));
-    }
+    course.courseData = course.courseData.filter(
+        (c: any) =>
+            c?.videoUrl?.url && c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
+    );
+
+    const sortedCourseData = (course.courseData = course.courseData.sort((a: any, b: any) => {
+        if (a.sectionOrder !== b.sectionOrder) {
+            return a.sectionOrder - b.sectionOrder; // Sort by sectionOrder first
+        }
+        return a.lessonOrder - b.lessonOrder; // If sectionOrder is the same, sort by lessonOrder
+    }));
+
+    course.courseData = sortedCourseData;
+
+    const modifiedCourseData = course.courseData.map((data: any) => {
+        if (data.isFree) {
+            return {
+                ...data.toObject(), // Convert Mongoose document to plain object
+                videoUrl: data.videoUrl // Include videoUrl
+            };
+        } else {
+            return {
+                ...data.toObject(),
+                videoUrl: undefined // Exclude videoUrl
+            };
+        }
+    });
+
+    course = {
+        ...course.toObject(),
+        courseData: modifiedCourseData
+    };
 
     if (!course) {
         return next(new ErrorHandler('Course not found', 404));
@@ -762,7 +787,7 @@ export const getAllCoursesWithoutPurchase = catchAsync(async (req: Request, res:
     if (isCacheExist) {
         courses = JSON.parse(isCacheExist);
     } else {
-        const courses = await CourseModel.find().select(
+        const courses = await CourseModel.find({ isPublished: true }).select(
             '-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links'
         );
         redis.set(`allCourses ${req.user?._id}`, JSON.stringify(courses));
@@ -791,6 +816,11 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
         return next(new ErrorHandler('Course not found', 404));
     }
 
+    course.courseData = course.courseData.filter(
+        (c: any) =>
+            c?.videoUrl?.url && c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
+    );
+
     const sortedCourseData = (course.courseData = course.courseData.sort((a: any, b: any) => {
         if (a.sectionOrder !== b.sectionOrder) {
             return a.sectionOrder - b.sectionOrder; // Sort by sectionOrder first
@@ -798,9 +828,11 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
         return a.lessonOrder - b.lessonOrder; // If sectionOrder is the same, sort by lessonOrder
     }));
 
+    course.courseData = sortedCourseData;
+
     res.status(200).json({
         success: true,
-        course: sortedCourseData
+        course
     });
 });
 
@@ -829,6 +861,31 @@ export const getUploadedCourseByInstructor = catchAsync(async (req: Request, res
         course
     });
 });
+
+// get uploaded courses & purchased courses of instructor
+export const getAllUploadedAndPurchasedCoursesOfInstructor = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const user = await UserModel.findById(req?.user?._id);
+
+        if (!user) {
+            return next(new ErrorHandler('User not found', 404));
+        }
+
+        const purchasedCourses = await CourseModel.find({
+            _id: { $in: user.purchasedCourses }
+        }).select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links');
+
+        const uploadedCourses = await CourseModel.find({
+            _id: { $in: user.uploadedCourses }
+        }).select('-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links');
+
+        res.status(200).json({
+            success: true,
+            purchasedCourses,
+            uploadedCourses
+        });
+    }
+);
 
 // add question in course
 interface IAddQuestionData {
@@ -884,6 +941,7 @@ interface IAddAnswerData {
 }
 
 interface CourseFilter {
+    isPublished: boolean;
     level?: mongoose.Types.ObjectId;
     category?: mongoose.Types.ObjectId;
     subCategory?: mongoose.Types.ObjectId;
@@ -1075,16 +1133,19 @@ export const getAllCourses = catchAsync(async (req: Request, res: Response, next
 export const deleteCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
+    // Find the course by ID
     const course = await CourseModel.findById(id);
 
     if (!course) {
         return next(new ErrorHandler('Course not found', 404));
     }
 
+    // If the course has a thumbnail, delete it from Cloudinary
     if (course?.thumbnail?.public_id) {
         await cloudinary.v2.uploader.destroy(course.thumbnail.public_id);
     }
 
+    // Delete the course
     await course.deleteOne({ id });
 
     // Update users who have purchased the course
@@ -1093,8 +1154,16 @@ export const deleteCourse = catchAsync(async (req: Request, res: Response, next:
         { $pull: { purchasedCourses: id } } // Remove the course ID from purchasedCourses
     );
 
+    // Update users who uploaded the course
+    await UserModel.updateMany(
+        { uploadedCourses: id }, // Find users with the uploaded course ID
+        { $pull: { uploadedCourses: id } } // Remove the course ID from uploadedCourses
+    );
+
+    // Optionally, delete the course ID from Redis cache
     await redis.del(id);
 
+    // Respond with success message
     res.status(200).json({
         success: true,
         message: 'Course deleted successfully'
@@ -1108,7 +1177,7 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
     const limit = parseInt(req.query.limit as string, 10) || 10;
     const skip = (page - 1) * limit;
 
-    const filter: CourseFilter = {};
+    const filter: CourseFilter = { isPublished: true };
 
     if (req.query.level) {
         const levelDoc = await LevelModel.findOne({ name: req.query.level as string });
@@ -1172,7 +1241,7 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
 
 // get courses statistics
 export const getCourseStatistics = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const courses = await CourseModel.find()
+    const courses = await CourseModel.find({ isPublished: true })
         .populate('category', 'title')
         .populate('subCategory', 'title')
         .populate('authorId', 'name')

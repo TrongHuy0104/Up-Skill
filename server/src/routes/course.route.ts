@@ -33,7 +33,8 @@ import {
     unpublishSection,
     deleteSection,
     publishCourse,
-    unpublishCourse
+    unpublishCourse,
+    getAllUploadedAndPurchasedCoursesOfInstructor
 } from '@/controllers/course.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
@@ -60,6 +61,14 @@ router.get('/', getAllCoursesWithoutPurchase);
 router.get('/purchased/:id', updateAccessToken, isAuthenticated, getPurchasedCourseByUser);
 
 router.get('/uploaded/:id', updateAccessToken, isAuthenticated, getUploadedCourseByInstructor);
+
+router.get(
+    '/instructor/all',
+    updateAccessToken,
+    isAuthenticated,
+    authorizeRoles('instructor'),
+    getAllUploadedAndPurchasedCoursesOfInstructor
+);
 
 router.put('/add-question', updateAccessToken, isAuthenticated, addQuestion);
 

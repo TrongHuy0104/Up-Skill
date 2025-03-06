@@ -2,6 +2,8 @@
 
 import { Trash, TriangleAlert } from 'lucide-react';
 import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
@@ -12,8 +14,6 @@ import {
     usePublishCourseMutation,
     useUnpublishCourseMutation
 } from '@/lib/redux/features/course/courseApi';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
 
 type Props = { course: any; refetchCourse: any };
 
@@ -188,7 +188,7 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
                 title: 'Delete course successfully'
             });
             refetchCourse();
-            router.replace('/dashboard');
+            router.replace('/dashboard/instructor');
         }
         if (errorDelete) {
             if ('data' in errorDelete) {
