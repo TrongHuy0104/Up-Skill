@@ -37,7 +37,7 @@ export default function CourseContentList({ data, activeVideo, setActiveVideo }:
                 const sectionVideos: any[] = data.filter((item: any) => item.videoSection === section);
                 const sectionVideoCount = sectionVideos.length;
                 const sectionVideoLength = sectionVideos.reduce(
-                    (totalLength: number, item: any) => totalLength + item.videoLength,
+                    (totalLength: number, item: any) => totalLength + item?.videoLength,
                     0
                 );
 
@@ -57,7 +57,9 @@ export default function CourseContentList({ data, activeVideo, setActiveVideo }:
                                 {section}
                                 <span className="text-sm font-normal">
                                     {sectionVideoCount} lessons •{' '}
-                                    {sectionVideoLength < 60 ? sectionVideoLength : sectionContentHours.toFixed(2)}{' '}
+                                    {sectionVideoLength < 60
+                                        ? sectionVideoLength?.toFixed(0)
+                                        : sectionContentHours.toFixed(2)}{' '}
                                     {sectionVideoLength > 60 ? 'hours' : 'minutes'}
                                 </span>
                             </div>
@@ -66,7 +68,7 @@ export default function CourseContentList({ data, activeVideo, setActiveVideo }:
                             <div className="mt-2 border-t pt-2 space-y-2">
                                 {sectionVideos.map((item: any, index: number) => {
                                     const videoIndex = sectionStartIndex + index;
-                                    const lessonLength = item.videoLength;
+                                    const lessonLength = item?.videoLength;
                                     return (
                                         <div
                                             key={item.title + index}
@@ -85,7 +87,7 @@ export default function CourseContentList({ data, activeVideo, setActiveVideo }:
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm text-[#131836]">
-                                                    {getMinutes(lessonLength)}
+                                                    {getMinutes(lessonLength.toFixed(0))}
                                                 </span>
                                             </div>
                                         </div>

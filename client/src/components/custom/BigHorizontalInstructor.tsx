@@ -21,7 +21,7 @@ const InstructorCard = ({ name, profession, avatar, rating, reviews, students, c
         <div className="flex items-center gap-6   w-[900px]">
             {/* Avatar */}
             <div className="w-52 h-52 rounded-sm overflow-hidden">
-                <Image src={avatar} alt={name} width={210} height={210} objectFit="cover" quality={100} />
+                <Image src={avatar} alt={name || ''} width={210} height={210} objectFit="cover" quality={100} />
             </div>
 
             {/* Thông tin Instructor */}
