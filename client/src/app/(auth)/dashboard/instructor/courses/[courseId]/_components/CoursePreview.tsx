@@ -1,50 +1,55 @@
 import React from 'react';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
+import Image from 'next/image';
 
-import CoursePlayer from './CoursePlayer';
 import { Button } from '@/components/ui/Button';
 import { formCreateCourseStyles } from '@/styles/styles';
 import Ratings from './Ratings';
+import VideoPlayer from './VideoPlayer';
 
 type Props = {
     active: number;
     setActive: (active: number) => void;
-    courseData: any;
-    handleCourseCreate: any;
+    course: any;
 };
 
-function CoursePreview({ active, setActive, courseData, handleCourseCreate }: Props) {
-    const discountPercentagePrice = (
-        ((courseData?.estimatedPrice - courseData?.price) / courseData?.estimatedPrice) *
-        100
-    ).toFixed(0);
+function CoursePreview({ active, setActive, course }: Props) {
+    const discountPercentagePrice = (((course?.estimatedPrice - course?.price) / course?.estimatedPrice) * 100).toFixed(
+        0
+    );
 
     const prevButton = () => {
         setActive(active - 1);
     };
 
-    const createCourse = () => {
-        handleCourseCreate();
-    };
     return (
         <>
             <div className="w-full relative">
                 <div className="w-full mt-10">
-                    <CoursePlayer videoUrl={courseData?.demoUrl} title={courseData?.title} />
+                    {!course?.demoUrl?.url ? (
+                        <Image
+                            src={course.thumbnail.url}
+                            width={100}
+                            height={100}
+                            quality={100}
+                            alt=""
+                            className="object-cover w-full aspect-video"
+                        />
+                    ) : (
+                        <VideoPlayer videoUrl={course?.demoUrl.url} />
+                    )}
                 </div>
                 <div className="flex items-center mt-4 gap-3">
                     <span className="text-[26px] font-medium text-accent-900">
-                        {courseData?.price === 0 ? 'Free' : courseData?.price + '$'}
+                        {course?.price === 0 ? 'Free' : course?.price + '$'}
                     </span>
-                    <span className="line-through opacity-80">{`${courseData?.estimatedPrice}$`}</span>
+                    <span className="line-through opacity-80">{`${course?.estimatedPrice}$`}</span>
                     <span className="rounded px-4 border border-accent-900 text-accent-900 bg-accent-100">
                         {discountPercentagePrice}% Off
                     </span>
                 </div>
                 <div className="flex items-center">
-                    <Button className="!w-[160px] my-3 !bg-red-600 cursor-not-allowed">
-                        Buy now {courseData?.price}$
-                    </Button>
+                    <Button className="!w-[160px] my-3 !bg-red-600 cursor-not-allowed">Buy now {course?.price}$</Button>
                 </div>
                 <div className="flex items-center">
                     <input
@@ -64,7 +69,7 @@ function CoursePreview({ active, setActive, courseData, handleCourseCreate }: Pr
             <div className="w-full">
                 <div className="w-full">
                     <h1 className="text-[36px] leading-[56px] font-cardo font-semibold text-ellipsis overflow-hidden">
-                        {courseData?.name}
+                        {course?.name}
                     </h1>
                     <div className="flex items-center justify-between pt-3">
                         <div className="flex items-center">
@@ -75,7 +80,7 @@ function CoursePreview({ active, setActive, courseData, handleCourseCreate }: Pr
                     </div>
                 </div>
                 <h1 className="text-[25px] font-cardo mt-5">What will you learn from this course?</h1>
-                {courseData?.benefits?.map((item: any, index: number) => (
+                {course?.benefits?.map((item: any, index: number) => (
                     <div key={index} className="w-full flex py-2">
                         <div className="mr-1 w-[15px]">
                             <IoIosCheckmarkCircleOutline size={20} />
@@ -84,7 +89,7 @@ function CoursePreview({ active, setActive, courseData, handleCourseCreate }: Pr
                     </div>
                 ))}
                 <h1 className="text-[25px] font-cardo mt-5">What are the prerequisites for starting this course?</h1>
-                {courseData?.prerequisites?.map((item: any, index: number) => (
+                {course?.prerequisites?.map((item: any, index: number) => (
                     <div key={index} className="w-full flex py-2">
                         <div className="mr-1 w-[15px]">
                             <IoIosCheckmarkCircleOutline size={20} />
@@ -95,15 +100,12 @@ function CoursePreview({ active, setActive, courseData, handleCourseCreate }: Pr
                 <br />
                 <div className="w-full">
                     <h1 className="text-[25px] font-cardo">Course Details</h1>
-                    <p className="mt-2 mb-6 whitespace-pre-line w-full overflow-hidden">{courseData?.description}</p>
+                    <p className="mt-2 mb-6 whitespace-pre-line w-full overflow-hidden">{course?.description}</p>
                 </div>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-start">
                 <Button onClick={prevButton} size="sm" type="submit">
                     <span>Back</span>
-                </Button>
-                <Button type="submit" size="sm" onClick={createCourse}>
-                    <span>Create</span>
                 </Button>
             </div>
         </>

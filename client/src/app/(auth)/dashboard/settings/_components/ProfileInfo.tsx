@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { formStyles } from '@/styles/styles';
 import { Input } from '@/components/ui/Input';
 import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
+import defaultAvatar from '@/public/assets/images/avatar/default-avatar.jpg';
 import { Button } from '@/components/ui/Button';
 import { useUpdateUserInfoMutation } from '@/lib/redux/features/user/userApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
@@ -84,7 +85,7 @@ const ProfileInfo = () => {
             <div className="relative flex items-center gap-[30px] pb-[38px] mb-[30px] border-b border-primary-100">
                 <div className="relative flex items-center justify-center p-[2px] bg-gradient-to-br from-[hsl(308,98%,60%)] to-[hsl(25,100%,55%)] rounded-full w-[120px] h-[120px]">
                     <Image
-                        src={imagePreview || user?.avatar?.url}
+                        src={user?.avatar?.url || imagePreview || defaultAvatar}
                         alt="Avatar"
                         width={120}
                         height={120}

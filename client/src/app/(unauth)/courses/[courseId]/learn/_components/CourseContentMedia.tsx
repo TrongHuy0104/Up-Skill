@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { FaRegMessage } from 'react-icons/fa6';
 
-import CoursePlayer from '@/app/(auth)/dashboard/instructor/create-course/_components/CoursePlayer';
 import { Button } from '@/components/ui/Button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import CoursesDetailInfo from '../../_components/CoursesDetailInfo';
@@ -19,7 +18,8 @@ import {
     useAddReviewInCourseMutation
 } from '@/lib/redux/features/course/courseApi';
 import SpinnerMini from '@/components/custom/SpinnerMini';
-import Ratings from '@/app/(auth)/dashboard/instructor/create-course/_components/Ratings';
+import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
+import Ratings from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/Ratings';
 
 type Props = {
     readonly course: any;
@@ -197,7 +197,7 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
 
     return (
         <div className="w-[95%] md:w-[90%] py-4 m-auto">
-            <CoursePlayer title={content?.[activeVideo]?.title} videoUrl={content?.[activeVideo]?.videoUrl} />
+            <VideoPlayer videoUrl={content?.[activeVideo]?.videoUrl?.url} />
             <div className="w-full flex items-center justify-between my-5">
                 <Button
                     size={'rounded'}
