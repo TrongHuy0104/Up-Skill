@@ -22,9 +22,9 @@ const formSchema = z.object({
 });
 
 interface QuizUpdateModalProps {
-  quiz: Quiz;
-  onClose: () => void;
-  onUpdate: (updatedQuiz: Quiz) => void;
+  readonly quiz: Quiz;
+  readonly onClose: () => void;
+  readonly onUpdate: (updatedQuiz: Quiz) => void;
 }
 
 export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateModalProps) {
