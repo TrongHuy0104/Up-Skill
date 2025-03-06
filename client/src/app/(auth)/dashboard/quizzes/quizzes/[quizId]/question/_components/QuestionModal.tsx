@@ -145,7 +145,9 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 />
 
                 {/* Label và input cho Options */}
-                <label className="block text-sm font-medium text-gray-700 mb-1">Options</label>
+                <label htmlFor="options" className="block text-sm font-medium text-gray-700 mb-1">
+                    Options
+                </label>
                 {formData.options.map((option, index) => (
                     <div key={`${formData._id}-${index}`} className="mb-2 flex items-center">
                         <input
