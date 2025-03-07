@@ -15,9 +15,9 @@ function TopCoursesContent() {
     useEffect(() => {
         const fetchTopCourses = async () => {
             try {
-                const res = await fetch('http://localhost:8000/api/courses/top-courses', {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/top-courses`, {
                     method: 'GET',
-                    credentials: 'include',
+                    credentials: 'include'
                 });
 
                 if (!res.ok) {
@@ -89,15 +89,15 @@ function TopCourses() {
                                 </Link>
                             </div>
                             <div className="mt-6">
-                                <Suspense fallback={
-                                    [...Array(5)].map((_, index) => (
+                                <Suspense
+                                    fallback={[...Array(5)].map((_, index) => (
                                         <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                                             <div className="p-1">
-                                            <VerticalCardSkeleton/>
+                                                <VerticalCardSkeleton />
                                             </div>
                                         </CarouselItem>
-                                    ))
-                                }>
+                                    ))}
+                                >
                                     <TopCoursesContent />
                                 </Suspense>
                             </div>

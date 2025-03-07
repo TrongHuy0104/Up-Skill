@@ -6,6 +6,7 @@ import { CourseHorizontalCard } from '@/components/custom/CourseCard';
 import PaginationComponent from '@/components/custom/PaginationComponent';
 import dynamic from 'next/dynamic';
 import noData from '@/public/assets/images/courses/no-data.jpg';
+import { HorizontalCardSkeleton } from '@/components/ui/Skeleton';
 
 // Sử dụng dynamic để tắt SSR cho modal
 const Modal = dynamic(() => import('@/app/(unauth)/courses/_components//ModalComponent'), { ssr: false });
@@ -74,7 +75,7 @@ export default function HorizontalCoursesList({
 }: HorizontalCoursesListProps) {
     const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
     const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
-    const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ 
+    const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ
     const [currentPage, setCurrentPage] = useState(page);
 
     useEffect(() => {
@@ -95,17 +96,23 @@ export default function HorizontalCoursesList({
     };
 
     if (!isClient) {
-        return null; // Không render gì khi chưa ở client
+        return (
+            <div className="w-full">
+                {[...Array(3)].map((_, index) => (
+                    <HorizontalCardSkeleton key={index} />
+                ))}
+            </div>
+        );
     }
     const startIndex = totalCourses === 0 ? 0 : (page - 1) * limit + 1;
     const endIndex = Math.min(page * limit, totalCourses);
 
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
-    };    
+    };
 
     return (
-        <div className="pl-[28px] relative">
+        <div className="pl-[28px] relative w-full">
             <div className="flex justify-between items-center pb-8 w-full">
                 <p className="text-primary-800">
                     Showing {startIndex}-{endIndex} Of {totalCourses} Courses
@@ -131,13 +138,13 @@ export default function HorizontalCoursesList({
 
             {/* Pagination */}
             {totalCourses > 0 && (
-            <div className="p-5">
-                <PaginationComponent 
-                    currentPage={currentPage} 
-                    totalPages={totalPages} 
-                    onPageChange={handlePageChange} 
-                />
-            </div>
+                <div className="p-5">
+                    <PaginationComponent
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                    />
+                </div>
             )}
         </div>
     );

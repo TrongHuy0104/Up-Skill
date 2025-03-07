@@ -32,13 +32,19 @@ export interface ILink extends Document {
 export interface ICourseData extends Document {
     title: string;
     description: string;
-    videoUrl: string;
+    videoUrl: object;
     videoLength: number;
     videoPlayer: string;
     videoSection: string;
     links: ILink[];
     suggestion: string;
     questions: IComment[];
+    isCompleted: boolean;
+    isPublished: boolean;
+    isPublishedSection: boolean;
+    isFree: boolean;
+    sectionOrder: number;
+    lessonOrder: number;
 }
 
 export interface ICourse extends Document {
@@ -59,6 +65,7 @@ export interface ICourse extends Document {
     rating?: number;
     purchased?: number;
     isPublished: boolean;
+    isFree: boolean;
     category: mongoose.Schema.Types.ObjectId;
     subCategory: mongoose.Schema.Types.ObjectId;
 }

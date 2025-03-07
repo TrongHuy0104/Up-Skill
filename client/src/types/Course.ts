@@ -10,7 +10,10 @@ export interface Course {
     thumbnail?: any;
     authorId: User;
     tags?: string;
-    demoUrl?: string;
+    demoUrl?: {
+        public_id: string;
+        url: string;
+    };
     benefits: { title: string }[];
     prerequisites: { title: string }[];
     rating?: number;
