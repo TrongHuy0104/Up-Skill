@@ -6,7 +6,6 @@ import CourseContent from './_components/CourseContent';
 export default async function Page({ params }: any) {
     const { courseId } = await params;
 
-    console.log('Fetching user data...');
     const cookieStore = await cookies();
     const cookie = cookieStore.toString();
 
@@ -37,29 +36,9 @@ export default async function Page({ params }: any) {
             redirect('/');
         }
 
-        // Fetch course data
-        const courseRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/purchased/${courseId}`, {
-            credentials: 'include',
-            headers: {
-                Cookie: cookie
-            },
-            cache: 'no-store' // Disable caching
-        });
-
-        if (!courseRes.ok) {
-            throw new Error(`Failed to fetch course data: ${courseRes} ${courseRes.statusText}`);
-        }
-
-        const courseData = await courseRes.json();
-        const { course } = courseData;
-
-        if (!course) {
-            throw new Error('Course data is undefined');
-        }
-
         return (
             <div>
-                <CourseContent course={course} courseId={courseId} user={user} />
+                <CourseContent courseId={courseId} user={user} />
             </div>
         );
     } catch (error) {

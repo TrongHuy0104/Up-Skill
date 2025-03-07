@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
 import { cookies } from 'next/headers';
-import Link from 'next/link';
 
 import Banner from '@/components/ui/Banner';
 import { layoutStyles } from '@/styles/styles';
@@ -10,14 +9,14 @@ import playOutlineIcon from '@/public/assets/icons/play-outline.svg';
 import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
-import arrowTopRightIcon from '@/public/assets/icons/arrow-top-right.svg';
-import { Button } from '@/components/ui/Button';
+import defaultImage from '@/public/assets/images/avatar/user-3.png';
+import CreateCourseForm from './CreateCourseForm';
 
 const InstructorDashboardBanner = async () => {
     const cookieStore = await cookies();
     const cookie = cookieStore.toString(); // Convert cookies to a string
 
-    const res = await fetch('http://localhost:8000/api/user/me', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
         credentials: 'include',
         headers: {
             Cookie: cookie // Pass the cookies in the headers
@@ -25,6 +24,7 @@ const InstructorDashboardBanner = async () => {
     });
 
     const { user } = await res.json();
+
     return (
         <Banner
             contentAlignment="left"
@@ -34,7 +34,7 @@ const InstructorDashboardBanner = async () => {
                 <div className={`${layoutStyles.row} items-center`}>
                     <div className="w-2/3">
                         <div className="flex items-center justify-start gap-[30px]">
-                            <Avatar size={120} avatar={user?.avatar?.url} />
+                            <Avatar size={120} avatar={user?.avatar?.url || defaultImage} />
                             <div>
                                 <h2 className="text-[42px] leading-[56px] mb-2 font-bold font-cardo">
                                     Welcome, <span>{user?.name}</span>
@@ -70,11 +70,7 @@ const InstructorDashboardBanner = async () => {
                         </div>
                     </div>
                     <div className="w-1/3">
-                        <Link href="/dashboard/instructor/create-course">
-                            <Button variant="secondary" size="xl">
-                                Create A New Course <Image src={arrowTopRightIcon} alt="" />
-                            </Button>
-                        </Link>
+                        <CreateCourseForm />
                     </div>
                 </div>
             </div>

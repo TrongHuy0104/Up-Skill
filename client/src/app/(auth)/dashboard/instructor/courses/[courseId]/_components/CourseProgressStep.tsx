@@ -10,7 +10,7 @@ function CourseProgressStep({ active, setActive }: Props) {
     const steps = ['Course Information', 'Course Options', 'Course Content', 'Course Preview'];
 
     return (
-        <div className="w-full pt-8 pb-16 px-4">
+        <div className="w-full pt-2 pb-16 px-4">
             <div className="flex items-center justify-between relative">
                 {/* Background line */}
                 <div className="absolute top-1/2 left-0 w-full transform -translate-y-1/2">

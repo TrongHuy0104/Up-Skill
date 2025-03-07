@@ -37,3 +37,33 @@ export const VerticalCardSkeleton = () => {
         </div>
     );
 };
+
+export function HorizontalCardSkeleton() {
+    return (
+        <div className="w-full flex pb-5 px-6 mb-5 border-b gap-5 border-primary-100">
+            <Skeleton className="h-[240px] w-[320px] shrink-0 rounded-md" />
+            <div className="flex flex-col gap-6 w-full">
+                <Skeleton className="h-6 w-1/2 rounded-md" />
+                <Skeleton className="h-6 w-full rounded" />
+                <Skeleton className="h-6 w-3/4 rounded" />
+                <Skeleton className="h-6 w-1/4 rounded" />
+                <Skeleton className="h-6 w-1/5 rounded" />
+            </div>
+        </div>
+    );
+}
+export function CourseSidebarSkeleton() {
+    return (
+        <div className="flex flex-col p-6">
+            <Skeleton className="h-6 w-full shrink-0 rounded" />
+            <Skeleton className="h-10 w-full shrink-0 rounded mt-4" />
+            <Skeleton className="h-3 w-3/4 mx-auto shrink-0 rounded-full mt-2" />
+            <Skeleton className="h-6 w-3/4 shrink-0 rounded mt-4" />
+            <Skeleton className="h-4 w-1/2 shrink-0 rounded mt-2" />
+            <Skeleton className="h-4 w-1/4 shrink-0 rounded mt-2" />
+            <Skeleton className="h-4 w-1/2 shrink-0 rounded mt-2" />
+            <Skeleton className="h-4 w-1/2 shrink-0 rounded mt-2" />
+            <Skeleton className="h-8 w-full shrink-0 border-t border-primary-100 rounded mt-8" />
+        </div>
+    );
+}

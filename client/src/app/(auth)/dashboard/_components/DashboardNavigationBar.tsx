@@ -12,7 +12,7 @@ import { usePathname } from 'next/navigation';
 const navbarList = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: '/dashboard/instructor',
         icon: <MdOutlineDashboardCustomize className="text-[20px]" />
     },
     {

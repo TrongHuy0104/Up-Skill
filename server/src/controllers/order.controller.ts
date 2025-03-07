@@ -101,13 +101,13 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     // Update user's purchased courses
     user.purchasedCourses.push(...courses.map((course) => course._id));
 
+    await user.save();
     // Update Redis cache
-    if (req.user?.id) {
-        await redis.set(req.user.id, JSON.stringify(user));
+    if (req.user?._id) {
+        await redis.set(req.user._id, JSON.stringify(user));
     }
 
     // Save user
-    await user.save();
 
     // Create notifications for each course
     await Promise.all(
