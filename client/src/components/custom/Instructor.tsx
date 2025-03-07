@@ -6,6 +6,7 @@ import play from '@/public/assets/icons/play.svg';
 import star from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
 import { cn } from '@/utils/helpers';
+import Link from 'next/link';
 
 const dmSans = DM_Sans({ subsets: ['latin'] });
 
@@ -14,12 +15,14 @@ interface InstructorCardProps {
     readonly width?: string; // Optional: Custom width
     readonly instructor?: {
         name?: string; // Instructor's name
-        role?: string; // Instructor's role (used as jobTitle)
-        averageRating?: number; // Instructor's average rating
+        rating?: number; // Instructor's average rating
         totalStudents?: number; // Total number of students
         uploadedCoursesCount?: number; // Total number of courses
         imageUrl?: string; // URL of the instructor's avatar
+        avatar?: { url?: string };
         _id?: string; // Instructor's ID
+        profession?: string;
+        uploadedCourses?: { _id: string }[];
     };
 }
 
@@ -31,11 +34,11 @@ export default function InstructorCard({
     // Destructure instructor properties with default values
     const {
         name = 'Instructor Name',
-        role = 'Instructor', // Use role as jobTitle
-        averageRating = 0,
+        profession = 'Instructor', // Use role as jobTitle
+        rating = 0,
         totalStudents = 0,
-        uploadedCoursesCount = 0,
-        imageUrl = img.src // Default image URL
+        uploadedCoursesCount = instructor?.uploadedCourses?.length ?? 0,
+        imageUrl = instructor?.avatar?.url ?? img.src // Default image URL
     } = instructor;
 
     return (
@@ -48,14 +51,16 @@ export default function InstructorCard({
                 )}
             >
                 <div className="group overflow-hidden rounded-xl">
-                    <Image
-                        className="object-cover transition duration-1000 group-hover:scale-125"
-                        style={{ width }}
-                        src={imageUrl}
-                        alt={name}
-                        width={260} // Set appropriate width
-                        height={190} // Set appropriate height
-                    />
+                    <Link href={`/instructors/${instructor._id}`}>
+                        <Image
+                            className="object-cover transition duration-1000 group-hover:scale-125"
+                            style={{ width }}
+                            src={instructor.imageUrl ?? imageUrl}
+                            alt={name}
+                            width={260} // Set appropriate width
+                            height={190} // Set appropriate height
+                        />
+                    </Link>
                 </div>
             </div>
 
@@ -82,21 +87,29 @@ export default function InstructorCard({
                 </div>
 
                 {/* Name */}
-                <div className="text-left">
-                    <h3 className="text-base font-medium leading-6 mb-1">{name}</h3>
-                </div>
+
+                <h6 className="mb-[10px] line-clamp-1 font-medium text-base leading-6">
+                    <Link
+                        href={`/instructors/${instructor._id}`}
+                        className="bg-no-repeat bg-[length:0_100%] bg-[position-y:0px] bg-gradient-to-b from-transparent 
+                    from-[calc(100%-1px)] to-current to-[1px] transition-all duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] 
+                    backface-hidden group-hover:bg-[length:100%_100%] group-hover:delay-300 hover:text-accent-600"
+                    >
+                        {name}
+                    </Link>
+                </h6>
 
                 {/* Job Title (using role) */}
-                <p className="text-sm text-gray-600 font-normal text-left mb-1">{role}</p>
+                <p className="text-sm text-gray-600 font-normal text-left mb-1">{profession}</p>
 
                 {/* Rating */}
                 <div className="flex items-center relative gap-[6px] pb-[2px]">
-                    <span>{averageRating?.toFixed(1)}</span>
+                    <span>{instructor?.rating?.toFixed(1)}</span>
                     {[...Array(5)].map((_, index) => (
                         <Image
                             key={index}
-                            src={index < Math.floor(averageRating) ? star : starOutlineIcon}
-                            alt={index < Math.floor(averageRating) ? 'Filled Star' : 'Outline Star'}
+                            src={index < Math.floor(rating) ? star : starOutlineIcon}
+                            alt={index < Math.floor(rating) ? 'Filled Star' : 'Outline Star'}
                         />
                     ))}
                 </div>

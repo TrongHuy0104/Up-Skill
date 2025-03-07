@@ -13,6 +13,7 @@ import {
     getPurchasedCourseByUser,
     getSingleCourse,
     getTopCourses,
+    getTopRatedCoursesController,
     updateCourse,
     uploadCourse,
     getCourseStatistics,
@@ -43,6 +44,8 @@ const router = express.Router();
 router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
 router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCourse);
+
+router.get('/all-courses/:id', updateAccessToken, isAuthenticated, getTopRatedCoursesController);
 
 router.put('/publish-course/:id', updateAccessToken, isAuthenticated, publishCourse);
 
@@ -77,6 +80,8 @@ router.put('/add-answer', updateAccessToken, isAuthenticated, addAnswer);
 router.put('/add-review/:id', updateAccessToken, isAuthenticated, addReview);
 
 router.put('/add-reply', updateAccessToken, isAuthenticated, addReplyToReview);
+
+router.get('/top-courses', getTopCourses);
 
 router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCourses);
 

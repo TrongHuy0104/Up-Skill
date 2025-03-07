@@ -16,6 +16,50 @@ import CategoryModel from '@/models/Category.model';
 import SubCategoryModel from '@/models/SubCategory.model';
 import UserModel from '@/models/User.model';
 
+export const getTopRatedCoursesController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id: instructorId } = req.params; // Lấy giá trị `id` từ req.params
+
+    if (!instructorId) {
+        return next(new ErrorHandler('Instructor not found', 404));
+    }
+
+    // Find top-rated courses by the specific instructor
+    const topCourses = await CourseModel.find({ authorId: instructorId }) // Lọc đúng instructor
+        .sort({ rating: -1 })
+        .limit(10)
+        .populate('authorId', 'name email')
+        .populate('category', 'name')
+        .lean();
+
+    if (!topCourses || topCourses.length === 0) {
+        return next(new ErrorHandler('No courses found', 404));
+    }
+
+    // Add lesson count and duration
+    const coursesWithDetails = topCourses.map((course) => {
+        const lessonsCount = course.courseData?.length || 0;
+        const duration =
+            course.courseData?.reduce(
+                (acc: number, curr: { videoLength?: number }) => acc + (curr.videoLength ?? 0),
+                0
+            ) || 0;
+        const durationInHours = (duration / 60).toFixed(1);
+
+        return {
+            ...course,
+            lessonsCount,
+            duration: `${durationInHours} hours`
+        };
+    });
+
+    res.status(200).json({
+        success: true,
+        data: {
+            topCourses: coursesWithDetails
+        }
+    });
+});
+
 export const uploadCourse = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
 
