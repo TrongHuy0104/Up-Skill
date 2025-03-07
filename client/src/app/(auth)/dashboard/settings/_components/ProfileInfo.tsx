@@ -20,7 +20,16 @@ import SpinnerMini from '@/components/custom/SpinnerMini';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
-    name: z.string().min(1, { message: 'This field has to be filled.' })
+    name: z.string().min(1, { message: 'This field has to be filled.' }),
+    profession: z.string().min(1, { message: 'This field has to be filled.' }),
+    introduce: z.string().optional(),
+    age: z.number().min(0, { message: 'Age must be a positive number' }).optional(),
+    address: z.string().min(1, { message: 'This field has to be filled.' }),
+    phoneNumber: z
+        .string()
+        .min(1, { message: 'This field has to be filled.' })
+        .max(15, { message: 'Phone number must be at most 15 digits.' })
+        .regex(/^\+?\d{10,15}$/, { message: 'Phone number must contain only numbers.' })
 });
 
 const ProfileInfo = () => {
@@ -35,9 +44,27 @@ const ProfileInfo = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: user?.name || ''
+            name: user?.name || '',
+            profession: user?.profession || '',
+            introduce: user?.introduce || '',
+            age: user?.age || undefined,
+            address: user?.address || '',
+            phoneNumber: user?.phoneNumber || ''
         }
     });
+
+    useEffect(() => {
+        if (user) {
+            form.reset({
+                name: user?.name || '',
+                profession: user?.profession || '',
+                introduce: user?.introduce || '',
+                age: user?.age || undefined,
+                address: user?.address || '',
+                phoneNumber: user?.phoneNumber || ''
+            });
+        }
+    }, [user, form]); // Mỗi khi user thay đổi, reset form với dữ liệu mới
 
     useEffect(() => {
         if (isSuccess) {
@@ -69,17 +96,37 @@ const ProfileInfo = () => {
     };
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        let data: { name: string; avatar?: any } = {
-            name: values.name
+        let data: {
+            name: string;
+            profession?: string;
+            introduce?: string;
+            age?: number;
+            avatar?: any;
+            address?: string;
+            phoneNumber?: string;
+        } = {
+            name: values.name,
+            profession: values.profession,
+            introduce: values.introduce,
+            age: values.age,
+            address: values.address,
+            phoneNumber: values.phoneNumber
         };
         if (avatarImage) {
             data = {
                 name: values.name,
-                avatar: avatarImage
+                avatar: avatarImage,
+                profession: values.profession,
+                introduce: values.introduce,
+                age: values.age,
+                phoneNumber: values.phoneNumber,
+                address: values.address
             };
         }
         await updateUserInfo(data);
     }
+
+    if (!user) return <SpinnerMini />;
     return (
         <div>
             <div className="relative flex items-center gap-[30px] pb-[38px] mb-[30px] border-b border-primary-100">
@@ -116,7 +163,7 @@ const ProfileInfo = () => {
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="py-1">
                                 <FormControl>
                                     <fieldset className={formStyles.fieldset}>
                                         <Input {...field} type="text" className={formStyles.textInput} />
@@ -131,6 +178,117 @@ const ProfileInfo = () => {
                             </FormItem>
                         )}
                     />
+
+                    <FormField
+                        control={form.control}
+                        name="age"
+                        render={({ field }) => (
+                            <FormItem className="py-1">
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input
+                                            {...field}
+                                            type="number"
+                                            className={formStyles.textInput}
+                                            onChange={(e) =>
+                                                field.onChange(e.target.value ? Number(e.target.value) : '')
+                                            }
+                                        />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Age
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="profession"
+                        render={({ field }) => (
+                            <FormItem className="py-1">
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input {...field} type="text" className={formStyles.textInput} />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Profession
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                            <FormItem className="py-1">
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input {...field} type="text" className={formStyles.textInput} />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Address
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="phoneNumber"
+                        render={({ field }) => (
+                            <FormItem className="py-1">
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <Input {...field} type="text" className={formStyles.textInput} />
+                                        <FormLabel
+                                            className={`-z-10 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : ''}`}
+                                        >
+                                            Phone Number
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="introduce"
+                        render={({ field }) => (
+                            <FormItem className="py-1">
+                                <FormControl>
+                                    <fieldset className={formStyles.fieldset}>
+                                        <textarea
+                                            {...field}
+                                            className={`${formStyles.textInput} p-2  w-full h-24 mb-4`}
+                                        />
+                                        <FormLabel
+                                            className={`-z-2  ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : 'translate-y-[-60px]'}`}
+                                        >
+                                            Introduce
+                                        </FormLabel>
+                                    </fieldset>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
                     <Button type="submit" size="lg" className="mt-6" disabled={isLoading}>
                         {isLoading && <SpinnerMini />}
                         <span>Update Profile</span> <Image src={arrowTopRightIcon} alt="" />

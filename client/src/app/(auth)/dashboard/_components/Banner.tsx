@@ -9,6 +9,7 @@ import playOutlineIcon from '@/public/assets/icons/play-outline.svg';
 import studentsIcon from '@/public/assets/icons/students.svg';
 import starIcon from '@/public/assets/icons/star.svg';
 import starOutlineIcon from '@/public/assets/icons/star-outline.svg';
+import defaultImage from '@/public/assets/images/avatar/user-3.png';
 import CreateCourseForm from './CreateCourseForm';
 
 const InstructorDashboardBanner = async () => {
@@ -23,6 +24,7 @@ const InstructorDashboardBanner = async () => {
     });
 
     const { user } = await res.json();
+
     return (
         <Banner
             contentAlignment="left"
@@ -32,7 +34,7 @@ const InstructorDashboardBanner = async () => {
                 <div className={`${layoutStyles.row} items-center`}>
                     <div className="w-2/3">
                         <div className="flex items-center justify-start gap-[30px]">
-                            <Avatar size={120} avatar={user?.avatar?.url} />
+                            <Avatar size={120} avatar={user?.avatar?.url || defaultImage} />
                             <div>
                                 <h2 className="text-[42px] leading-[56px] mb-2 font-bold font-cardo">
                                     Welcome, <span>{user?.name}</span>
