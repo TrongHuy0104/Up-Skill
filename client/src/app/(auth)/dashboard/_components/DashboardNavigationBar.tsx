@@ -17,32 +17,32 @@ const navbarList = [
     },
     {
         title: 'My Course',
-        href: '/dashboard/my-course',
+        href: '/dashboard/instructor/my-course',
         icon: <MdOutlineSlowMotionVideo className="text-[20px]" />
     },
     {
         title: 'Reviews',
-        href: '/dashboard/reviews',
+        href: '/dashboard/instructor/reviews',
         icon: <TbMessageDots className="text-[20px]" />
     },
     {
         title: 'Wishlist',
-        href: '/dashboard/wishlist',
+        href: '/dashboard/instructor/wishlist',
         icon: <FaRegHeart className="text-[20px]" />
     },
     {
         title: 'Quizzes',
-        href: '/dashboard/quizzes',
+        href: '/dashboard/instructor/quizzes',
         icon: <FaRegCircleQuestion className="text-[20px]" />
     },
     {
         title: 'Order',
-        href: '/dashboard/order',
+        href: '/dashboard/instructor/order',
         icon: <PiBagBold className="text-[20px]" />
     },
     {
         title: 'Settings',
-        href: '/dashboard/settings',
+        href: '/dashboard/instructor/settings',
         icon: <IoSettingsOutline className="text-[20px]" />
     }
 ];
