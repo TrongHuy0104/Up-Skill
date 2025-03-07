@@ -47,7 +47,7 @@ function CreateEditCourse({ levels, categories, courseId }: CreateEditCourseProp
 
     return (
         <div>
-            <CourseProgressStep active={active} setActive={setActive} />
+            <CourseProgressStep course={courseResponse.course} active={active} setActive={setActive} />
             {!(active === 3 || (active === 2 && (subActive === 1 || subActive === 2))) && (
                 <PublishCourseStatus course={courseResponse.course} refetchCourse={refetchCourse} />
             )}
