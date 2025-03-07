@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdOutlineDashboardCustomize, MdOutlineSlowMotionVideo } from 'react-icons/md';
 import { TbMessageDots } from 'react-icons/tb';
 import { FaRegCircleQuestion, FaRegHeart } from 'react-icons/fa6';
@@ -47,14 +47,61 @@ const navbarList = [
     }
 ];
 
+const navbarListForUser = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard/user',
+        icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+    },
+    {
+        title: 'Order',
+        href: '/dashboard/user/order',
+        icon: <PiBagBold className="text-[20px]" />
+    },
+    {
+        title: 'Settings',
+        href: '/dashboard/user/settings',
+        icon: <IoSettingsOutline className="text-[20px]" />
+    }
+];
+
 const DashboardNavigationBar = () => {
     const pathName = usePathname();
+    const [userRole, setUserRole] = useState(null); // State để lưu role của người dùng
+
+    useEffect(() => {
+        // Gọi API để lấy thông tin người dùng
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/user/me', {
+                    credentials: 'include' // Bao gồm cookie nếu cần
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    setUserRole(data.user.role); // Lưu role vào state
+                } else {
+                    console.error('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    // Chọn danh sách điều hướng dựa trên role
+    const currentNavbarList = userRole === 'instructor' ? navbarList : navbarListForUser;
 
     return (
         <div>
             <div className="bg-primary-800 rounded-xl pb-5">
-                <div className="text-primary-50 opacity-50 pt-[21px] px-[30px] pb-[11px]">STUDENT DASHBOARD</div>
-                {navbarList.map((item) => (
+                <div className="text-primary-50 opacity-50 pt-[21px] px-[30px] pb-[11px]">
+                    {userRole === 'instructor' ? 'INSTRUCTOR DASHBOARD' : 'USER DASHBOARD'}
+                </div>
+                {currentNavbarList.map((item) => (
                     <Link
                         href={item.href}
                         key={item.href}

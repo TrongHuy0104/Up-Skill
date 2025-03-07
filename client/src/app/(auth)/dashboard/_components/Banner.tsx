@@ -26,7 +26,6 @@ const InstructorDashboardBanner = async () => {
     });
 
     const { user } = await res.json();
-    console.log('ủe', user);
 
     return (
         <Banner
@@ -79,12 +78,14 @@ const InstructorDashboardBanner = async () => {
                             <CreateCourseForm />
                         </div>
                     )}
-                    <div className="w-1/3">
-                        <Button variant="secondary" size="lg">
-                            Become a teacher
-                            <Image src={arrowIcon} alt=""></Image>
-                        </Button>
-                    </div>
+                    {user?.role === 'user' && (
+                        <div className="w-1/3">
+                            <Button variant="secondary" size="lg">
+                                Become a teacher
+                                <Image src={arrowIcon} alt=""></Image>
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
         </Banner>

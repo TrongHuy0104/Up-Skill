@@ -6,7 +6,7 @@ import { IoIosLogOut } from 'react-icons/io';
 import { LuSquareUserRound } from 'react-icons/lu';
 import { redirect } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import {
@@ -24,12 +24,9 @@ import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
 
-interface UserDropdownProps {
-    user: User;
-}
-
-export function UserDropdown({ user }: UserDropdownProps) {
+export function UserDropdown() {
     const [logout, setLogout] = useState(false);
+    const [user, setUser] = useState<User | null>(null); // Khai báo state để lưu thông tin người dùng
     useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data: session } = useSession();
 
@@ -40,6 +37,33 @@ export function UserDropdown({ user }: UserDropdownProps) {
         setLogout(true);
         redirect('/');
     };
+
+    useEffect(() => {
+        // Gọi API để lấy thông tin người dùng
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/api/user/me', {
+                    credentials: 'include' // Bao gồm cookie nếu cần
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser(data.user); // Lưu thông tin người dùng vào state
+                } else {
+                    console.error('Failed to fetch user data');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    // Kiểm tra nếu user chưa được lấy, hiển thị loading hoặc không render gì
+    if (!user) {
+        return null; // Hoặc hiển thị một spinner loading
+    }
 
     return (
         <DropdownMenu>
@@ -60,7 +84,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href="/dashboard/settings">
+                    <Link href={`/dashboard/${user.role}`}>
                         <DropdownMenuItem>
                             Profile
                             <DropdownMenuShortcut>
