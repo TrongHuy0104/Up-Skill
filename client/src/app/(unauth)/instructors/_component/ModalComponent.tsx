@@ -10,23 +10,6 @@ const ModalComponent = ({
             <li
                 className="cursor-pointer hover:bg-gray-200 p-2 rounded"
                 onClick={() => {
-                    onSelectSort('Best Selling');
-                    closeModal();
-                }}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        onSelectSort('Best Selling');
-                        closeModal();
-                    }
-                }}
-                tabIndex={0} // Làm cho phần tử có thể nhận sự kiện bàn phím
-                role="button" // Đảm bảo phần tử <li> được nhận diện là button cho accessibility
-            >
-                Best Selling
-            </li>
-            <li
-                className="cursor-pointer hover:bg-gray-200 p-2 rounded"
-                onClick={() => {
                     onSelectSort('Oldest');
                     closeModal();
                 }}

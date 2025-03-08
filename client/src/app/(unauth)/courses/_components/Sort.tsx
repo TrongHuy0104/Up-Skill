@@ -17,6 +17,7 @@ export default function Sort() {
 
     // **Map giá trị API sang format UI**
     const sortDisplayMap: { [key: string]: string } = {
+        bestselling: 'Best Selling',
         oldest: 'Oldest',
         recent: '3 Days',
         'date-created': 'Date Created' // Default nếu không có giá trị trong URL
@@ -39,23 +40,22 @@ export default function Sort() {
     }, []);
 
     const handleSortSelect = (sortValue: string) => {
-        setIsSortOpen(false); // Đóng dropdown
+        setIsSortOpen(false);
 
-        // **Chuyển đổi `sortValue` từ UI sang API**
         const sortApiMap: { [key: string]: string } = {
+            'Best Selling': 'bestselling',
             Oldest: 'oldest',
             '3 Days': 'recent',
             'Date Created': 'date-created'
         };
 
-        // Map giá trị từ UI sang API
         const formattedSort = sortApiMap[sortValue];
 
         if (!formattedSort) {
             console.error('❌ Sort mapping failed for:', sortValue);
-            return; // Tránh lỗi nếu sortValue không hợp lệ
+            return;
         }
-        // **Cập nhật URL query params**
+
         const params = new URLSearchParams(searchParams.toString());
         params.set('sort', formattedSort);
         router.replace(`?${params.toString()}`);

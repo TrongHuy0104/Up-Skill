@@ -1,15 +1,12 @@
 'use client';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
-import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
 import { CourseHorizontalCard } from '@/components/custom/CourseCard';
 import PaginationComponent from '@/components/custom/PaginationComponent';
-import dynamic from 'next/dynamic';
 import noData from '@/public/assets/images/courses/no-data.jpg';
 import { HorizontalCardSkeleton } from '@/components/ui/Skeleton';
-
-// Sử dụng dynamic để tắt SSR cho modal
-const Modal = dynamic(() => import('@/app/(unauth)/courses/_components//ModalComponent'), { ssr: false });
+import Sort from './Sort';
+import { useSearchParams } from 'next/navigation';
 
 type Benefit = {
     title: string;
@@ -59,42 +56,68 @@ export type Course = {
 };
 
 interface HorizontalCoursesListProps {
-    readonly courses: Course[];
+    readonly initialCourses: Course[];
     readonly totalPages: number;
-    readonly totalCourses: number;
+    readonly initialTotalCourses: number;
     readonly limit: number;
     readonly page: number;
 }
 
 export default function HorizontalCoursesList({
-    courses,
+    initialCourses,
+    initialTotalCourses,
     totalPages,
-    totalCourses,
     limit,
     page
 }: HorizontalCoursesListProps) {
-    const [isModalOpen, setIsModalOpen] = useState(false); // Quản lý trạng thái modal
     const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
-    const [selectedSort, setSelectedSort] = useState('Best Selling'); // Quản lý giá trị đã chọn từ
     const [currentPage, setCurrentPage] = useState(page);
+    const [courses, setCourses] = useState(initialCourses);
+    const [isLoading, setIsLoading] = useState(false);
+    const [totalCourses, setTotalCourses] = useState(initialTotalCourses);
+    const searchParams = useSearchParams();
+    const sortType = searchParams.get('sort') || 'date-created';
+    console.log();
 
     useEffect(() => {
         setIsClient(true); // Chỉ chạy sau khi component render trên client
     }, []);
 
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen); // Đổi trạng thái của modal khi click vào mũi tên
-    };
+    useEffect(() => {
+        const fetchCourses = async () => {
+            setIsLoading(true);
+            try {
+                // Đảm bảo URL API chính xác
+                const apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
+                const res = await fetch(apiUrl);
 
-    const closeModal = () => {
-        setIsModalOpen(false); // Đóng modal khi chọn một mục
-    };
+                // Kiểm tra phản hồi từ API
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
+                }
 
-    // Hàm xử lý khi chọn giá trị trong modal
-    const handleSortSelect = (sortValue: string) => {
-        setSelectedSort(sortValue); // Cập nhật giá trị đã chọn
-    };
+                const data = await res.json();
+                console.log('Data:', data); // Log dữ liệu để kiểm tra
 
+                // Đảm bảo dữ liệu trả về có cấu trúc đúng
+                if (!data.courses) {
+                    throw new Error('Invalid data format: courses not found');
+                }
+
+                setCourses(data.courses || []);
+                setTotalCourses(data.courses.length || 0); // Cập nhật tổng số courses
+            } catch (error) {
+                console.error('❌ Fetch Error:', error);
+                setCourses([]);
+                setTotalCourses(0);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Fetch dữ liệu khi sortType thay đổi
+        fetchCourses();
+    }, [sortType]);
     if (!isClient) {
         return (
             <div className="w-full">
@@ -117,17 +140,16 @@ export default function HorizontalCoursesList({
                 <p className="text-primary-800">
                     Showing {startIndex}-{endIndex} Of {totalCourses} Courses
                 </p>
-                <div className="flex items-center gap-3">
-                    <p className="text-primary-600">Sort by</p>
-                    <span className="text-primary-800">{selectedSort}</span> {/* Hiển thị giá trị đã chọn */}
-                    <Image className="cursor-pointer" src={arrowDownIcon} alt="Arrow Down Icon" onClick={toggleModal} />
-                </div>
+                <Sort />
             </div>
 
-            {/* Dropdown Modal */}
-            {isModalOpen && <Modal closeModal={closeModal} onSelectSort={handleSortSelect} />}
-
-            {totalCourses === 0 ? (
+            {isLoading ? (
+                <div className="w-full">
+                    {[...Array(3)].map((_, index) => (
+                        <HorizontalCardSkeleton key={index} />
+                    ))}
+                </div>
+            ) : totalCourses === 0 ? (
                 <div className="flex flex-col items-center justify-center w-full h-full">
                     <Image src={noData} alt="No Courses Found" />
                     <p className="text-primary-600 mt-4">No courses found. Please try a different search.</p>
