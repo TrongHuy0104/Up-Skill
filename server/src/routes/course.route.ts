@@ -16,7 +16,8 @@ import {
     getTopCourses,
     updateCourse,
     uploadCourse,
-    getCourseStatistics
+    getCourseStatistics,
+    searchCoursesAndInstructors
 } from '@/controllers/course.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
@@ -29,6 +30,8 @@ router.put('/update-course/:id', updateAccessToken, isAuthenticated, updateCours
 router.get('/pagination', getCoursesLimitWithPagination);
 
 router.get('/count', getCourseStatistics);
+
+router.post('/search', searchCoursesAndInstructors);
 
 router.get('/top-courses', getTopCourses);
 

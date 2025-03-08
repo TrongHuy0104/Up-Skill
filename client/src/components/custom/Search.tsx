@@ -11,62 +11,43 @@ import Link from 'next/link';
 
 export default function Search() {
     const [searchValue, setSearchValue] = useState('');
-    const [results, setResults] = useState<{ courses: Course[]; users: User[] }>({
-        courses: [],
-        users: []
-    });
-
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [users, setUsers] = useState<User[]>([]);
-    const [showResults, setShowResults] = useState(false); // ✅ State kiểm soát modal
-
-    const searchRef = useRef<HTMLDivElement>(null); // ✅ Ref để kiểm tra click ra ngoài
+    const [results, setResults] = useState<{ courses: Course[]; instructors: User[] }>({ courses: [], instructors: [] });
+    const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        const fetchData = async () => {
+        if (!searchValue.trim()) {
+            setResults({ courses: [], instructors: [] });
+            setShowResults(false);
+            return;
+        }
+
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+        timeoutRef.current = setTimeout(async () => {
             try {
-                const [coursesRes, usersRes] = await Promise.all([
-                    fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses`),
-                    fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/instructor`)
-                ]);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ search: searchValue }),
+                });
 
-                const { courses } = await coursesRes.json();
-                const { instructors } = await usersRes.json();
-                setCourses(courses);
-                setUsers(instructors);
+                const data = await response.json();
+                setResults(data);
+                setShowResults(true);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching search results:', error);
             }
-        };
+        }, 1000);
 
-        fetchData();
-    }, []);
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, [searchValue]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchValue(value);
-
-        if (value) {
-            const filteredCourses = courses.filter((course) => {
-                // Tìm người dùng tương ứng với authorId
-                const author = users.find((user) => user._id === course?.authorId?.toString());
-
-                // Kiểm tra điều kiện lọc
-                return (
-                    course?.name?.toLowerCase().includes(value.toLowerCase()) ||
-                    course?.description?.toLowerCase().includes(value.toLowerCase()) ||
-                    author?.name?.toLowerCase().includes(value.toLowerCase()) // Lọc theo tên người đăng
-                );
-            });
-
-            const filteredUsers = users.filter((user) => user?.name?.toLowerCase().includes(value.toLowerCase()));
-
-            setResults({ courses: filteredCourses, users: filteredUsers });
-            setShowResults(true);
-        } else {
-            setResults({ courses: [], users: [] });
-            setShowResults(false);
-        }
+        setSearchValue(e.target.value);
     };
 
     const handleSelectResult = () => {
@@ -85,28 +66,20 @@ export default function Search() {
     }, []);
 
     return (
-        <div className="max-w-[600px] grow relative" ref={searchRef}>
-            <form action="#" className="relative z-30">
-                <fieldset className="mb-0 w-full">
-                    <input
-                        type="text"
-                        placeholder="Search for anything..."
-                        className="shadow-none w-full py-2 px-5 pr-6 text-sm leading-7 bg-primary-50 border border-primary-100 rounded text-primary-600"
-                        name="searchValue"
-                        value={searchValue}
-                        onChange={handleSearchChange}
-                    />
-                </fieldset>
-                <div className="absolute right-5 top-2/4 transform translate-y-[-50%] h-5">
-                    <button type="submit" className="p-1 cursor-pointer">
-                        <Image src={searchIcon} alt="Search Icon" className="relative -top-1 text-[21px]" />
-                    </button>
-                </div>
-            </form>
-
-            {showResults && (results.courses.length > 0 || results.users.length > 0) ? (
+        <div className="relative" ref={searchRef}>
+            <div className="flex w-[600px] items-center border border-primary-100 rounded-lg p-2">
+                <Image src={searchIcon} alt="Search" width={20} height={20} />
+                <input
+                    type="text"
+                    placeholder="Search anything..."
+                    className="ml-2 flex-grow outline-none"
+                    value={searchValue}
+                    onChange={handleSearchChange}
+                />
+            </div>
+            {showResults && (
                 <div className="absolute z-20 w-full mt-2 bg-white border border-primary-100 rounded shadow-lg">
-                    <div className="py-2">
+                    <div className="py-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary-500 scrollbar-track-primary-100">
                         {results.courses.length > 0 && (
                             <div className="px-2">
                                 <ul>
@@ -128,10 +101,8 @@ export default function Search() {
                                                     <div>
                                                         <div className="font-medium">{course?.name}</div>
                                                         <div className="flex items-center gap-2">
-                                                            <div className="text-sm text-black w-[70px]">
-                                                                {users?.find(
-                                                                    (user) => user?._id === course?.authorId?.toString()
-                                                                )?.name || 'Unknown'}
+                                                            <div className="text-sm text-black w-auto">
+                                                                {course?.authorId?.name || 'Unknown'}
                                                             </div>
                                                             <p className="text-sm text-primary-500">
                                                                 {course?.description?.length > 50
@@ -147,12 +118,12 @@ export default function Search() {
                                 </ul>
                             </div>
                         )}
-                        {results.users.length > 0 && (
+                        {results?.instructors?.length > 0 && (
                             <div className="px-2">
                                 <ul>
-                                    {results.users.map((user) => (
+                                    {results?.instructors?.map((user) => (
                                         <li
-                                            key={user._id}
+                                            key={user?._id}
                                             className="p-1 hover:bg-primary-50 cursor-pointer flex items-center"
                                             onClick={handleSelectResult}
                                         >
@@ -178,7 +149,7 @@ export default function Search() {
                         )}
                     </div>
                 </div>
-            ) : null}
+            )}
         </div>
     );
 }
