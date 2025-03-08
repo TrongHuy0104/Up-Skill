@@ -33,14 +33,14 @@ export default function CourseVerticalCard({
     course = {}
 }: CourseVerticalCardProps) {
     const {
-        imageUrl = defaultImage.src,
+        thumbnail = defaultImage.src,
         name = 'Become a Certified Web Developer: HTML, CSS and JavaScript',
         lessonsCount = 11,
         duration = '16',
-        rating = 4.9,
-        reviewsCount = 230,
+        rating = 0,
+        reviews = 0,
         authorId = null,
-        price = 89.29,
+        price = 0,
         isEnrolled = false,
         _id
     } = course;
@@ -50,7 +50,7 @@ export default function CourseVerticalCard({
             <div className="relative rounded-sm overflow-hidden" style={{ height }}>
                 <Link href={`/courses/${_id}`}>
                     <Image
-                        src={imageUrl || defaultImage}
+                        src={thumbnail?.url || defaultImage}
                         alt={name}
                         className="w-full h-full object-cover transition-all duration-1000 ease-in-out 
                         group-hover:scale-110 group-hover:transition-all group-hover:duration-1000 group-hover:ease-in-out"
@@ -101,7 +101,7 @@ export default function CourseVerticalCard({
                             />
                         ))}
                     </div>
-                    <span>({reviewsCount})</span>
+                    <span>({reviews.length})</span>
                 </div>
                 {/* Conditional Progress Bar */}
                 {isProgress && (
@@ -119,7 +119,10 @@ export default function CourseVerticalCard({
                     <>
                         <div className="text-primary-600 mb-[13px]">
                             By:{' '}
-                            <Link href="#!" className="hover:text-accent-600 transition-colors duration-300">
+                            <Link
+                                href={`/instructors/${course?.authorId?._id}`}
+                                className="hover:text-accent-600 transition-colors duration-300"
+                            >
                                 {authorId?.name || 'Unknown Instructor'}
                             </Link>
                         </div>
@@ -185,7 +188,8 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                             <Image src={hourIcon} className="relative bottom-[1px]" alt="Duration" />
                             <p>
                                 {(
-                                    course?.courseData?.reduce((total, item) => total + (item.videoLength || 0), 0) / 60
+                                    course?.courseData?.reduce((total, item) => total + (item?.videoLength || 0), 0) /
+                                    60
                                 ).toFixed(1)}{' '}
                                 hour
                             </p>
@@ -205,8 +209,10 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                         {course?.name}
                     </Link>
                 </h6>
-                <p className="mb-[10px] text-sm leading-7 max-w-[80%]">
-                    {course?.description?.length > 100 ? course.description.slice(0, 100) + '...' : course.description}
+                <p className="mb-[10px] text-sm leading-7 max-w-[80%] break-all">
+                    {course?.description
+                        ? course.description.slice(0, 100) + (course.description.length > 100 ? '...' : '')
+                        : ''}
                 </p>
                 <div className="mb-[8px] flex items-center gap-[7px]">
                     <span>{course.rating}</span>

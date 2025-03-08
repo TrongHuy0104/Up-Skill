@@ -1,8 +1,10 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import {
     activateUser,
     deleteUser,
+    getAllInstructors,
     getAllUsers,
+    getInstructorsWithSort,
     getUserInfo,
     loginUser,
     logoutUser,
@@ -17,15 +19,14 @@ import {
     resetCodeVerify,
     resetPassword,
     refreshToken,
-    getTopInstructors,
-    getAllInstructor
+    updateUserSocialLinks,
+    getUser,
+    getTopInstructors
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
 
 const router = express.Router();
-
-router.get('/instructor', getAllInstructor);
 
 router.post('/register', registrationUser);
 
@@ -53,11 +54,19 @@ router.put('/update-password', updateAccessToken, isAuthenticated, updatePasswor
 
 router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePicture);
 
+router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialLinks);
+
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
 router.get('/top-instructors', getTopInstructors);
 
-router.put('/update-role', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateUserRole);
+router.get('/get-instructors', getAllInstructors);
+
+router.get('/:id', getUser);
+
+router.get('/instructors/sort', getInstructorsWithSort as RequestHandler);
+
+router.put('/update-role', isAuthenticated, authorizeRoles('admin'), updateUserRole);
 
 router.delete('/delete-user:id', isAuthenticated, authorizeRoles('admin'), deleteUser);
 

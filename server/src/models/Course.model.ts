@@ -1,15 +1,26 @@
 import mongoose, { Schema } from 'mongoose';
-import { IComment, ICommentReply, ICourse, ICourseData, ILink, IReview } from '@/interfaces/Course';
+import { IComment, ICommentReply, ICourse, ICourseData, ILink, IReview, IReviewReply } from '@/interfaces/Course';
 
-const ReviewSchema = new Schema<IReview>({
-    user: Object,
-    rating: {
-        type: Number,
-        default: 0
+const ReviewReplySchema = new Schema<IReviewReply>(
+    {
+        user: Object,
+        comment: String
     },
-    comment: String,
-    commentReplies: [Object]
-});
+    { timestamps: true }
+);
+
+const ReviewSchema = new Schema<IReview>(
+    {
+        user: Object,
+        rating: {
+            type: Number,
+            default: 0
+        },
+        comment: String,
+        commentReplies: [ReviewReplySchema]
+    },
+    { timestamps: true }
+);
 
 const LinkSchema = new Schema<ILink>({
     title: String,
@@ -36,13 +47,26 @@ const CommentSchema = new Schema<IComment>(
 const CourseDataSchema = new Schema<ICourseData>({
     title: String,
     description: String,
-    videoUrl: String,
+    videoUrl: {
+        public_id: {
+            type: String
+        },
+        url: {
+            type: String
+        }
+    },
     videoPlayer: String,
-    videoSection: String,
+    videoSection: { type: String },
     videoLength: Number,
     links: [LinkSchema],
     suggestion: String,
-    questions: [CommentSchema]
+    questions: [CommentSchema],
+    isCompleted: { type: Boolean, default: false },
+    isPublished: { type: Boolean, default: false },
+    isPublishedSection: { type: Boolean, default: false },
+    isFree: { type: Boolean, default: false },
+    sectionOrder: Number,
+    lessonOrder: Number
 });
 
 const CourseSchema = new Schema<ICourse>(
@@ -87,8 +111,12 @@ const CourseSchema = new Schema<ICourse>(
             ref: 'Level'
         },
         demoUrl: {
-            type: String
-            // required: true
+            public_id: {
+                type: String
+            },
+            url: {
+                type: String
+            }
         },
         benefits: [{ title: String }],
         prerequisites: [{ title: String }],
@@ -103,15 +131,14 @@ const CourseSchema = new Schema<ICourse>(
             default: 0
         },
         isPublished: { type: Boolean, default: false },
+        isFree: { type: Boolean, default: false },
         category: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Category',
-            required: [true, 'Category is required']
+            ref: 'Category'
         },
         subCategory: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'SubCategory',
-            required: [true, 'Sub Category is required']
+            ref: 'SubCategory'
         }
     },
     { timestamps: true }
