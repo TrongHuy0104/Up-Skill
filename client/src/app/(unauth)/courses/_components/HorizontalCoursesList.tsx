@@ -77,8 +77,8 @@ export default function HorizontalCoursesList({
     const [isLoading, setIsLoading] = useState(false);
     const [totalCourses, setTotalCourses] = useState(initialTotalCourses);
     const searchParams = useSearchParams();
-    const sortType = searchParams.get('sort') || 'date-created';
-    console.log();
+    const sortType = searchParams.get('sort');
+    console.log('sortType', sortType);
 
     useEffect(() => {
         setIsClient(true); // Chỉ chạy sau khi component render trên client
@@ -90,7 +90,10 @@ export default function HorizontalCoursesList({
             setIsLoading(true);
             try {
                 // Đảm bảo URL API chính xác
-                const apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
+                let apiUrl = `http://localhost:8000/api/courses}`;
+                if (sortType) {
+                    apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
+                }
                 const res = await fetch(apiUrl);
 
                 // Kiểm tra phản hồi từ API
