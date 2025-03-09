@@ -39,7 +39,7 @@ const ProfileInfo = () => {
     const [avatarImage, setAvatarImage] = useState<string | ArrayBuffer | null>(null);
     const [updateUserInfo, { isLoading, isSuccess, error }] = useUpdateUserInfoMutation();
     const [loadUser, setLoadUser] = useState(false);
-    useLoadUserQuery(undefined, { skip: loadUser ? false : true });
+    useLoadUserQuery(undefined, { skip: !loadUser });
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

@@ -7,6 +7,7 @@ import noData from '@/public/assets/images/courses/no-data.jpg';
 import { HorizontalCardSkeleton } from '@/components/ui/Skeleton';
 import Sort from './Sort';
 import { useSearchParams } from 'next/navigation';
+import { v4 as uuidv4 } from 'uuid';
 
 type Benefit = {
     title: string;
@@ -85,6 +86,7 @@ export default function HorizontalCoursesList({
 
     useEffect(() => {
         const fetchCourses = async () => {
+            if (!sortType) return;
             setIsLoading(true);
             try {
                 // Đảm bảo URL API chính xác
@@ -143,20 +145,24 @@ export default function HorizontalCoursesList({
                 <Sort />
             </div>
 
-            {isLoading ? (
+            {isLoading && (
                 <div className="w-full">
-                    {[...Array(3)].map((_, index) => (
-                        <HorizontalCardSkeleton key={index} />
+                    {[...Array(3)].map(() => (
+                        <HorizontalCardSkeleton key={uuidv4()} />
                     ))}
                 </div>
-            ) : totalCourses === 0 ? (
+            )}
+
+            {!isLoading && totalCourses === 0 && (
                 <div className="flex flex-col items-center justify-center w-full h-full">
                     <Image src={noData} alt="No Courses Found" />
                     <p className="text-primary-600 mt-4">No courses found. Please try a different search.</p>
                 </div>
-            ) : (
-                courses.map((course) => <CourseHorizontalCard key={course._id} course={course} />)
             )}
+
+            {!isLoading &&
+                totalCourses > 0 &&
+                courses.map((course) => <CourseHorizontalCard key={course._id} course={course} />)}
 
             {/* Pagination */}
             {totalCourses > 0 && (
