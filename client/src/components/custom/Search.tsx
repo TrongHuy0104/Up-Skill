@@ -10,10 +10,28 @@ import defaultInstructorImage from '@/public/assets/images/avatar/default-avatar
 import Link from 'next/link';
 import { Skeleton } from '../ui/Skeleton';
 
+interface SearchResults {
+    courses: Course[];
+    instructors: User[];
+}
+
+// Component hiển thị Skeleton loading
+const SearchResultSkeleton = () => (
+    <div className="p-1 flex items-center">
+        <Skeleton className="h-10 w-10 rounded mr-2" />
+        <div className="w-full">
+            <Skeleton className="h-4 w-3/4 mb-2 rounded" />
+            <div className="flex items-center gap-2">
+                <Skeleton className="h-3 w-1/4 rounded" />
+                <Skeleton className="h-3 w-1/2 rounded" />
+            </div>
+        </div>
+    </div>
+);
 
 export default function Search() {
     const [searchValue, setSearchValue] = useState('');
-    const [results, setResults] = useState<{ courses: Course[]; instructors: User[] }>({ courses: [], instructors: [] });
+    const [results, setResults] = useState<SearchResults>({ courses: [], instructors: [] });
     const [showResults, setShowResults] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
@@ -41,9 +59,9 @@ export default function Search() {
 
                 const data = await response.json();
                 setResults(data);
-                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching search results:', error);
+            } finally {
                 setIsLoading(false);
             }
         }, 1000);
@@ -57,46 +75,16 @@ export default function Search() {
         setSearchValue(e.target.value);
     };
 
-    const handleSelectResult = () => {
-        setShowResults(false);
-    };
-
     const handleClickOutside = (event: MouseEvent) => {
         if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
             setShowResults(false);
         }
     };
 
-    const handleFocus = () => {
-        if (searchValue.trim()) {
-            setShowResults(true);
-        }
-    };
-    
-    const handleBlur = () => {
-        setTimeout(() => {
-            setShowResults(false);
-        }, 200);
-    };
-
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
-
-    // Search result skeleton using existing Skeleton component
-    const SearchResultSkeleton = () => (
-        <div className="p-1 flex items-center">
-            <Skeleton className="h-10 w-10 rounded mr-2" />
-            <div className="w-full">
-                <Skeleton className="h-4 w-3/4 mb-2 rounded" />
-                <div className="flex items-center gap-2">
-                    <Skeleton className="h-3 w-1/4 rounded" />
-                    <Skeleton className="h-3 w-1/2 rounded" />
-                </div>
-            </div>
-        </div>
-    );
 
     return (
         <div className="relative" ref={searchRef}>
@@ -108,8 +96,7 @@ export default function Search() {
                     className="ml-2 flex-grow outline-none"
                     value={searchValue}
                     onChange={handleSearchChange}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
+                    onFocus={() => searchValue.trim() && setShowResults(true)}
                 />
             </div>
             {showResults && (
@@ -117,75 +104,85 @@ export default function Search() {
                     <div className="py-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary-500 scrollbar-track-primary-100">
                         {isLoading ? (
                             <div className="px-2">
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                    <SearchResultSkeleton key={`search-result-skeleton-${index}`} />
+                                {[...Array(5)].map(() => (
+                                    <SearchResultSkeleton key={crypto.randomUUID()} />
                                 ))}
                             </div>
                         ) : (
                             <>
                                 {results.courses.length > 0 && (
                                     <div className="px-2">
-                                            {results.courses.map((course) => (
-                                                <Link key={course?._id} href={`/courses/${course?._id}`} legacyBehavior>
-                                                <div
+                                        {results.courses.map((course) => (
+                                            <Link key={course._id} href={`/courses/${course._id}`} legacyBehavior>
+                                                <a
                                                     className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
-                                                    onClick={handleSelectResult}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            window.location.href = `/courses/${course._id}`;
+                                                        }
+                                                    }}
                                                 >
-                                                        <a className="flex items-center gap-2">
-                                                            <Image
-                                                                src={course?.thumbnail?.url || defaultCourseImage}
-                                                                alt="Course Image"
-                                                                width={40}
-                                                                height={40}
-                                                                className="rounded mr-2"
-                                                            />
-                                                            <div>
-                                                                <div className="font-medium bg-no-repeat bg-[length:0_100%] bg-[position-y:0px] bg-gradient-to-b from-transparent 
-                                            from-[calc(100%-1px)] to-current to-[1px] transition-all duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] 
-                                            backface-hidden group-hover:bg-[length:100%_100%] group-hover:delay-300 hover:text-accent-600">{course?.name}</div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <div className="text-sm text-black w-auto">
-                                                                        {course?.authorId?.name || 'Unknown'}
-                                                                    </div>
-                                                                    <p className="text-sm text-primary-500">
-                                                                        {course?.description?.length > 50
-                                                                            ? course.description.slice(0, 50) + '...'
-                                                                            : course.description}
-                                                                    </p>
-                                                                </div>
+                                                    <Image
+                                                        src={course?.thumbnail?.url || defaultCourseImage}
+                                                        alt="Course Image"
+                                                        width={40}
+                                                        height={40}
+                                                        className="rounded mr-2"
+                                                    />
+                                                    <div>
+                                                        <div className="font-medium hover:text-accent-600">
+                                                            {course?.name}
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="text-sm text-black w-auto">
+                                                                {course?.authorId?.name || 'Unknown'}
                                                             </div>
-                                                        </a>
-                                                </div>
-                                                    </Link>
-                                            ))}
+                                                            <p className="text-sm text-primary-500">
+                                                                {course?.description?.length > 50
+                                                                    ? `${course.description.slice(0, 50)}...`
+                                                                    : course.description}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </Link>
+                                        ))}
                                     </div>
                                 )}
                                 {results.instructors.length > 0 && (
                                     <div className="px-2">
-                                            {results.instructors.map((user) => (
-                                                <Link key={user?._id} href={`/instructors/${user?._id}`} legacyBehavior>
-                                                <div
+                                        {results.instructors.map((user) => (
+                                            <Link key={user._id} href={`/instructors/${user._id}`} legacyBehavior>
+                                                <a
                                                     className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
-                                                    onClick={handleSelectResult}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            window.location.href = `/instructors/${user._id}`;
+                                                        }
+                                                    }}
                                                 >
-                                                        <a className="flex items-center gap-2">
-                                                            <Image
-                                                                src={user?.avatar?.url || defaultInstructorImage}
-                                                                alt="User Avatar"
-                                                                width={40}
-                                                                height={40}
-                                                                className="rounded-full mr-2"
-                                                            />
-                                                            <div>
-                                                                <div className="font-medium bg-no-repeat bg-[length:0_100%] bg-[position-y:0px] bg-gradient-to-b from-transparent 
-                                            from-[calc(100%-1px)] to-current to-[1px] transition-all duration-300 ease-[cubic-bezier(0.215,0.61,0.355,1)] 
-                                            backface-hidden group-hover:bg-[length:100%_100%] group-hover:delay-300 hover:text-accent-600">{user.name}</div>
-                                                                <div className="text-sm text-primary-500">{user.role}</div>
-                                                            </div>
-                                                        </a>
-                                                </div>
-                                                    </Link>
-                                            ))}
+                                                    <Image
+                                                        src={user?.avatar?.url || defaultInstructorImage}
+                                                        alt="User Avatar"
+                                                        width={40}
+                                                        height={40}
+                                                        className="rounded-full mr-2"
+                                                    />
+                                                    <div>
+                                                        <div className="font-medium hover:text-accent-600">
+                                                            {user.name}
+                                                        </div>
+                                                        <div className="text-sm text-primary-500">{user.role}</div>
+                                                    </div>
+                                                </a>
+                                            </Link>
+                                        ))}
                                     </div>
                                 )}
                                 {results.courses.length === 0 && results.instructors.length === 0 && (
