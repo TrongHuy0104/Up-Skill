@@ -1419,13 +1419,13 @@ export const searchCoursesAndInstructors = catchAsync(async (req: Request, res: 
     const courses = await CourseModel.find({
         $or: [{ name: regex }, { description: regex }]
     })
-        .select('name description authorId')
-        .populate('authorId', 'name role');
+        .select('name description authorId thumbnail')
+        .populate('authorId', 'name role ');
 
     const instructors = await UserModel.find({
         name: regex,
         role: 'instructor'
-    }).select('name role');
+    }).select('name role avatar');
 
     res.status(200).json({
         success: true,
