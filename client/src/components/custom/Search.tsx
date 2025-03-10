@@ -15,7 +15,6 @@ interface SearchResults {
     instructors: User[];
 }
 
-// Component hiển thị Skeleton loading
 const SearchResultSkeleton = () => (
     <div className="p-1 flex items-center">
         <Skeleton className="h-10 w-10 rounded mr-2" />
@@ -114,16 +113,8 @@ export default function Search() {
                                     <div className="px-2">
                                         {results.courses.map((course) => (
                                             <Link key={course._id} href={`/courses/${course._id}`} legacyBehavior>
-                                                <a
-                                                    className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
-                                                    role="button"
-                                                    tabIndex={0}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === ' ') {
-                                                            e.preventDefault();
-                                                            window.location.href = `/courses/${course._id}`;
-                                                        }
-                                                    }}
+                                                <button
+                                                    className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2 w-full text-left"
                                                 >
                                                     <Image
                                                         src={course?.thumbnail?.url || defaultCourseImage}
@@ -147,7 +138,7 @@ export default function Search() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                </a>
+                                                </button>
                                             </Link>
                                         ))}
                                     </div>
@@ -156,16 +147,8 @@ export default function Search() {
                                     <div className="px-2">
                                         {results.instructors.map((user) => (
                                             <Link key={user._id} href={`/instructors/${user._id}`} legacyBehavior>
-                                                <a
-                                                    className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
-                                                    role="button"
-                                                    tabIndex={0}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === ' ') {
-                                                            e.preventDefault();
-                                                            window.location.href = `/instructors/${user._id}`;
-                                                        }
-                                                    }}
+                                                <button
+                                                    className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2 w-full text-left"
                                                 >
                                                     <Image
                                                         src={user?.avatar?.url || defaultInstructorImage}
@@ -180,7 +163,7 @@ export default function Search() {
                                                         </div>
                                                         <div className="text-sm text-primary-500">{user.role}</div>
                                                     </div>
-                                                </a>
+                                                </button>
                                             </Link>
                                         ))}
                                     </div>
