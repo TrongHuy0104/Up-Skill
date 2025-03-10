@@ -67,6 +67,18 @@ export default function Search() {
         }
     };
 
+    const handleFocus = () => {
+        if (searchValue.trim()) {
+            setShowResults(true);
+        }
+    };
+    
+    const handleBlur = () => {
+        setTimeout(() => {
+            setShowResults(false);
+        }, 200);
+    };
+
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -96,6 +108,8 @@ export default function Search() {
                     className="ml-2 flex-grow outline-none"
                     value={searchValue}
                     onChange={handleSearchChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                 />
             </div>
             {showResults && (
@@ -113,12 +127,12 @@ export default function Search() {
                                     <div className="px-2">
                                         <ul>
                                             {results.courses.map((course) => (
+                                                <Link key={course?._id} href={`/courses/${course?._id}`} legacyBehavior>
                                                 <li
                                                     key={course?._id}
                                                     className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
                                                     onClick={handleSelectResult}
                                                 >
-                                                    <Link href={`/courses/${course?._id}`} legacyBehavior>
                                                         <a className="flex items-center gap-2">
                                                             <Image
                                                                 src={course?.thumbnail?.url || defaultCourseImage}
@@ -143,8 +157,8 @@ export default function Search() {
                                                                 </div>
                                                             </div>
                                                         </a>
-                                                    </Link>
                                                 </li>
+                                                    </Link>
                                             ))}
                                         </ul>
                                     </div>
@@ -153,12 +167,12 @@ export default function Search() {
                                     <div className="px-2">
                                         <ul>
                                             {results.instructors.map((user) => (
+                                                <Link key={user?._id} href={`/instructors/${user?._id}`} legacyBehavior>
                                                 <li
                                                     key={user?._id}
                                                     className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
                                                     onClick={handleSelectResult}
                                                 >
-                                                    <Link href={`/instructors/${user?._id}`} legacyBehavior>
                                                         <a className="flex items-center gap-2">
                                                             <Image
                                                                 src={user?.avatar?.url || defaultInstructorImage}
@@ -174,8 +188,8 @@ export default function Search() {
                                                                 <div className="text-sm text-primary-500">{user.role}</div>
                                                             </div>
                                                         </a>
-                                                    </Link>
                                                 </li>
+                                                    </Link>
                                             ))}
                                         </ul>
                                     </div>
