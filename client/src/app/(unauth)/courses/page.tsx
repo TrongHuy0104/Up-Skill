@@ -38,7 +38,7 @@ export default async function Page({ searchParams = {} }: any) {
         <div className="w-full pb-40">
             <Banner />
             <PopularInstructor />
-            <div className="flex w-[1400px] mx-auto pt-[54px] relative">
+            <div className="flex flex-col md:flex-row w-full px-4 md:px-0 md:w-[1400px] mx-auto pt-[54px] relative">
                 <Suspense fallback={<DashboardSkeleton />}>
                     <FilterCourses filterData={data} />
                     <HorizontalCoursesList

@@ -140,9 +140,9 @@ export default function HorizontalCoursesList({
     };
 
     return (
-        <div className="pl-[28px] relative w-full">
-            <div className="flex justify-between items-center pb-8 w-full">
-                <p className="text-primary-800">
+        <div className="pl-[10px] md:pl-[28px] relative w-full">
+            <div className="flex flex-col md:flex-row justify-between items-center pb-8 w-full">
+                <p className="text-primary-800 mb-4 md:mb-0">
                     Showing {startIndex}-{endIndex} Of {totalCourses} Courses
                 </p>
                 <Sort />
@@ -169,7 +169,7 @@ export default function HorizontalCoursesList({
 
             {/* Pagination */}
             {totalCourses > 0 && (
-                <div className="p-5">
+                <div className="p-5 flex justify-start md:justify-center">
                     <PaginationComponent
                         currentPage={currentPage}
                         totalPages={totalPages}

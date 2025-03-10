@@ -76,7 +76,7 @@ export default function Sort() {
             </div>
 
             {isSortOpen && (
-                <div ref={dropdownRef}>
+                <div ref={dropdownRef} className="absolute top-full mt-2 z-10">
                     <ModalComponent closeModal={() => setIsSortOpen(false)} onSelectSort={handleSortSelect} />
                 </div>
             )}
