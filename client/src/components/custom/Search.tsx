@@ -125,11 +125,9 @@ export default function Search() {
                             <>
                                 {results.courses.length > 0 && (
                                     <div className="px-2">
-                                        <ul>
                                             {results.courses.map((course) => (
                                                 <Link key={course?._id} href={`/courses/${course?._id}`} legacyBehavior>
-                                                <li
-                                                    key={course?._id}
+                                                <div
                                                     className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
                                                     onClick={handleSelectResult}
                                                 >
@@ -157,19 +155,16 @@ export default function Search() {
                                                                 </div>
                                                             </div>
                                                         </a>
-                                                </li>
+                                                </div>
                                                     </Link>
                                             ))}
-                                        </ul>
                                     </div>
                                 )}
                                 {results.instructors.length > 0 && (
                                     <div className="px-2">
-                                        <ul>
                                             {results.instructors.map((user) => (
                                                 <Link key={user?._id} href={`/instructors/${user?._id}`} legacyBehavior>
-                                                <li
-                                                    key={user?._id}
+                                                <div
                                                     className="p-1 hover:bg-primary-50 cursor-pointer flex items-center pt-2"
                                                     onClick={handleSelectResult}
                                                 >
@@ -188,10 +183,9 @@ export default function Search() {
                                                                 <div className="text-sm text-primary-500">{user.role}</div>
                                                             </div>
                                                         </a>
-                                                </li>
+                                                </div>
                                                     </Link>
                                             ))}
-                                        </ul>
                                     </div>
                                 )}
                                 {results.courses.length === 0 && results.instructors.length === 0 && (
