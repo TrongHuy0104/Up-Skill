@@ -36,8 +36,6 @@ export default function OrderList() {
       withCredentials: true,
     });
 
-    console.log("Fetched orders:", response.data.orders);
-
     setOrders(response.data.orders);
       setTotalCourses(response.data.orders.reduce((acc: any, order: { courseIds: string | any[]; }) => acc + order.courseIds.length, 0));
   } catch (error) {
