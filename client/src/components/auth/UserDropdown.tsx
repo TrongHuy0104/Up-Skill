@@ -76,6 +76,17 @@ export function UserDropdown({ user }: UserDropdownProps) {
                             </DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
+                    {/* Check if user is admin */}
+                    {user.role === 'admin' && (
+                        <Link href="/admin/dashboard">
+                            <DropdownMenuItem>
+                                Manage Admin
+                                <DropdownMenuShortcut>
+                                    <IoSettingsOutline className="text-lg" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </Link>
+                    )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
