@@ -29,13 +29,21 @@ const Sidebar = () => {
             {/* Logo */}
             <div className=" flex items-center p-4 gap-4">
                 <Image src="/assets/images/logo/favicon.png" alt="Logo" width={50} height={50} />
-                <div className='text-gray-400 text-2xl'>UpSkill</div>
+                <div className="text-gray-400 text-2xl">UpSkill</div>
             </div>
             {/* Avatar and Role */}
-            <div className='mt-4 text-white text-xl px-4 py-8'>
-				<div>tên</div>
+            <div className="mt-4 text-white px-4 py-8 flex flex-col items-center gap-2">
+                <Image
+                    src="/assets/images/avatar/default-avatar.jpg"
+                    alt="User Avatar"
+                    width={50}
+                    height={50}
+                    className="rounded-full"
+                />
+                <div className='text-2xl'>tên</div>
                 <div>role</div>
-			</div>
+            </div>
+
             {/* Menu */}
             <div className="w-full max-h-screen overflow-y-auto overflow-x-hidden p-4">
                 {menuItems.map((i) => (
