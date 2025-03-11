@@ -1,9 +1,12 @@
-// import ListUser from './_components/ListUser';
+import UserAnalyticsChart from './_components/Chart';
 
-import ListUser from "./_components/ListUser";
+import ListUser from './_components/ListUser';
 
 export default function Page() {
     return (
-        <ListUser />
+        <div>
+            <ListUser />
+            <UserAnalyticsChart />
+        </div>
     );
 }

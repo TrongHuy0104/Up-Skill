@@ -1,18 +1,21 @@
-import Menu from "./dashboard/_components/Menu";
+// app/admin/layout.tsx
+import { ReactNode } from 'react';
+import Sidebar from './dashboard/_components/SideBar';
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="h-[800px] flex">
-            {/* LEFT - Menu Sidebar */}
-            <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4">
-                <Menu />
-            </div>
+        <html lang="en">
+            <body className="overflow-x-hidden relative">
+                <div className="h-screen flex">
+                    {/* LEFT - Menu Sidebar */}
+                    <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4 bg-gray-900">
+                        <Sidebar />
+                    </div>
 
-            {/* RIGHT - Nội dung động */}
-            <div className="flex-1 p-6 bg-[#F7F8FA] overflow-auto">
-                {children}
-            </div>
-        </div>
+                    {/* RIGHT - Nội dung động */}
+                    <div className="flex-1 p-6 bg-black overflow-auto">{children}</div>
+                </div>
+            </body>
+        </html>
     );
 }
-
