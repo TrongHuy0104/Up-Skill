@@ -14,12 +14,12 @@ interface QuizItemProps {
     readonly isFirst?: boolean;
     readonly isLast?: boolean;
     readonly onClick: () => void;
-    readonly userId: string; // Add userId to props
+    // readonly userId: string; // Add userId to props
     readonly onUpdate: (updatedQuiz: any) => void; // Callback to handle quiz updates
     readonly onDelete: (quizId: string) => void; // Callback to handle quiz delete
 }
 
-export default function QuizItem({ quiz, isFirst, isLast, onClick, userId, onUpdate, onDelete }: QuizItemProps) {
+export default function QuizItem({ quiz, isFirst, isLast, onClick, onUpdate, onDelete }: QuizItemProps) {
     const { questions, duration, passingScore, _id: quizId } = quiz;
     const [showResultsModal, setShowResultsModal] = useState(false); // State to control results modal visibility
     const [showUpdateModal, setShowUpdateModal] = useState(false); // State to control update modal visibility
@@ -27,7 +27,7 @@ export default function QuizItem({ quiz, isFirst, isLast, onClick, userId, onUpd
 
     return (
         <>
-             <li
+            <li
                 role="button"
                 onClick={onClick}
                 className={`group grid grid-cols-10 gap-4 items-baseline cursor-pointer hover:bg-gray-100 transition ${isFirst ? 'pt-6' : ''
@@ -100,7 +100,6 @@ export default function QuizItem({ quiz, isFirst, isLast, onClick, userId, onUpd
             {showResultsModal && (
                 <QuizResultModal
                     quizId={quizId}
-                    userId={userId}
                     onClose={() => setShowResultsModal(false)} // Close the modal
                 />
             )}

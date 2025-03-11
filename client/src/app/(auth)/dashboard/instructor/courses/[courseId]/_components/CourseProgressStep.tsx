@@ -2,15 +2,43 @@ import React from 'react';
 import { IoMdCheckmark } from 'react-icons/io';
 
 type Props = {
+    course: any;
     active: number;
     setActive: (active: number) => void;
 };
 
-function CourseProgressStep({ active, setActive }: Props) {
+function CourseProgressStep({ active, setActive, course }: Props) {
     const steps = ['Course Information', 'Course Options', 'Course Content', 'Course Preview'];
 
+    const handleSelect = (index: number) => {
+        const isCourseInfoValid =
+            course.name &&
+            course.description &&
+            course.level &&
+            course.category &&
+            course.subCategory &&
+            course.tags &&
+            course.price &&
+            course.thumbnail;
+
+        const isCourseOptionsValid = course.benefits.length > 0 && course.prerequisites.length > 0;
+
+        const isCourseContentValid = course.courseData.find(
+            (c: any) => c.title && c.description && c.videoUrl && c.isPublished && c.isPublishedSection
+        );
+        if (index === 0) {
+            return setActive(index);
+        } else if (index === 1 && isCourseInfoValid) {
+            return setActive(index);
+        } else if (index === 2 && isCourseOptionsValid) {
+            return setActive(index);
+        } else if (index === 3 && isCourseContentValid && isCourseInfoValid && isCourseOptionsValid) {
+            return setActive(index);
+        }
+    };
+
     return (
-        <div className="w-full pt-8 pb-16 px-4">
+        <div className="w-full pt-2 pb-16 px-4">
             <div className="flex items-center justify-between relative">
                 {/* Background line */}
                 <div className="absolute top-1/2 left-0 w-full transform -translate-y-1/2">
@@ -33,8 +61,8 @@ function CourseProgressStep({ active, setActive }: Props) {
                         <div key={step} className="flex flex-col items-center relative z-10">
                             {/* Step circle */}
                             <button
-                                onClick={() => setActive(index)}
-                                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 cursor-default ${
+                                onClick={() => handleSelect(index)}
+                                className={`w-10 h-10 rounded-full cursor-pointer flex items-center justify-center transition-colors duration-300 cursor-default ${
                                     isCompleted ? 'bg-accent-600' : 'bg-primary-800'
                                 }`}
                             >

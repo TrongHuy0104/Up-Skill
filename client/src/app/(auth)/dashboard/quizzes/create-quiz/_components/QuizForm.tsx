@@ -41,7 +41,6 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [cookie, setCookie] = useState<string | null>(null);
 
-  // Fetch cookies when the component is mounted
   useEffect(() => {
     const cookies = document.cookie;
     setCookie(cookies);
@@ -76,44 +75,28 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      // Get the selected course
       const selectedCourse = courses.find((course) => course._id === data.courseId);
-      if (!selectedCourse) {
-        throw new Error('Course not found');
-      }
+      if (!selectedCourse) throw new Error('Course not found');
 
-      // Send POST request with quiz data and cookie in headers
       const response = await fetch('http://localhost:8000/api/quizzes/create-quiz', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Cookie': cookie || '',
+          Cookie: cookie || '',
         },
         body: JSON.stringify({
           ...data,
-          instructorId: selectedCourse.authorId, // Set authorId from the selected course
+          instructorId: selectedCourse.authorId,
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create quiz');
-      }
+      if (!response.ok) throw new Error('Failed to create quiz');
 
-      // Redirect to quizzes page after successful quiz creation
       router.push('/dashboard/quizzes/create-quiz');
-      toast({
-        variant: 'success',
-        title: 'Quiz created!'
-    });
+      toast({ variant: 'success', title: 'Quiz created!' });
     } catch (error) {
       console.error('Error creating quiz:', error);
-      const errorData = error as any;
-      toast({
-        variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: errorData
-    });
+      toast({ variant: 'destructive', title: 'Uh oh! Something went wrong.', description: String(error) });
     } finally {
       setIsLoading(false);
     }
@@ -121,16 +104,23 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full space-y-8"
+      >
+
         {/* Course Selection */}
         <FormField
           control={form.control}
           name="courseId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Course</FormLabel>
+              <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Course</FormLabel>
               <FormControl>
-                <select className="w-full p-2 border rounded-md" {...field}>
+                <select
+                  {...field}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
+                >
                   <option value="">Select a course</option>
                   {courses?.map((course) => (
                     <option key={course._id} value={course._id}>
@@ -139,16 +129,13 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
                   ))}
                 </select>
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-sm text-red-500 mt-1" />
             </FormItem>
           )}
         />
 
-        {/* Video Section Selection */}
-        <VideoSectionSelector
-          videoSections={videoSections}
-          selectedCourse={!!selectedCourse}
-        />
+        {/* Video Section Selector */}
+        <VideoSectionSelector videoSections={videoSections} selectedCourse={!!selectedCourse} />
 
         {/* Quiz Title */}
         <FormField
@@ -156,11 +143,15 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Title</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter quiz title" />
+                <Input
+                  {...field}
+                  placeholder="Enter quiz title"
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-sm text-red-500 mt-1" />
             </FormItem>
           )}
         />
@@ -171,86 +162,111 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Description</FormLabel>
               <FormControl>
-                <textarea className="w-full p-2 border rounded-md" {...field} placeholder="Describe the quiz" />
+                <textarea
+                  {...field}
+                  placeholder="Describe the quiz"
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
+                  rows={4}
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-sm text-red-500 mt-1" />
             </FormItem>
           )}
         />
 
-        {/* Difficulty */}
-        <FormField
-          control={form.control}
-          name="difficulty"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Difficulty</FormLabel>
-              <FormControl>
-                <select className="w-full p-2 border rounded-md" {...field}>
-                  <option value="easy">Easy</option>
-                  <option value="medium">Medium</option>
-                  <option value="hard">Hard</option>
-                </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Difficulty, Duration, Passing Score, Max Attempts */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="difficulty"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="block text-sm font-medium text-slate-700 mb-[1px]">Difficulty</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
+                  >
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                  </select>
+                </FormControl>
+                <FormMessage className="text-sm text-red-500 mt-1" />
+              </FormItem>
+            )}
+          />
 
-        {/* Duration */}
-        <FormField
-          control={form.control}
-          name="duration"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Duration (minutes)</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} placeholder="30" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="duration"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Duration (minutes)</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Enter duration"
+                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500 mt-1" />
+              </FormItem>
+            )}
+          />
 
-        {/* Passing Score */}
-        <FormField
-          control={form.control}
-          name="passingScore"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Passing Score (%)</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} placeholder="70" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="passingScore"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Passing Score (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Enter passing score"
+                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500 mt-1" />
+              </FormItem>
+            )}
+          />
 
-        {/* Max Attempts */}
-        <FormField
-          control={form.control}
-          name="maxAttempts"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Max Attempts</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} placeholder="3" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="maxAttempts"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Max Attempts</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Enter max attempts"
+                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
+                  />
+                </FormControl>
+                <FormMessage className="text-sm text-red-500 mt-1" />
+              </FormItem>
+            )}
+          />
+        </div>
 
         {/* Submit Button */}
-        <Button type="submit" variant="default" disabled={isLoading}>
+        <Button
+          type="submit"
+          variant="default"
+          disabled={isLoading}
+          className="w-full py-3"
+        >
           {isLoading ? 'Creating...' : 'Create Quiz'}
         </Button>
       </form>
     </Form>
   );
 };
-
-

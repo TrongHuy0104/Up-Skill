@@ -73,22 +73,26 @@ export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateM
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Update Quiz</h2>
+    <div className="fixed h-full inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-8 animate-fade-in">
+        <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">Update Quiz</h2>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             {/* Title */}
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
+                <FormItem className="animate-fade-in-up delay-100">
+                  <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Title</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter quiz title" />
+                    <Input
+                      {...field}
+                      placeholder="Enter quiz title"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:shadow-md"
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm text-red-500 mt-1" />
                 </FormItem>
               )}
             />
@@ -98,17 +102,17 @@ export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateM
               control={form.control}
               name="description"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
+                <FormItem className="animate-fade-in-up delay-200">
+                  <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Description</FormLabel>
                   <FormControl>
                     <textarea
                       {...field}
-                      className="w-full p-2 border rounded-md"
                       placeholder="Describe the quiz"
-                      rows={3}
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:shadow-md"
+                      rows={4}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm text-red-500 mt-1" />
                 </FormItem>
               )}
             />
@@ -118,19 +122,19 @@ export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateM
               control={form.control}
               name="difficulty"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Difficulty</FormLabel>
+                <FormItem className="animate-fade-in-up delay-300">
+                  <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Difficulty</FormLabel>
                   <FormControl>
                     <select
                       {...field}
-                      className="w-full p-2 border rounded-md"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:shadow-md"
                     >
                       <option value="easy">Easy</option>
                       <option value="medium">Medium</option>
                       <option value="hard">Hard</option>
                     </select>
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm text-red-500 mt-1" />
                 </FormItem>
               )}
             />
@@ -140,17 +144,18 @@ export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateM
               control={form.control}
               name="duration"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Duration (minutes)</FormLabel>
+                <FormItem className="animate-fade-in-up delay-400">
+                  <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Duration (minutes)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       placeholder="30"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:shadow-md"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm text-red-500 mt-1" />
                 </FormItem>
               )}
             />
@@ -160,17 +165,18 @@ export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateM
               control={form.control}
               name="passingScore"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Passing Score (%)</FormLabel>
+                <FormItem className="animate-fade-in-up delay-500">
+                  <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Passing Score (%)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       placeholder="70"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:shadow-md"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm text-red-500 mt-1" />
                 </FormItem>
               )}
             />
@@ -180,17 +186,18 @@ export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateM
               control={form.control}
               name="maxAttempts"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Max Attempts</FormLabel>
+                <FormItem className="animate-fade-in-up delay-600">
+                  <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Max Attempts</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
                       onChange={(e) => field.onChange(Number(e.target.value))}
                       placeholder="3"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:shadow-md"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm text-red-500 mt-1" />
                 </FormItem>
               )}
             />
@@ -200,33 +207,35 @@ export default function QuizUpdateModal({ quiz, onClose, onUpdate }: QuizUpdateM
               control={form.control}
               name="isPublished"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Published</FormLabel>
+                <FormItem className="animate-fade-in-up delay-700">
+                  <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Published</FormLabel>
                   <FormControl>
                     <input
                       type="checkbox"
                       checked={field.value}
                       onChange={(e) => field.onChange(e.target.checked)}
-                      className="ml-2"
+                      className="ml-2 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all"
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-sm text-red-500 mt-1" />
                 </FormItem>
               )}
             />
 
             {/* Buttons */}
-            <div className="flex justify-end space-x-4">
+            <div className="flex justify-end space-x-4 mt-8">
               <Button
                 type="button"
                 onClick={onClose}
                 variant="secondary"
+                className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-600 transition-all transform hover:scale-105"
               >
                 {form.formState.isSubmitting ? 'Updating...' : 'Update'}
               </Button>

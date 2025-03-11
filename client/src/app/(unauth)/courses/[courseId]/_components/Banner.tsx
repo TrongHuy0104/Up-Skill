@@ -52,7 +52,7 @@ export default function Banner({ course }: Props) {
                 <div className="flex items-center mt-4 gap-4">
                     <Image
                         src={course?.authorId?.avatar?.url || defaultAvatar}
-                        alt={course?.authorId?.name}
+                        alt={course?.authorId?.name || 'avatar'}
                         width={40}
                         height={40}
                         className="rounded-full  border-4 border-white outline outline-[1px] outline-accent-600 min-w-[40px] max-w[40px]"

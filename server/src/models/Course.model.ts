@@ -37,9 +37,16 @@ const CourseDataSchema = new Schema<ICourseData>({
     order: Number,
     title: String,
     description: String,
-    videoUrl: String,
+    videoUrl: {
+        public_id: {
+            type: String
+        },
+        url: {
+            type: String
+        }
+    },
     videoPlayer: String,
-    videoSection: String,
+    videoSection: { type: String },
     videoLength: Number,
     links: [LinkSchema],
     suggestion: String,
@@ -49,7 +56,13 @@ const CourseDataSchema = new Schema<ICourseData>({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Quiz'
         }
-    ]
+    ],
+    isCompleted: { type: Boolean, default: false },
+    isPublished: { type: Boolean, default: false },
+    isPublishedSection: { type: Boolean, default: false },
+    isFree: { type: Boolean, default: false },
+    sectionOrder: Number,
+    lessonOrder: Number
 });
 
 const CourseSchema = new Schema<ICourse>(
@@ -91,7 +104,12 @@ const CourseSchema = new Schema<ICourse>(
             ref: 'Level'
         },
         demoUrl: {
-            type: String
+            public_id: {
+                type: String
+            },
+            url: {
+                type: String
+            }
         },
         benefits: [{ title: String }],
         prerequisites: [{ title: String }],
@@ -106,15 +124,14 @@ const CourseSchema = new Schema<ICourse>(
             default: 0
         },
         isPublished: { type: Boolean, default: false },
+        isFree: { type: Boolean, default: false },
         category: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Category',
-            required: [true, 'Category is required']
+            ref: 'Category'
         },
         subCategory: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'SubCategory',
-            required: [true, 'Sub Category is required']
+            ref: 'SubCategory'
         }
     },
     { timestamps: true }

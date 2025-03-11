@@ -8,6 +8,8 @@ import PlayContent from '@/public/assets/icons/play-content.svg';
 import LockIcon from '@/public/assets/icons/lock.svg';
 import MoreSections from '@/public/assets/icons/more-sections.svg';
 import { getMinutes } from '@/lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
+import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 
 interface Props {
     readonly data: any;
@@ -63,7 +65,9 @@ export default function CourseContent({ data }: Props) {
                                 {section}
                                 <span className="text-sm font-normal">
                                     {sectionVideoCount} lessons •{' '}
-                                    {sectionVideoLength < 60 ? sectionVideoLength : sectionContentHours.toFixed(2)}{' '}
+                                    {sectionVideoLength < 60
+                                        ? sectionVideoLength.toFixed(0)
+                                        : sectionContentHours.toFixed(2)}{' '}
                                     {sectionVideoLength > 60 ? 'hours' : 'minutes'}
                                 </span>
                             </div>
@@ -73,7 +77,7 @@ export default function CourseContent({ data }: Props) {
                                 {sectionVideos.map((item: any, index: number) => {
                                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                     const videoIndex = sectionStartIndex + index;
-                                    const lessonLength = item.videoLength;
+                                    const lessonLength = item?.videoLength;
                                     return (
                                         <div
                                             key={item.title + index}
@@ -83,20 +87,35 @@ export default function CourseContent({ data }: Props) {
                                                 <span className="p-5">
                                                     <Image src={PlayContent} alt="play content" />
                                                 </span>
-                                                <button className="hover:text-accent-900" onClick={() => {}}>
-                                                    {item.title}
-                                                </button>
+                                                {item.isFree ? (
+                                                    <Dialog>
+                                                        <DialogTrigger className="hover:text-accent-900" asChild>
+                                                            <div className="cursor-pointer">{item.title}</div>
+                                                        </DialogTrigger>
+                                                        <DialogContent className="sm:max-w-[425px] md:max-w-[800px]">
+                                                            <DialogHeader>
+                                                                <DialogTitle className="text-2xl">
+                                                                    Course Preview
+                                                                </DialogTitle>
+                                                            </DialogHeader>
+                                                            <VideoPlayer videoUrl={item?.videoUrl?.url || ''} />
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                ) : (
+                                                    <div className="hover:text-accent-900">{item.title}</div>
+                                                )}
                                             </span>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-sm text-[#131836]">
-                                                    {getMinutes(lessonLength)}
+                                                <span className="text-sm text-primary-800">
+                                                    {getMinutes(lessonLength?.toFixed(0))}
                                                 </span>
-                                                {/* {lecture.preview && (
-                                                        <button className="text-accent-900 border border-acctext-accent-900 px-2 py-1 text-sm rounded">
-                                                            Preview
-                                                        </button>
-                                                    )} */}
-                                                {<Image src={LockIcon} alt="locked" />}
+                                                {item.isFree ? (
+                                                    <div className="text-accent-900 border border-accent-900 px-2 py-1 text-sm rounded">
+                                                        Preview
+                                                    </div>
+                                                ) : (
+                                                    <Image src={LockIcon} alt="locked" />
+                                                )}
                                             </div>
                                         </div>
                                     );
@@ -108,7 +127,7 @@ export default function CourseContent({ data }: Props) {
             })}
             {videoSections.length > 3 && (
                 <button
-                    className="flex w-[900px] justify-center items-center gap-[10px] border border-[#131836] hover:border-[#E27447] rounded-lg mt-4  h-[55px]"
+                    className="flex w-[900px] justify-center items-center gap-[10px] border border-primary-text-primary-800 hover:border-[#E27447] rounded-lg mt-4  h-[55px]"
                     onClick={() => setIsShowAllSections(!isShowAllSections)}
                 >
                     {isShowAllSections ? 'Collapse' : `${videoSections.length - 3} More Sections`}

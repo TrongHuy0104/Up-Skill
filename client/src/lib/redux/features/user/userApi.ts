@@ -3,10 +3,10 @@ import { apiSlice } from '../api/apiSlice';
 export const userApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         updateUserInfo: builder.mutation({
-            query: ({ avatar, name }) => ({
+            query: (data) => ({
                 url: 'user/update-user',
                 method: 'PUT',
-                body: { avatar, name },
+                body: data,
                 credentials: 'include' as const
             })
         }),
@@ -25,8 +25,17 @@ export const userApi = apiSlice.injectEndpoints({
                 body: { oldPassword, newPassword },
                 credentials: 'include' as const
             })
+        }),
+        updateLink: builder.mutation({
+            query: (data) => ({
+                url: 'user/update-link', // Route mới cho cập nhật các liên kết xã hội
+                method: 'PUT',
+                body: { ...data },
+                credentials: 'include' as const
+            })
         })
     })
 });
 
-export const { useUpdateUserInfoMutation, useUpdateAvatarMutation, useUpdatePasswordMutation } = userApi;
+export const { useUpdateUserInfoMutation, useUpdateAvatarMutation, useUpdatePasswordMutation, useUpdateLinkMutation } =
+    userApi;

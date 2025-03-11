@@ -36,13 +36,18 @@ export interface Quiz {
     courseId: string;
     userScores?: {
         user: {
-          _id: string;
-          name: string;
-          email: string;
-        };
+            _id: string;
+            name: string;
+            email: string;
+        }[];
         score: number;
         attemptedAt: Date;
-      };
+    };
+    userDetails?: {
+        _id: string;
+        name: string;
+        email: string;
+    }
 }
 
 export interface IUserScore {

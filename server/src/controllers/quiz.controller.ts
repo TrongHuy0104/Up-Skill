@@ -7,40 +7,52 @@ import ErrorHandler from '@/utils/ErrorHandler';
 import mongoose from 'mongoose';
 
 // GET /api/quizzes/:quizId - Fetch a quiz by ID
-export const getQuizbyId = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const getQuizbyId = catchAsync(async (req, res, next) => {
     const quizId = req.params.id;
-    console.log('quiz', quizId);
 
     if (!quizId) {
         return next(new ErrorHandler('Please provide a quiz id', 400));
     }
 
-    // Aggregate pipeline to get quiz details with userScores population
     const quiz = await Quiz.aggregate([
         {
-            $match: { _id: new mongoose.Types.ObjectId(quizId) } // Match the quiz by ID
+            $match: { _id: new mongoose.Types.ObjectId(quizId) }
+        },
+        {
+            $unwind: {
+                path: '$userScores',
+                preserveNullAndEmptyArrays: true // Keep quizzes without scores
+            }
         },
         {
             $lookup: {
-                from: 'users', // The name of the collection where User data is stored
-                localField: 'userScores.user', // The field in `userScores` that references the user
-                foreignField: '_id', // The field in the `users` collection to match
-                as: 'userDetails' // The new field where the populated data will be stored
+                from: 'users', // The collection to join
+                localField: 'userScores.user', // Field in the quiz document
+                foreignField: '_id', // Field in the users collection
+                as: 'userScores.userDetails' // Output array field
             }
         },
         {
             $unwind: {
-                // Unwind userDetails array so that it can be merged properly with each score
-                path: '$userScores',
-                preserveNullAndEmptyArrays: true // Keeps quizzes even if no user is associated with a score
+                path: '$userScores.userDetails',
+                preserveNullAndEmptyArrays: true // Keep scores without user details
             }
         },
         {
-            $lookup: {
-                from: 'users',
-                localField: 'userScores.user',
-                foreignField: '_id',
-                as: 'userScores.user'
+            $group: {
+                _id: '$_id',
+                root: { $first: '$$ROOT' }, // Preserve the original quiz document
+                userScores: { $push: '$userScores' } // Rebuild the userScores array
+            }
+        },
+        {
+            $replaceRoot: {
+                newRoot: {
+                    $mergeObjects: [
+                        '$root',
+                        { userScores: '$userScores' } // Replace userScores with the rebuilt array
+                    ]
+                }
             }
         },
         {
@@ -56,8 +68,26 @@ export const getQuizbyId = catchAsync(async (req: Request, res: Response, next: 
                 videoSection: 1,
                 courseId: 1,
                 questions: 1,
-                userScores: 1,
-                userDetails: { name: 1, email: 1, username: 1, profilePicture: 1, role: 1 } // Select the user fields you want
+                userScores: {
+                    $map: {
+                        input: '$userScores',
+                        as: 'score',
+                        in: {
+                            user: {
+                                $ifNull: [
+                                    '$$score.userDetails',
+                                    {
+                                        name: 'Unknown User',
+                                        email: 'unknown@example.com',
+                                        avatar: { url: '/default-avatar.png' }
+                                    }
+                                ]
+                            },
+                            score: '$$score.score',
+                            attemptedAt: '$$score.attemptedAt'
+                        }
+                    }
+                }
             }
         }
     ]);
@@ -66,10 +96,9 @@ export const getQuizbyId = catchAsync(async (req: Request, res: Response, next: 
         return next(new ErrorHandler('Quiz not found', 404));
     }
 
-    // Return the quiz with additional user data
     res.status(200).json({
         success: true,
-        quiz: quiz[0] // Since we used aggregate, the result is an array, so get the first element
+        quiz: quiz[0] // Return the first (and only) quiz document
     });
 });
 
