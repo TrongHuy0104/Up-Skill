@@ -6,6 +6,7 @@ import PaginationComponent from '@/components/custom/PaginationComponent';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
+import IncomeChart from '../_components/IncomeChart';
 
 interface Course {
     _id: string;
@@ -32,8 +33,11 @@ const Dashboard = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [bestSellingCourses, setBestSellingCourses] = useState<Course[]>([]);
+    const [userId, setUserId] = useState<string | null>(null); // Thêm state để lưu userId
 
     const totalPages = Math.max(1, Math.ceil(bestSellingCourses.length / 4));
+
+
 
     useEffect(() => {
         const fetchCourseStats = async () => {
@@ -83,12 +87,14 @@ const Dashboard = () => {
 
                 if (response.data.success) {
                     const user = response.data.user;
-                    const courseEnrolled = user.purchasedCourses.length;
+                    const courseEnrolled = user.purchasedCourses.length; // Get the number of courses enrolled
+                    const userId = user._id;
 
                     setStats((prevStats) => ({
                         ...prevStats,
                         courseEnrolled: courseEnrolled
                     }));
+                    setUserId(userId);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -148,6 +154,13 @@ const Dashboard = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Income Chart */}
+            <div className="container bg-primary-50 rounded-lg p-[34px] border border-primary-100 mb-8">
+                <h1 className="text-[22px] text-primary-800 font-medium">Total Income</h1>
+                {userId && <IncomeChart userId={userId} />} {/* Pass userId to IncomeChart */}
+
             </div>
 
             {/* Best Selling Courses Section */}

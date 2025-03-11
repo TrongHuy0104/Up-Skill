@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
 import app from '@/app';
 import { connectDB } from '@/utils/db';
+import calculateMonthlyIncome from './utils/cron';
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ export const startServer = async () => {
         await connectDB(process.env.DB_URI);
 
         console.log('MongoDB database connection established successfully');
+
+        // Khởi chạy Cron Job
+        calculateMonthlyIncome();
 
         app?.listen(process.env.PORT, () => {
             console.log(`Server is listening on port: http://localhost:${process.env.PORT} ....`);
