@@ -78,9 +78,7 @@ export default function FilterCourses({ filterData }: { readonly filterData: Fil
 
             {/* Overlay giúp đóng filter khi bấm ra ngoài */}
             {isTablet && isOpen && (
-                <div
-                    role="button"
-                    tabIndex={0}
+                <button
                     onClick={() => setIsOpen(false)}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
