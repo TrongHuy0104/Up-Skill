@@ -13,7 +13,7 @@ const data = [
 
 const UserAnalyticsChart = () => {
     return (
-        <div className="bg-gray-900 p-4 rounded-lg shadow-md">
+        <div className="bg-[#131836] p-4 rounded-lg shadow-md">
             <h2 className="text-white text-xl font-semibold mb-4">Users Analytics</h2>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data}>
