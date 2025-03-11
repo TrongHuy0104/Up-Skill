@@ -40,7 +40,7 @@ router.post('/resetcode-verify', resetCodeVerify);
 
 router.put('/reset-password', resetPassword);
 
-router.get('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
+router.get('/logout', isAuthenticated, authorizeRoles('user', 'instructor'), logoutUser);
 
 router.get('/refresh', refreshToken);
 
