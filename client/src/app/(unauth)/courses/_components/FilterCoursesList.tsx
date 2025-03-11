@@ -85,11 +85,8 @@ function FilterCoursesList({ filterData }: { readonly filterData: FilterResponse
     ];
 
     return (
-        <div className="h-full overflow-y-auto p-4 lg:p-5">
-            <div
-                className="bg-primary-50 border border-primary-100 rounded-lg lg:rounded-none 
-      space-y-6 lg:space-y-8"
-            >
+        <div className="h-full overflow-y-auto  ">
+            <div className="bg-primary-50 border border-primary-100 rounded-lg ">
                 {filtersData.map((filter) => (
                     <FilterBlock
                         key={filter.title}

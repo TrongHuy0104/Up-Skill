@@ -8,63 +8,61 @@ export default function FilterCourses({ filterData }: { readonly filterData: Fil
     const [isOpen, setIsOpen] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
 
+    // Kiểm tra kích thước màn hình để cập nhật trạng thái isTablet
     useEffect(() => {
         const checkTablet = () => {
-            // Xử lý cho iPad (768px - 1024px) và điện thoại (<768px)
             setIsTablet(window.innerWidth < 1024);
         };
 
+        // Chạy ngay khi component mount
         checkTablet();
+
         window.addEventListener('resize', checkTablet);
         return () => window.removeEventListener('resize', checkTablet);
     }, []);
 
     return (
         <>
-            {/* Toggle button cho iPad & điện thoại */}
+            {/* Nút mở Filter trên mobile & tablet */}
             {isTablet && (
                 <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="fixed bottom-6 right-6 z-50 bg-accent-600 text-white p-4 rounded-full shadow-xl
-          lg:hidden"
+                    onClick={() => {
+                        setIsOpen(!isOpen);
+                    }}
+                    className="fixed top-1/2 right-0 transform -translate-y-1/2 z-50 bg-accent-600 text-white rounded-l-lg shadow-lg p-2 lg:hidden"
+                    style={{ width: '40px', height: '40px' }}
                 >
-                    <FiFilter size={24} />
+                    <FiFilter size={20} className="mx-auto" />
                 </button>
             )}
 
-            {/* Filter sidebar */}
+            {/* Sidebar Filter */}
             <div
-                className={`
-          fixed lg:relative 
-          top-0 left-0 
-          h-full w-[320px] 
-          bg-white lg:bg-transparent 
-          transform transition-transform duration-300 
-          z-40
-          ${isTablet ? (isOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
-          shadow-xl lg:shadow-none
-        `}
+                className={`fixed lg:relative top-0 left-0 h-full w-[320px] bg-white lg:bg-transparent transition-transform duration-300 z-40 
+                ${isTablet && !isOpen ? '-translate-x-full' : 'translate-x-0'} shadow-xl lg:shadow-none`}
             >
-                {/* Header cho tablet */}
+                {/* Header trên mobile */}
                 {isTablet && (
                     <div className="flex justify-between items-center p-6 border-b">
                         <h2 className="text-2xl font-bold">Filters</h2>
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="p-2 hover:text-accent-600 transition-colors"
+                            className="p-3 hover:text-accent-600 transition-colors"
+                            aria-label="Close Filter"
                         >
                             <FiX size={28} />
                         </button>
                     </div>
                 )}
 
+                {/* Danh sách Filter */}
                 <FilterCoursesList filterData={filterData} />
             </div>
 
-            {/* Overlay cho tablet */}
+            {/* Overlay giúp đóng filter khi bấm ra ngoài */}
             {isTablet && isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/30 z-30 backdrop-blur-sm lg:hidden"
+                    className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300"
                     onClick={() => setIsOpen(false)}
                 />
             )}

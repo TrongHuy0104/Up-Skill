@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosStar } from 'react-icons/io';
 import Image from 'next/image';
@@ -37,7 +37,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
         Language: 'language',
         Author: 'authorId'
     };
-    const getInitialSelectedCategories = () => {
+    const getInitialSelectedCategories = useCallback(() => {
         const params = new URLSearchParams(searchParams.toString());
         const selectedSet = new Set<string>();
 
@@ -54,7 +54,11 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
         });
 
         return selectedSet;
-    };
+    }, [searchParams, options, title]); // 🔥 Đưa vào dependency array
+
+    useEffect(() => {
+        setSelectedCategories(getInitialSelectedCategories());
+    }, [getInitialSelectedCategories]);
 
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(getInitialSelectedCategories);
 
@@ -122,7 +126,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
     );
 
     return (
-        <div className="tf-sidebar-course bg-primary-50 border-b last:border-0 last:pb-0 last:mb-0 rounded-lg mb-6">
+        <div className="tf-sidebar-course bg-primary-50 border-b last:border-0 last:pb-0 last:mb-0 rounded-lg mb-6 m-5">
             <div
                 className="flex justify-between items-center cursor-pointer h-10 mb-5"
                 onClick={() => setIsOpen(!isOpen)}
@@ -141,7 +145,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                     isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
                 }`}
             >
-                <div className="px-4 pb-5">
+                <div className="px-4 pb-8">
                     <ul className="flex flex-col gap-2">
                         {options?.slice(0, visibleCount)?.map((option) => (
                             <li key={option.key} className="flex flex-col">

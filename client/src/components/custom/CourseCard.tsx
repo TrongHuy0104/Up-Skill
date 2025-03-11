@@ -280,19 +280,19 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
             </div>
 
             {/* Course Details */}
-            <div className="w-full">
+            <div className="w-full ">
                 {/* Lessons, Students, Duration */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-3">
-                    <div className="text-primary-600 gap-2 sm:gap-3 flex items-center flex-wrap">
-                        <div className="pr-[10px] relative flex items-center gap-[7px] after:absolute after:right-0 after:w-[1px] after:h-4 after:bg-primary-100">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-primary-600 mb-3 justify-between">
+                    <div className="flex flex-wrap w-full">
+                        <div className="flex items-center gap-[7px] pr-4 border-r border-primary-100 last:border-0">
                             <Image src={timeTableIcon} className="relative bottom-[1px]" alt="" />
                             <p>{course?.courseData?.length} Lessons</p>
                         </div>
-                        <div className="pr-[10px] relative flex items-center gap-[7px] after:absolute after:right-0 after:w-[1px] after:h-4 after:bg-primary-100">
+                        <div className="flex items-center gap-[7px] pr-4 border-r border-primary-100 last:border-0">
                             <Image src={studentsIcon} className="relative bottom-[1px]" alt="Students" />
                             <p>{course?.purchased} Students</p>
                         </div>
-                        <div className="pr-[10px] relative flex items-center gap-[7px]">
+                        <div className="flex items-center gap-[7px]">
                             <Image src={hourIcon} className="relative bottom-[1px]" alt="Duration" />
                             <p>
                                 {(
@@ -303,6 +303,7 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                             </p>
                         </div>
                     </div>
+
                     <div className="text-accent-600 font-medium text-lg leading-7">${course?.price}</div>
                 </div>
 

@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
 import Banner from './_components/Banner';
-import PopularInstructor from './_components/PopularInstructor';
 import FilterCourses from './_components/FilterCourses';
 import HorizontalCoursesList from './_components/HorizontalCoursesList';
 import { cookies } from 'next/headers';
@@ -37,8 +36,7 @@ export default async function Page({ searchParams = {} }: any) {
     return (
         <div className="w-full pb-40">
             <Banner />
-            <PopularInstructor />
-            <div className="flex flex-col md:flex-row w-full px-4 md:px-0 md:w-[1400px] mx-auto pt-[54px] relative">
+            <div className="flex flex-col md:flex-row max-w-[1400px] px-4 md:px-0  mx-auto pt-[54px] relative">
                 <Suspense fallback={<DashboardSkeleton />}>
                     <FilterCourses filterData={data} />
                     <HorizontalCoursesList

@@ -71,17 +71,31 @@ export default function HorizontalCoursesList({
     limit,
     page
 }: HorizontalCoursesListProps) {
-    const [isClient, setIsClient] = useState(false); // Đảm bảo rằng modal chỉ được hiển thị trên client
+    const [isClient, setIsClient] = useState(false);
     const [currentPage, setCurrentPage] = useState(page);
     const [courses, setCourses] = useState(initialCourses);
     const [isLoading, setIsLoading] = useState(false);
     const [totalCourses, setTotalCourses] = useState(initialTotalCourses);
     const searchParams = useSearchParams();
     const sortType = searchParams.get('sort');
-    console.log('sortType', sortType);
+
+    // Xác định khi nào là Tablet (768px - 1023px)
+    const [isTablet, setIsTablet] = useState(false);
+    console.log(isTablet);
 
     useEffect(() => {
-        setIsClient(true); // Chỉ chạy sau khi component render trên client
+        const checkTablet = () => {
+            const width = window.innerWidth;
+            setIsTablet(width >= 768 && width < 1024);
+        };
+
+        checkTablet();
+        window.addEventListener('resize', checkTablet);
+        return () => window.removeEventListener('resize', checkTablet);
+    }, []);
+
+    useEffect(() => {
+        setIsClient(true);
     }, []);
 
     useEffect(() => {
@@ -89,28 +103,24 @@ export default function HorizontalCoursesList({
             if (!sortType) return;
             setIsLoading(true);
             try {
-                // Đảm bảo URL API chính xác
                 let apiUrl = `http://localhost:8000/api/courses}`;
                 if (sortType) {
                     apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
                 }
                 const res = await fetch(apiUrl);
 
-                // Kiểm tra phản hồi từ API
                 if (!res.ok) {
                     throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
                 }
 
                 const data = await res.json();
-                console.log('Data:', data); // Log dữ liệu để kiểm tra
 
-                // Đảm bảo dữ liệu trả về có cấu trúc đúng
                 if (!data.courses) {
                     throw new Error('Invalid data format: courses not found');
                 }
 
                 setCourses(data.courses || []);
-                setTotalCourses(data.courses.length || 0); // Cập nhật tổng số courses
+                setTotalCourses(data.courses.length || 0);
             } catch (error) {
                 console.error('❌ Fetch Error:', error);
                 setCourses([]);
@@ -120,9 +130,9 @@ export default function HorizontalCoursesList({
             }
         };
 
-        // Fetch dữ liệu khi sortType thay đổi
         fetchCourses();
     }, [sortType]);
+
     if (!isClient) {
         return (
             <div className="w-full">
@@ -132,6 +142,7 @@ export default function HorizontalCoursesList({
             </div>
         );
     }
+
     const startIndex = totalCourses === 0 ? 0 : (page - 1) * limit + 1;
     const endIndex = Math.min(page * limit, totalCourses);
 
@@ -140,12 +151,17 @@ export default function HorizontalCoursesList({
     };
 
     return (
-        <div className="pl-[10px] md:pl-[28px] relative w-full">
-            <div className="flex flex-col md:flex-row justify-between items-center pb-8 w-full">
+        <div className="pl-[10px] md:pl-[28px] relative w-full ">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-8 w-full">
                 <p className="text-primary-800 mb-4 md:mb-0">
-                    Showing {startIndex}-{endIndex} Of {totalCourses} Courses
+                    Showing {startIndex}-{endIndex} of {totalCourses} Courses
                 </p>
-                <Sort />
+                {/* Chỉ hiển thị Sort khi không phải Tablet */}
+                {/* {!isTablet && ( */}
+                <div className="w-auto max-w-[200px] md:max-w-[250px] md:flex-shrink-0">
+                    <Sort />
+                </div>
+                {/* )} */}
             </div>
 
             {isLoading && (
@@ -165,11 +181,14 @@ export default function HorizontalCoursesList({
 
             {!isLoading &&
                 totalCourses > 0 &&
-                courses.map((course) => <CourseHorizontalCard key={course._id} course={course} />)}
-
+                courses.map((course) => (
+                    <div key={course._id} className="w-full md:w-3/4 lg:w-full">
+                        <CourseHorizontalCard course={course} />
+                    </div>
+                ))}
             {/* Pagination */}
             {totalCourses > 0 && (
-                <div className="p-5 flex justify-start md:justify-center">
+                <div className="p-5 flex justify-start md:justify-center w-full md:w-2/3 lg:w-full">
                     <PaginationComponent
                         currentPage={currentPage}
                         totalPages={totalPages}
