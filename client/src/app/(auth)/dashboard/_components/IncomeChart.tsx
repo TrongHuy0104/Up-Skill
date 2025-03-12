@@ -13,19 +13,22 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
   useEffect(() => {
     const fetchIncomeData = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/orders/income/${userId}`, {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/income/${userId}`, {
           withCredentials: true
         });
         const { data } = response;
-        const monthlyIncome = new Array(12).fill(0);
-        data.income.total.forEach((entry: any) => {
-          const monthIndex = entry.month - 1;
-          monthlyIncome[monthIndex] += entry.income;
-        });
+
+        if (!data || !data.incomeData || !Array.isArray(data.incomeData.total)) {
+          console.error('Invalid API response:', data);
+          return;
+        }
+
+        // Dữ liệu thu nhập của 12 tháng
+        const monthlyIncome: number[] = data.incomeData.total;
 
         createChart(monthlyIncome);
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching income data:', error);
       }
     };
 
@@ -47,7 +50,7 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
         }
 
         const config: ChartConfiguration = {
-          type: 'line',
+          type: 'line', // Thay đổi từ 'line' sang 'bar' để dễ nhìn hơn
           data: {
             labels: [
               'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -55,11 +58,11 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
             ],
             datasets: [
               {
-                label: 'Income',
+                label: 'Monthly Income ($)',
                 data,
                 backgroundColor: '#3182ce',
-                borderColor: '#3182ce',
-                fill: false
+                borderColor: '#2c5282',
+                borderWidth: 1
               }
             ]
           },
@@ -80,7 +83,7 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
   };
 
   return (
-    <div className="relative h-[400px]">
+    <div className="relative h-[400px] w-full">
       <canvas ref={chartRef} />
     </div>
   );
