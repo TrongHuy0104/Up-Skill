@@ -18,7 +18,7 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
         });
         const { data } = response;
 
-        if (!data || !data.incomeData || !Array.isArray(data.incomeData.total)) {
+        if (!data?.incomeData?.total || !Array.isArray(data.incomeData.total)) {
           console.error('Invalid API response:', data);
           return;
         }

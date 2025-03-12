@@ -49,7 +49,6 @@ const Dashboard = () => {
                 if (response.data.success) {
                     const purchasedCourses: Course[] = response.data.purchasedCourses;
                     const uploadedCourses: Course[] = response.data.uploadedCourses;
-                    // const courses = [...purchasedCourses, ...uploadedCourses];
 
                     //Course Stats
                     const publishedCourses = uploadedCourses.filter((course: Course) => course.isPublished);
