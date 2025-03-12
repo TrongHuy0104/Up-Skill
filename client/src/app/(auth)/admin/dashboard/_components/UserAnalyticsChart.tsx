@@ -2,16 +2,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const data = [
-    { date: 'Jan', users: 120, instructors: 10 },
-    { date: 'Feb', users: 180, instructors: 20 },
-    { date: 'Mar', users: 240, instructors: 30 },
-    { date: 'Apr', users: 300, instructors: 50 },
-    { date: 'May', users: 450, instructors: 80 },
-    { date: 'Jun', users: 500, instructors: 120 }
-];
-
-const UserAnalyticsChart = () => {
+const UserAnalyticsChart = ({data}: any) => {
     return (
         <div className="bg-[#131836] p-4 rounded-lg shadow-md">
             <h2 className="text-white text-xl font-semibold mb-4">Users Analytics</h2>
@@ -19,7 +10,7 @@ const UserAnalyticsChart = () => {
                 <LineChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
                     <XAxis dataKey="date" stroke="#fff" />
-                    <YAxis stroke="#fff" />
+                    <YAxis stroke="#fff" tickFormatter={(value) => Math.round(value).toString()} allowDecimals={false} />
                     <Tooltip contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
                     <Legend />
                     <Line

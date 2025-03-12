@@ -19,6 +19,7 @@ import {
     updateUserRoleService,
     getAllInstructorsService
 } from '@/services/user.service';
+import CourseModel from '@/models/Course.model';
 
 dotenv.config();
 
@@ -634,13 +635,51 @@ export const getInstructorsWithSort = catchAsync(async (req: Request, res: Respo
             .sort({ createdAt: -1 })
             .limit(3);
     } else {
-        users = await UserModel.find({ role: 'instructor' })
-            .sort({ createdAt: 1 }) // Sắp xếp tăng dần
-            .limit(10);
+        users = await UserModel.find({ role: 'instructor' }).sort({ createdAt: 1 }).limit(10);
     }
 
     res.status(200).json({
         success: true,
         instructors: users
+    });
+});
+
+//get data for analysis
+export const getUserStatisticsByMonth = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const totalUser = await UserModel.countDocuments({ role: 'user' });
+    const totalInstructor = await UserModel.countDocuments({ role: 'instructor' });
+    const totalCourse = await CourseModel.countDocuments({ isPublished: true });
+
+    const users = await UserModel.find({ role: 'user' }).select('createdAt');
+    const instructors = await UserModel.find({ role: 'instructor' }).select('createdAt');
+
+    const groupByMonth = (data: any[]) => {
+        return data.reduce(
+            (acc, item) => {
+                const month = new Date(item.createdAt).toLocaleString('en-US', { month: 'short' });
+                acc[month] = (acc[month] || 0) + 1;
+                return acc;
+            },
+            {} as Record<string, number>
+        );
+    };
+
+    const usersByMonth = groupByMonth(users);
+    const instructorsByMonth = groupByMonth(instructors);
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const data = months.map((month) => ({
+        date: month,
+        users: usersByMonth[month] || 0,
+        instructors: instructorsByMonth[month] || 0
+    }));
+
+    res.status(200).json({
+        success: true,
+        totalUser,
+        totalInstructor,
+        totalCourse,
+        data
     });
 });

@@ -21,7 +21,8 @@ import {
     refreshToken,
     updateUserSocialLinks,
     getUser,
-    getTopInstructors
+    getTopInstructors,
+    getUserStatisticsByMonth
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -40,7 +41,7 @@ router.post('/resetcode-verify', resetCodeVerify);
 
 router.put('/reset-password', resetPassword);
 
-router.get('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
+router.get('/logout', isAuthenticated, authorizeRoles('user', 'admin'), logoutUser);
 
 router.get('/refresh', refreshToken);
 
@@ -57,6 +58,8 @@ router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePi
 router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialLinks);
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
+
+router.get('/user-analysis', isAuthenticated, authorizeRoles('admin'), getUserStatisticsByMonth);
 
 router.get('/top-instructors', getTopInstructors);
 

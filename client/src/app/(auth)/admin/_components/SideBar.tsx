@@ -6,6 +6,7 @@ import Image from 'next/image';
 import manageUser from '@/public/assets/icons/students.svg';
 import manageCourse from '@/public/assets/icons/timetable.svg';
 import dashboard from '@/public/assets/icons/dashboard.svg';
+import { useSelector } from 'react-redux';
 
 const menuItems = [
     {
@@ -22,6 +23,7 @@ const menuItems = [
 ];
 
 const Sidebar = () => {
+    const { user } = useSelector((state: any) => state.auth);
     const pathname = usePathname();
 
     return (
@@ -34,14 +36,14 @@ const Sidebar = () => {
             {/* Avatar and Role */}
             <div className="mt-4 text-white px-4 py-8 flex flex-col items-center gap-2">
                 <Image
-                    src="/assets/images/avatar/default-avatar.jpg"
+                    src={user?.avatar?.url}
                     alt="User Avatar"
                     width={50}
                     height={50}
                     className="rounded-full"
                 />
-                <div className='text-2xl'>tên</div>
-                <div>role</div>
+                <div className='text-2xl'>{user?.name}</div>
+                <div>{user?.role}</div>
             </div>
 
             {/* Menu */}
