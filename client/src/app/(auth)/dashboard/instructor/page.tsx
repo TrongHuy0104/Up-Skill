@@ -33,7 +33,7 @@ const Dashboard = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [bestSellingCourses, setBestSellingCourses] = useState<Course[]>([]);
-    const [userId, setUserId] = useState<string | null>(null); // Thêm state để lưu userId
+    const [userId, setUserId] = useState<string | null>(null);
 
     const totalPages = Math.max(1, Math.ceil(bestSellingCourses.length / 4));
 
@@ -49,7 +49,7 @@ const Dashboard = () => {
                 if (response.data.success) {
                     const purchasedCourses: Course[] = response.data.purchasedCourses;
                     const uploadedCourses: Course[] = response.data.uploadedCourses;
-                    const courses = [...purchasedCourses, ...uploadedCourses];
+                    // const courses = [...purchasedCourses, ...uploadedCourses];
 
                     //Course Stats
                     const publishedCourses = uploadedCourses.filter((course: Course) => course.isPublished);
@@ -57,7 +57,7 @@ const Dashboard = () => {
 
                     setStats((prevStats) => ({
                         ...prevStats,
-                        totalCourses: courses.length,
+                        totalCourses: uploadedCourses.length,
                         publishedCourses: publishedCourses.length,
                         pendingCourses: uploadedCourses.length - publishedCourses.length,
                         totalStudent: totalStudent,
@@ -87,7 +87,7 @@ const Dashboard = () => {
 
                 if (response.data.success) {
                     const user = response.data.user;
-                    const courseEnrolled = user.purchasedCourses.length; // Get the number of courses enrolled
+                    const courseEnrolled = user.purchasedCourses.length;
                     const userId = user._id;
 
                     setStats((prevStats) => ({

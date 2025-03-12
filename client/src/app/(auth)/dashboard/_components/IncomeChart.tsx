@@ -23,7 +23,6 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
           return;
         }
 
-        // Dữ liệu thu nhập của 12 tháng
         const monthlyIncome: number[] = data.incomeData.total;
 
         createChart(monthlyIncome);
@@ -50,7 +49,7 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
         }
 
         const config: ChartConfiguration = {
-          type: 'line', // Thay đổi từ 'line' sang 'bar' để dễ nhìn hơn
+          type: 'line',
           data: {
             labels: [
               'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -60,9 +59,11 @@ const IncomeChart: React.FC<IncomeChartProps> = ({ userId }) => {
               {
                 label: 'Monthly Income ($)',
                 data,
-                backgroundColor: '#3182ce',
-                borderColor: '#2c5282',
-                borderWidth: 1
+                backgroundColor: 'rgba(49, 130, 206, 0.3)',
+                borderColor: '#3182ce',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
               }
             ]
           },

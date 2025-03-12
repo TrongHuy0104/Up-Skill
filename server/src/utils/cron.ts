@@ -3,8 +3,6 @@ import IncomeModel from '@/models/Income.model';
 import OrderModel from '@/models/Order.model';
 
 const updateDailyIncome = async () => {
-    console.log('Updating daily income...');
-
     const orders = await OrderModel.find({}).populate({
         path: 'courseIds',
         select: 'authorId price purchased createdAt'
@@ -40,11 +38,9 @@ const updateDailyIncome = async () => {
             { new: true, upsert: true }
         );
     }
-
-    console.log('Daily income update completed.');
 };
 
-// Chạy cron job hàng ngày lúc 12:00 AM
+// Run cron job everyday at 12:00 AM
 cron.schedule('0 0 * * *', updateDailyIncome);
 
 export default updateDailyIncome;
