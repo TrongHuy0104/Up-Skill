@@ -20,14 +20,18 @@ export default function Page() {
         <div className="pt-8 px-10 pb-10 ml-auto max-w-[1000px] border border-primary-100 rounded-xl">
             <Suspense fallback={<DashboardSkeleton />}>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    <TabsList className='relative'>
+                    <TabsList className="relative">
                         <TabsTrigger value="quiz">Quiz</TabsTrigger>
                         <TabsTrigger value="question" disabled={!selectedQuizId}>
                             Question
                         </TabsTrigger>
-                        <TabsTrigger value="practice">Practice</TabsTrigger>
-                        <div className="absolute top-0 right-0"> <QuizButton /></div>
-
+                        <TabsTrigger value="practice" disabled={!selectedQuizId}>
+                            Practice
+                        </TabsTrigger>
+                        <div className="absolute top-0 right-0">
+                            {' '}
+                            <QuizButton />
+                        </div>
                     </TabsList>
                     <TabsContent value="quiz">
                         <Quiz onQuizClick={handleQuizClick} />
@@ -36,7 +40,11 @@ export default function Page() {
                         {selectedQuizId ? <Question quizId={selectedQuizId} /> : <p>Chosse a quiz</p>}
                     </TabsContent>
                     <TabsContent value="practice">
-                        <Practice />
+                        {selectedQuizId ? (
+                            <Practice quizId={selectedQuizId} />
+                        ) : (
+                            <p>Please select a quiz</p> // Nếu không có quizId thì hiển thị thông báo
+                        )}
                     </TabsContent>
                 </Tabs>
             </Suspense>

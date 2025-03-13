@@ -7,7 +7,6 @@ interface QuizThumbProps {
 export default function QuizThumb({ quiz }: QuizThumbProps) {
     return (
         <div className="flex items-baseline max-w-102">
-
             {/* Title, Course, and Section Links */}
             <div className="flex flex-col space-y-1">
                 {' '}
@@ -24,9 +23,9 @@ export default function QuizThumb({ quiz }: QuizThumbProps) {
                 <a
                     href="#"
                     className="text-[10px] text-gray-600 hover:text-orange-500 transition-colors truncate"
-                    title={quiz.courseId.tags} // Show full course tag on hover
+                    title={quiz.courseId?.tags} // Show full course tag on hover
                 >
-                    Course: {quiz.courseId.tags}
+                    Course: {quiz.courseId?.tags}
                 </a>
                 {/* Section Tag */}
                 <a

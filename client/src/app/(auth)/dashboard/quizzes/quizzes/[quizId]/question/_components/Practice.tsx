@@ -1,114 +1,231 @@
-'use client';
+import { useEffect, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
-import arrowRight from '@/public/assets/icons/arrow-top-right.svg'; // Import ảnh từ public
-import type { Question } from '@/types/Quiz';
-import Image from 'next/image';
-import { useState } from 'react';
+import { Checkbox } from '@/components/ui/Checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/Radio';
+import axios from 'axios';
 
-// Dữ liệu giả
-const mockQuestions: Question[] = [
-    {
-        _id: '1',
-        text: 'What is the capital of France?',
-        type: 'multiple-choice',
-        points: 10,
-        correctAnswer: 'Paris',
-        options: ['Paris', 'London', 'Berlin', 'Madrid']
-    },
-    {
-        _id: '2',
-        text: 'Which planet is known as the Red Planet?',
-        type: 'multiple-choice',
-        points: 10,
-        correctAnswer: 'Mars',
-        options: ['Earth', 'Mars', 'Jupiter', 'Saturn']
-    },
-    {
-        _id: '3',
-        text: "Who wrote 'To Kill a Mockingbird'?",
-        type: 'multiple-choice',
-        points: 10,
-        correctAnswer: 'Harper Lee',
-        options: ['Harper Lee', 'Mark Twain', 'J.K. Rowling', 'Ernest Hemingway']
-    }
-];
+const singleChoiceSchema = z.object({
+    answer: z.string().min(1, 'You need to select an option.')
+});
 
-export default function Practice() {
+const multipleChoiceSchema = z.object({
+    answers: z.array(z.string()).nonempty('You need to select at least one option.')
+});
+
+type FormData = {
+    answer?: string;
+    answers?: string[];
+};
+
+export default function Practice({ quizId }: { quizId: string }) {
+    const [questions, setQuestions] = useState<any[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
-    const [score, setScore] = useState(0); // Điểm số
-    const [isQuizFinished, setIsQuizFinished] = useState(false); // Trạng thái hoàn thành quiz
+    const [score, setScore] = useState(0);
+    const [isQuizFinished, setIsQuizFinished] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const currentQuestion = mockQuestions[currentQuestionIndex];
-    const isLastQuestion = currentQuestionIndex === mockQuestions.length - 1;
+    const form = useForm<FormData>({
+        resolver: zodResolver(
+            questions[currentQuestionIndex]?.type === 'single-choice' ? singleChoiceSchema : multipleChoiceSchema
+        )
+    });
 
-    const handleSelectOption = (option: string) => {
-        setSelectedOption(option);
+    // Fetch user info (userId) from API
+
+    const getUserInfo = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
+                withCredentials: true
+            });
+            const userId = response.data.user._id;
+            console.log('userId', userId);
+            return userId;
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
     };
 
-    const handleNext = () => {
-        if (!selectedOption) {
-            alert('Please select an option!');
-            return;
-        }
+    // Update quiz score in the userScores
+    const updateQuizScore = async (quizId: string, userId: string, newScore: number) => {
+        const currentQuestion = questions[currentQuestionIndex];
 
-        // Kiểm tra câu trả lời đúng và cập nhật điểm số
-        if (selectedOption === currentQuestion.correctAnswer) {
+        // Kiểm tra nếu userScores là mảng hợp lệ, nếu không thì gán giá trị mặc định là mảng rỗng
+        const userScores = Array.isArray(currentQuestion.userScores) ? currentQuestion.userScores : [];
+
+        const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userScores: [
+                    ...userScores.map((scoreEntry: any) => {
+                        if (scoreEntry.user === userId) {
+                            if (scoreEntry.score < newScore) {
+                                return { ...scoreEntry, score: newScore }; // Update if new score is higher
+                            }
+                        }
+                        return scoreEntry;
+                    }),
+                    { user: userId, score: newScore } // Add if not found
+                ]
+            })
+        });
+
+        const data = await res.json();
+        return data;
+    };
+
+    useEffect(() => {
+        const fetchQuestions = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}/questions`);
+                if (!res.ok) throw new Error('Failed to fetch questions');
+                const data = await res.json();
+                setQuestions(data.questions);
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchQuestions();
+    }, [quizId]);
+
+    const onSubmit: SubmitHandler<FormData> = async (data) => {
+        const currentQuestion = questions[currentQuestionIndex];
+        const correctAnswers = Array.isArray(currentQuestion.correctAnswer)
+            ? currentQuestion.correctAnswer
+            : [currentQuestion.correctAnswer];
+
+        const selectedAnswers = currentQuestion.type === 'single-choice' ? [data.answer] : data.answers;
+
+        const isCorrect =
+            correctAnswers.every((ans: string) => selectedAnswers?.includes(ans)) &&
+            selectedAnswers?.every((ans: string | undefined) => ans !== undefined && correctAnswers.includes(ans));
+
+        if (isCorrect) {
             setScore(score + currentQuestion.points);
         }
 
-        // Reset selectedOption và chuyển sang câu hỏi tiếp theo
-        setSelectedOption(null);
-        if (!isLastQuestion) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-        } else {
-            // Kết thúc quiz
+        if (currentQuestionIndex === questions.length - 1) {
             setIsQuizFinished(true);
+        } else {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            form.reset();
         }
+
+        // Update the user's score in userScores
+        const userId = await getUserInfo(); // Get the logged-in user's ID
+        await updateQuizScore(quizId, userId, score + currentQuestion.points); // Update quiz score
     };
 
     const handleRestart = () => {
-        // Reset trạng thái để làm lại quiz
         setCurrentQuestionIndex(0);
-        setSelectedOption(null);
         setScore(0);
         setIsQuizFinished(false);
+        form.reset();
     };
 
-    // Tính tỷ lệ đúng
-    const totalPoints = mockQuestions.reduce((sum, question) => sum + question.points, 0);
+    const totalPoints = questions.reduce((sum, question) => sum + question.points, 0);
     const percentage = (score / totalPoints) * 100;
+
+    if (loading) {
+        return <div>Loading questions...</div>;
+    }
+
+    if (!questions.length) {
+        return <div>No questions available.</div>;
+    }
+
+    const currentQuestion = questions[currentQuestionIndex];
+    const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             {!isQuizFinished ? (
-                <>
-                    <h2 className="text-xl font-semibold mb-4">{currentQuestion.text}</h2>
-                    <div className="space-y-3">
-                        {currentQuestion.options.map((option) => (
-                            <Button
-                                key={option} // Sử dụng option làm key
-                                variant={selectedOption === option ? 'primary' : 'outline'}
-                                size="lg"
-                                className="w-full justify-start"
-                                onClick={() => handleSelectOption(option)}
-                            >
-                                {option}
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        <h2 className="text-xl font-semibold mb-8  bg-accent-100 p-6 rounded-lg">
+                            Question {currentQuestionIndex + 1}: {currentQuestion.text}
+                        </h2>
+                        {currentQuestion.type === 'single-choice' ? (
+                            <FormField
+                                control={form.control}
+                                name="answer"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-3 ">
+                                        <FormControl>
+                                            <RadioGroup
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                className="flex flex-col space-y-1"
+                                            >
+                                                {currentQuestion.options.map((option: string) => (
+                                                    <FormItem
+                                                        key={option}
+                                                        className="flex items-center space-x-3 space-y-0 pl-8 my-2"
+                                                    >
+                                                        <FormControl>
+                                                            <RadioGroupItem value={option} className="opacity-50" />
+                                                        </FormControl>
+                                                        <FormLabel className="font-normal">{option}</FormLabel>
+                                                    </FormItem>
+                                                ))}
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        ) : (
+                            <FormField
+                                control={form.control}
+                                name="answers"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-3">
+                                        {currentQuestion.options.map((option: string) => (
+                                            <FormItem
+                                                key={option}
+                                                className="flex items-center space-x-3 space-y-0 pl-8 my-2"
+                                            >
+                                                <FormControl>
+                                                    <Checkbox
+                                                        checked={field.value?.includes(option)}
+                                                        onCheckedChange={(checked) => {
+                                                            const updatedValue = field.value ?? [];
+                                                            return checked
+                                                                ? field.onChange([...updatedValue, option])
+                                                                : field.onChange(
+                                                                      updatedValue.filter(
+                                                                          (value: string) => value !== option
+                                                                      )
+                                                                  );
+                                                        }}
+                                                        className="opacity-50"
+                                                    />
+                                                </FormControl>
+                                                <FormLabel className="text-sm font-normal">{option}</FormLabel>
+                                            </FormItem>
+                                        ))}
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+                        <div className="mt-6 flex justify-end">
+                            <Button type="submit" disabled={!form.formState.isValid}>
+                                {isLastQuestion ? 'Finish' : 'Next'}
                             </Button>
-                        ))}
-                    </div>
-                    <div className="mt-6 flex justify-end">
-                        <Button
-                            variant="default"
-                            size="lg"
-                            onClick={handleNext}
-                            disabled={!selectedOption} // Disable nút "Next" nếu chưa chọn câu trả lời
-                        >
-                            {isLastQuestion ? 'Finish' : 'Next'}
-                            <Image src={arrowRight} alt="Arrow Right" />
-                        </Button>
-                    </div>
-                </>
+                        </div>
+                    </form>
+                </Form>
             ) : (
                 <div className="text-center">
                     <h2 className="text-2xl font-semibold mb-4">Result</h2>
@@ -120,9 +237,7 @@ export default function Practice() {
                     ) : (
                         <p className="text-red-600 font-semibold mb-4">One more time!</p>
                     )}
-                    <Button variant="default" size="lg" onClick={handleRestart}>
-                        Again
-                    </Button>
+                    <Button onClick={handleRestart}>Again</Button>
                 </div>
             )}
         </div>
