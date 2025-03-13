@@ -80,7 +80,7 @@ export default function CoursesList({ user }: Props) {
         };
 
         fetchTopCourses();
-    }, []);
+    }, [user._id]);
 
     return (
         <div className="mb-[61px] w-[900px]">

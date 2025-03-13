@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
 import {
@@ -36,11 +36,14 @@ import {
     deleteSection,
     publishCourse,
     unpublishCourse,
-    getAllUploadedAndPurchasedCoursesOfInstructor
+    getAllUploadedAndPurchasedCoursesOfInstructor,
+    getCoursesWithSort
 } from '@/controllers/course.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
 const router = express.Router();
+
+router.get('/sort', getCoursesWithSort as RequestHandler);
 
 router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
