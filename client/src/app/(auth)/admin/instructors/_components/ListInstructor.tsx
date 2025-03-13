@@ -12,7 +12,7 @@ interface User {
     avatar?: { url: string };
 }
 
-export default function ListUser() {
+export default function ListInstructor() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -47,23 +47,23 @@ export default function ListUser() {
     if (loading) return <p className="text-gray-500">Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
 
-    const filteredUsers = users.filter((user) => user.role === 'user');
+    const filteredUsers = users.filter((user) => user.role === 'instructor');
 
     return (
         <div className="p-4 text-white">
-            <h2 className="text-xl font-bold mb-4">Manage Users</h2>
+            <h2 className="text-xl font-bold mb-4">Manage Instructors</h2>
             <div className="overflow-x-auto">
                 <table className="min-w-full rounded-lg bg-[#131836] text-white">
                     <thead>
                         <tr>
-                            <th className="px-4 py-2 text-left">User</th>
+                            <th className="px-4 py-2 text-left">Instructor</th>
                             <th className="px-4 py-2 text-center">Role</th>
                             <th className="px-4 py-2 text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredUsers.map((user) => (
-                            <tr key={user._id}>
+                            <tr key={user._id} className="hover:bg-[#4845AA] transition">
                                 <td className="px-4 py-4 flex items-center space-x-2">
                                     <Image
                                         src={user.avatar?.url || defaultAvatar}
