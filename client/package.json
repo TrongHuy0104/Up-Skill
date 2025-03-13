@@ -57,11 +57,7 @@
         "swiper": "^11.2.3",
         "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
-<<<<<<< HEAD
-        "uuid": "^8.3.2",
-=======
         "uuid": "^11.1.0",
->>>>>>> c2ac4dc7952eee94f2246d2e324626eb0af53324
         "zod": "^3.24.1"
     },
     "devDependencies": {
