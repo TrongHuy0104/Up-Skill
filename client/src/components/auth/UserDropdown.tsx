@@ -26,7 +26,7 @@ import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
 
 export function UserDropdown() {
     const [logout, setLogout] = useState(false);
-    const [user, setUser] = useState<User | null>(null); // Khai báo state để lưu thông tin người dùng
+    const [user, setUser] = useState<User | null>(null);
     useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data: session } = useSession();
 
@@ -39,16 +39,15 @@ export function UserDropdown() {
     };
 
     useEffect(() => {
-        // Gọi API để lấy thông tin người dùng
         const fetchUserData = async () => {
             try {
-                const response = await fetch('http://localhost:8000/api/user/me', {
-                    credentials: 'include' // Bao gồm cookie nếu cần
+                const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
+                    credentials: 'include'
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    setUser(data.user); // Lưu thông tin người dùng vào state
+                    setUser(data.user);
                 } else {
                     console.error('Failed to fetch user data');
                 }
@@ -60,9 +59,8 @@ export function UserDropdown() {
         fetchUserData();
     }, []);
 
-    // Kiểm tra nếu user chưa được lấy, hiển thị loading hoặc không render gì
     if (!user) {
-        return null; // Hoặc hiển thị một spinner loading
+        return null;
     }
 
     return (
