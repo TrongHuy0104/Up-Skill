@@ -17,6 +17,7 @@ import {
     updateCourse,
     uploadCourse,
     getCourseStatistics,
+    searchCoursesAndInstructors,
     getUploadedCourseByInstructor,
     createSection,
     reorderSection,
@@ -58,6 +59,8 @@ router.get('/pagination', getCoursesLimitWithPagination);
 
 router.get('/count', getCourseStatistics);
 
+router.post('/search', searchCoursesAndInstructors);
+
 router.get('/top-courses', getTopCourses);
 
 router.get('/:id', getSingleCourse);
@@ -84,7 +87,7 @@ router.put('/add-review/:id', updateAccessToken, isAuthenticated, addReview);
 
 router.put('/add-reply', updateAccessToken, isAuthenticated, addReplyToReview);
 
-router.get('/top-courses', getTopCourses);
+// router.get('/top-courses', getTopCourses);
 
 router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCourses);
 
