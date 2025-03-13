@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/Badge';
 import IncomeChart from '../_components/IncomeChart';
 import PaginationComponent from '@/components/custom/PaginationComponent';
 
-
 interface Course {
     _id: string;
     name: string;
