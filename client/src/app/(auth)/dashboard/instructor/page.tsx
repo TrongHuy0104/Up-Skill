@@ -6,8 +6,9 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 import { Badge } from '@/components/ui/Badge';
-import PaginationComponent from '@/components/custom/PaginationComponent';
 import IncomeChart from '../_components/IncomeChart';
+import PaginationComponent from '@/components/custom/PaginationComponent';
+
 
 interface Course {
     _id: string;
