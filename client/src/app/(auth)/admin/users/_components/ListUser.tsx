@@ -9,6 +9,7 @@ interface User {
     name: string;
     email: string;
     role: string;
+    address: string;
     avatar?: { url: string };
 }
 
@@ -50,37 +51,34 @@ export default function ListUser() {
     const filteredUsers = users.filter((user) => user.role === 'user');
 
     return (
-        <div className="p-4 text-white">
+        <div className="p-4 text-black">
             <h2 className="text-xl font-bold mb-4">Manage Users</h2>
-            <div className="overflow-x-auto">
-                <table className="min-w-full rounded-lg bg-[#131836] text-white">
-                    <thead>
+            <div className="rounded-lg overflow-hidden border border-white border-opacity-30">
+                <table className="min-w-full bg-white text-black">
+                    <thead className="border-b border-black border-opacity-30">
                         <tr>
-                            <th className="px-4 py-2 text-left">User</th>
-                            <th className="px-4 py-2 text-center">Role</th>
-                            <th className="px-4 py-2 text-center">Action</th>
+                            <th className="px-4 py-2 text-left w-1/3">User</th>
+                            <th className="px-4 py-2 text-left w-1/3">Address</th>
+                            <th className="px-4 py-2 text-left w-1/3">Email</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredUsers.map((user) => (
                             <tr key={user._id}>
-                                <td className="px-4 py-4 flex items-center space-x-2">
+                                <td className="px-4 py-4 flex items-center space-x-2 ">
                                     <Image
                                         src={user.avatar?.url || defaultAvatar}
-                                        alt={user.name}
+                                        alt='Avatar'
                                         width={32}
                                         height={32}
                                         className="rounded-full"
                                     />
                                     <span>{user.name}</span>
                                 </td>
-                                <td className="px-4 py-4 text-center align-middle">
-                                    <span className="px-4 py-1">{user.role}</span>
+                                <td className=" py-4 text-left w-1/3">
+                                    <span className="px-4 py-1">{user.address || 'Unknown'}</span>
                                 </td>
-                                <td className="px-4 py-4 text-center align-middle space-x-2">
-                                    <button className="bg-blue-500 text-white px-3 py-1 rounded">Edit</button>
-                                    <button className="bg-red-500 text-white px-3 py-1 rounded">Delete</button>
-                                </td>
+                                <td className="px-4 py-4 text-left w-1/3">{user.email || 'Unknown'}</td>
                             </tr>
                         ))}
                     </tbody>

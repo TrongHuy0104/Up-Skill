@@ -4,13 +4,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 const UserAnalyticsChart = ({data}: any) => {
     return (
-        <div className="bg-[#131836] p-4 rounded-lg shadow-md">
-            <h2 className="text-white text-xl font-semibold mb-4">Users Analytics</h2>
+        <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-black text-xl font-semibold mb-4">Users Analytics</h2>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
-                    <XAxis dataKey="date" stroke="#fff" />
-                    <YAxis stroke="#fff" tickFormatter={(value) => Math.round(value).toString()} allowDecimals={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(7, 7, 7, 0.2)" />
+                    <XAxis dataKey="date" stroke="#000" />
+                    <YAxis stroke="#000" tickFormatter={(value) => Math.round(value).toString()} allowDecimals={false} />
                     <Tooltip contentStyle={{ backgroundColor: '#333', color: '#fff' }} />
                     <Legend />
                     <Line

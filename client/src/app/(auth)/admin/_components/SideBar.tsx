@@ -29,27 +29,28 @@ const Sidebar = () => {
     const pathname = usePathname();
 
     return (
-        <div>
+        <div className="bg-white w-full">
             {/* Logo */}
-            <div className=" flex items-center p-4 gap-4">
+            <div className="flex items-center p-4 gap-4">
                 <Image src="/assets/images/logo/favicon.png" alt="Logo" width={50} height={50} />
-                <div className="text-white text-2xl">UpSkill</div>
+                <div className="text-black text-2xl font-bold">UpSkill</div>
             </div>
+
             {/* Avatar and Role */}
-            <div className="mt-4 text-white px-4 py-8 flex flex-col items-center gap-2">
+            <div className="mt-4 text-black px-4 py-8 flex flex-col items-center gap-2">
                 <Image
-                    src={user?.avatar?.url}
+                    src={user?.avatar?.url || '/assets/images/avatar/default-avatar.jpg'}
                     alt="User Avatar"
-                    width={50}
-                    height={50}
+                    width={100}
+                    height={100}
                     className="rounded-full"
                 />
-                <div className='text-2xl'>{user?.name}</div>
+                <div className="text-2xl">{user?.name}</div>
                 <div>{user?.role}</div>
             </div>
 
             {/* Menu */}
-            <div className="w-full max-h-screen overflow-y-auto overflow-x-hidden p-4 text-white">
+            <div className="w-full max-h-screen overflow-y-auto overflow-x-hidden text-black">
                 {menuItems.map((i) => (
                     <div className="flex flex-col gap-2 w-full" key={i.title}>
                         <span className="hidden lg:block font-light my-4">{i.title}</span>
@@ -57,8 +58,8 @@ const Sidebar = () => {
                             <Link
                                 href={item.path}
                                 key={item.label}
-                                className={`flex items-center justify-center lg:justify-start gap-4 py-2 rounded-md ${
-                                    pathname === item.path ? 'bg-[#4845AA]' : ''
+                                className={`flex items-center justify-center lg:justify-start gap-4 p-2 rounded-md ${
+                                    pathname === item.path ? 'bg-gray-200' : ''
                                 }`}
                             >
                                 <Image
@@ -66,7 +67,7 @@ const Sidebar = () => {
                                     alt={item.label}
                                     width={20}
                                     height={20}
-                                    className="w-5 h-5 object-contain"
+                                    className="w-5 h-5 object-contain filter invert-0"
                                 />
                                 <span className="hidden lg:block">{item.label}</span>
                             </Link>

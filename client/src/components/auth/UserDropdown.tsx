@@ -78,7 +78,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                     </Link>
                     {/* Check if user is admin */}
                     {user.role === 'admin' && (
-                        <Link href="/admin/dashboard">
+                        <Link href="/admin/dashboard" target="_blank" rel="noopener noreferrer">
                             <DropdownMenuItem>
                                 Manage Admin
                                 <DropdownMenuShortcut>
