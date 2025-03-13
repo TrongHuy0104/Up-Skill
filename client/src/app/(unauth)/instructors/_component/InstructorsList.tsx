@@ -1,7 +1,7 @@
 'use client';
 import InstructorCard from '@/components/custom/Instructor';
 import PaginationComponent from '@/components/custom/PaginationComponent';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 interface Instructor {
     _id: string;
@@ -19,7 +19,7 @@ const InstructorList = ({ instructors = [] }: { instructors?: Instructor[] }) =>
     const instructorsPerPage = 10;
 
     // Đảm bảo instructors là một mảng
-    const safeInstructors = Array.isArray(instructors) ? instructors : [];
+    const safeInstructors = useMemo(() => (Array.isArray(instructors) ? instructors : []), [instructors]);
 
     // Debugging: Kiểm tra dữ liệu đầu vào
     useEffect(() => {}, [instructors, safeInstructors]); // Thêm safeInstructors vào dependency array

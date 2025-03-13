@@ -127,7 +127,8 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         course.purchased = course.purchased ? course.purchased + 1 : 1;
         await course.save();
     }
-
+    await redis.del(`allOrders ${req.user?._id}`);
+    await redis.del('allOrders undefined');
     // Create the order
     newOrder(data, next, res);
 });
@@ -186,5 +187,28 @@ export const newPayment = catchAsync(async (req: Request, res: Response, next: N
     res.status(201).json({
         success: true,
         client_secret: myPayment.client_secret
+    });
+});
+
+// get all orders of a specific user with Redis caching
+export const getUserOrders = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    const isCacheExist = await redis.get(`allOrders ${req.user?._id}`);
+    let orders;
+    
+    if(isCacheExist){
+        orders = JSON.parse(isCacheExist);
+    } else {
+        orders = await OrderModel.find({userId})
+            .populate({
+                path: 'courseIds',
+                select: 'name price'
+            })
+            .sort({ createdAt: -1 });
+        redis.set(`allOrders ${req.user?._id}`, JSON.stringify(orders));
+    }
+    res.status(200).json({
+        success: true,
+        orders
     });
 });

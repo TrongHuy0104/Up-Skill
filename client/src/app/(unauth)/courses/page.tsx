@@ -42,9 +42,9 @@ export default async function Page({ searchParams = {} }: any) {
                 <Suspense fallback={<DashboardSkeleton />}>
                     <FilterCourses filterData={data} />
                     <HorizontalCoursesList
-                        courses={courses}
+                        initialCourses={courses}
                         totalPages={totalPages}
-                        totalCourses={totalCourses}
+                        initialTotalCourses={totalCourses}
                         limit={limit}
                         page={page}
                     />

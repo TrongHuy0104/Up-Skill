@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-// import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { formStyles } from '@/styles/styles';
 import { Input } from '@/components/ui/Input';
@@ -27,7 +26,7 @@ const passwordSchema = z
     .refine((password) => /[a-z]/.test(password), {
         message: 'Password must contain at least one lowercase letter.'
     })
-    .refine((password) => /[0-9]/.test(password), {
+    .refine((password) => /\d/.test(password), {
         message: 'Password must contain at least one number.'
     })
     .refine((password) => /[!@#$%^&*]/.test(password), {

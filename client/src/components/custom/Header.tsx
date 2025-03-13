@@ -85,7 +85,7 @@ export default function Header() {
                                         />
                                     </svg>
                                 </Link>
-                                <UserDropdown user={user} />
+                                <UserDropdown />
                             </>
                         ) : (
                             <AuthDialog />

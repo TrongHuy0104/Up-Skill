@@ -8,6 +8,7 @@ import categoryRoutes from '@/routes/category.route';
 import levelRoutes from '@/routes/level.route';
 import quizRoutes from '@/routes/quiz.route';
 import progressRoutes from '@/routes/progress.route';
+import incomeRoutes from '@/routes/income.route';
 
 const router = express.Router();
 
@@ -28,5 +29,7 @@ router.use('/category', categoryRoutes);
 router.use('/quizzes', quizRoutes);
 
 router.use('/progress', progressRoutes);
+
+router.use('/income', incomeRoutes);
 
 export default router;

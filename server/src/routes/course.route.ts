@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
 import {
@@ -18,6 +18,7 @@ import {
     uploadCourse,
     getCourseStatistics,
     getCoursesByUser,
+    searchCoursesAndInstructors,
     getUploadedCourseByInstructor,
     createSection,
     reorderSection,
@@ -36,13 +37,16 @@ import {
     deleteSection,
     publishCourse,
     unpublishCourse,
-    getAllUploadedAndPurchasedCoursesOfInstructor
+    getAllUploadedAndPurchasedCoursesOfInstructor,
+    getCoursesWithSort
 } from '@/controllers/course.controller';
 import { getUserInfo, updateAccessToken } from '@/controllers/user.controller';
 
 const router = express.Router();
 
 router.get('/user-courses', updateAccessToken, isAuthenticated, getCoursesByUser, getUserInfo);
+
+router.get('/sort', getCoursesWithSort as RequestHandler);
 
 router.post('/create-course', updateAccessToken, isAuthenticated, uploadCourse);
 
@@ -57,6 +61,8 @@ router.put('/unpublish-course/:id', updateAccessToken, isAuthenticated, unpublis
 router.get('/pagination', getCoursesLimitWithPagination);
 
 router.get('/count', getCourseStatistics);
+
+router.post('/search', searchCoursesAndInstructors);
 
 router.get('/top-courses', getTopCourses);
 
