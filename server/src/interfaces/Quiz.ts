@@ -19,7 +19,8 @@ export interface IQuiz extends Document {
     isPublished: boolean;
     instructorId: Types.ObjectId;
     questions: IQuestion[];
-    order: number;
+    sectionOrder: number;
+    lessonOrder: number;
     videoSection: string;
     courseId: Types.ObjectId;
     userScores: IUserScore[];

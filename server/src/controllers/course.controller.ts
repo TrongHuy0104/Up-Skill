@@ -1472,3 +1472,36 @@ export const getSignatureForDelete = catchAsync(async (req: Request, res: Respon
 
     res.status(200).json({ timestamp, signature });
 });
+
+// update lesson completion status
+export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const courseId = req.params.id;
+    const { lessonId, isCompleted } = req.body;
+
+    if (!courseId || !lessonId) {
+        return next(new ErrorHandler('Course ID and Lesson ID are required', 400));
+    }
+
+    // Find the course
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+
+    // Find the lesson in courseData and update its isCompleted status
+    const lesson = course.courseData.id(lessonId);
+    if (!lesson) {
+        return next(new ErrorHandler('Lesson not found', 404));
+    }
+
+    lesson.isCompleted = isCompleted;
+    await course.save();
+
+    // Update redis cache
+    await redis.set(courseId, JSON.stringify(course));
+
+    res.status(200).json({
+        success: true,
+        message: 'Lesson completion status updated successfully'
+    });
+});

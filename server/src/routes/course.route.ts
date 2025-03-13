@@ -128,4 +128,7 @@ router.post('/sign-upload', generateVideoCloudinarySignature);
 
 router.post('/sign-delete', getSignatureForDelete);
 
+// Add new route for updating lesson completion status
+// router.put('/update-lesson-completion/:id', updateAccessToken, isAuthenticated, updateLessonCompletionStatus);
+
 export = router;

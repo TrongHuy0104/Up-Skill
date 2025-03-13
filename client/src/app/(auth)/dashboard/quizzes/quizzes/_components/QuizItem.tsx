@@ -11,6 +11,7 @@ import QuizDeleteModal from './QuizDeleteModal'; // Import the delete modal
 
 interface QuizItemProps {
     readonly quiz: any;
+    readonly courses: any;
     readonly isFirst?: boolean;
     readonly isLast?: boolean;
     readonly onClick: () => void;
@@ -19,11 +20,13 @@ interface QuizItemProps {
     readonly onDelete: (quizId: string) => void; // Callback to handle quiz delete
 }
 
-export default function QuizItem({ quiz, isFirst, isLast, onClick, onUpdate, onDelete }: QuizItemProps) {
+export default function QuizItem({ quiz, courses, isFirst, isLast, onClick, onUpdate, onDelete }: QuizItemProps) {
     const { questions, duration, passingScore, _id: quizId } = quiz;
     const [showResultsModal, setShowResultsModal] = useState(false); // State to control results modal visibility
     const [showUpdateModal, setShowUpdateModal] = useState(false); // State to control update modal visibility
     const [showDeleteModal, setShowDeleteModal] = useState(false); // State to control delete modal visibility
+
+
 
     return (
         <>
@@ -107,6 +110,7 @@ export default function QuizItem({ quiz, isFirst, isLast, onClick, onUpdate, onD
             {/* Update Modal */}
             {showUpdateModal && (
                 <QuizUpdateModal
+                    courses={courses}
                     quiz={quiz}
                     onClose={() => setShowUpdateModal(false)}
                     onUpdate={(updatedQuiz) => {

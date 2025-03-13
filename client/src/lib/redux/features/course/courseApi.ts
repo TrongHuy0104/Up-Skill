@@ -182,7 +182,7 @@ export const courseApi = apiSlice.injectEndpoints({
                 body: { comment, courseId, reviewId },
                 credentials: 'include' as const
             })
-        })
+        }),
     })
 });
 
@@ -209,5 +209,5 @@ export const {
     useDeleteSectionMutation,
     usePublishCourseMutation,
     useUnpublishCourseMutation,
-    useDeleteCourseMutation
+    useDeleteCourseMutation,
 } = courseApi;

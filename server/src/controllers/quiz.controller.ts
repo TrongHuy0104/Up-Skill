@@ -113,11 +113,12 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         maxAttempts,
         isPublished,
         questions,
-        order,
+        lessonOrder,
         videoSection,
         courseId,
         instructorId // Get instructorId from the request body
     } = req.body;
+    console.log(req.body);
 
     // Validate required fields
     if (
@@ -126,8 +127,8 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         !duration ||
         !passingScore ||
         !maxAttempts ||
-        !questions ||
-        !order ||
+        questions ||
+        !lessonOrder ||
         !videoSection ||
         !courseId ||
         !instructorId // Ensure instructorId is provided
@@ -152,7 +153,7 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         isPublished,
         instructorId, // Include instructorId in the quiz document
         questions,
-        order,
+        lessonOrder,
         videoSection,
         courseId
     });

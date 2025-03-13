@@ -1,5 +1,4 @@
-'use client';
-
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -7,29 +6,27 @@ import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/custom/Input';
-import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 import { VideoSectionSelector } from './VideoSectionSelector';
-import { toast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   courseId: z.string().min(1, { message: 'Course is required' }),
   videoSection: z.string().min(1, { message: 'Video section is required' }),
   title: z.string().min(3, { message: 'Title is required and must be at least 3 characters.' }),
   description: z.string().min(1, { message: 'Description is required' }),
-  difficulty: z.string(),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
   duration: z.number().min(1, { message: 'Duration must be at least 1 minute' }),
   passingScore: z.number().min(0).max(100, { message: 'Passing score must be between 0 and 100' }),
   maxAttempts: z.number().min(1, { message: 'Max attempts must be at least 1' }),
   isPublished: z.boolean(),
-  questions: z.array(z.any()),
-  order: z.number().min(1, { message: 'Order is required' }),
+  lessonOrder: z.number().min(1, { message: 'Order is required' }),
 });
 
 export interface Course {
   _id: string;
   name: string;
   authorId: string;
-  courseData: Array<{ videoSection: string; title: string; description: string }>;
+  courseData: Array<{ videoSection: string; title: string; description: string; lessonOrder: number }>;
 }
 
 interface QuizFormProps {
@@ -40,6 +37,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [cookie, setCookie] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const cookies = document.cookie;
@@ -58,8 +56,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
       passingScore: 70,
       maxAttempts: 3,
       isPublished: true,
-      questions: [],
-      order: 1,
+      lessonOrder: 1,
     },
   });
 
@@ -71,6 +68,27 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
       description: section.description,
     }))
     : [];
+
+  useEffect(() => {
+    if (selectedCourse && form.watch('videoSection')) {
+      const videoSectionSelected = form.watch('videoSection');
+
+      // Filter out lessons by the selected video section
+      const existingLessons = selectedCourse.courseData.filter(
+        (section) => section.videoSection === videoSectionSelected
+      );
+
+      // Find the highest existing lessonOrder or set to 0 if no lessons exist
+      const highestLessonOrder = existingLessons.reduce((maxOrder, lesson) => {
+        return Math.max(maxOrder, lesson.lessonOrder);
+      }, 0);
+
+      // Set the next lessonOrder (highest + 1)
+      const nextLessonOrder = highestLessonOrder + 1;
+      form.setValue('lessonOrder', nextLessonOrder);  // Automatically update the lesson order
+    }
+  }, [form.watch('videoSection'), selectedCourse]);
+
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -104,11 +122,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-8"
-      >
-
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
         {/* Course Selection */}
         <FormField
           control={form.control}
@@ -117,10 +131,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
             <FormItem>
               <FormLabel className="block text-sm font-medium text-slate-700 mb-2">Course</FormLabel>
               <FormControl>
-                <select
-                  {...field}
-                  className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
-                >
+                <select {...field} className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all">
                   <option value="">Select a course</option>
                   {courses?.map((course) => (
                     <option key={course._id} value={course._id}>
@@ -208,7 +219,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
                 <FormControl>
                   <Input
                     {...field}
-                    type="number"
+                    type="string"
                     placeholder="Enter duration"
                     className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
                   />
@@ -227,7 +238,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
                 <FormControl>
                   <Input
                     {...field}
-                    type="number"
+                    type="string"
                     placeholder="Enter passing score"
                     className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
                   />
@@ -246,7 +257,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
                 <FormControl>
                   <Input
                     {...field}
-                    type="number"
+                    type="string"
                     placeholder="Enter max attempts"
                     className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 transition-all"
                   />

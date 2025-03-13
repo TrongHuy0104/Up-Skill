@@ -51,7 +51,8 @@ const quizSchema = new Schema<IQuiz>(
             required: true
         },
         questions: [questionSchema],
-        order: { type: Number, required: true },
+        sectionOrder: { type: Number, required: false },
+        lessonOrder: { type: Number, required: false },
         videoSection: { type: String, required: true },
         courseId: {
             type: mongoose.Schema.Types.ObjectId,
