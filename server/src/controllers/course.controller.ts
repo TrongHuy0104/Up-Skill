@@ -1224,22 +1224,22 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
     const filter: CourseFilter = { isPublished: true };
 
     if (req.query.level) {
-        const levelDoc = await LevelModel.findOne({ name: req.query.level as string });
+        const levelDoc = await LevelModel.findOne({ name: new RegExp(`^${req.query.level}$`, 'i') });
         if (levelDoc) filter.level = levelDoc._id;
     }
 
     if (req.query.category) {
-        const categoryDoc = await CategoryModel.findOne({ title: req.query.category as string });
+        const categoryDoc = await CategoryModel.findOne({ title: new RegExp(`^${req.query.category}$`, 'i') });
         if (categoryDoc) filter.category = categoryDoc._id;
     }
 
     if (req.query.subCategory) {
-        const subCategoryDoc = await SubCategoryModel.findOne({ title: req.query.subCategory as string });
+        const subCategoryDoc = await SubCategoryModel.findOne({ title: new RegExp(`^${req.query.subCategory}$`, 'i') });
         if (subCategoryDoc) filter.subCategory = subCategoryDoc._id;
     }
 
     if (req.query.authorId) {
-        const authorDoc = await UserModel.findOne({ name: req.query.authorId as string });
+        const authorDoc = await UserModel.findOne({ name: new RegExp(`^${req.query.authorId}$`, 'i') });
         if (authorDoc) filter.authorId = authorDoc._id;
     }
 
@@ -1404,6 +1404,35 @@ export const getTopCourses = catchAsync(async (req: Request, res: Response, next
     });
 });
 
+export const searchCoursesAndInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { search } = req.body;
+
+    if (!search) {
+        return res.status(400).json({
+            success: false,
+            message: 'Search query is required'
+        });
+    }
+
+    const regex = new RegExp(search, 'i');
+
+    const courses = await CourseModel.find({
+        $or: [{ name: regex }, { description: regex }]
+    })
+        .select('name description authorId thumbnail')
+        .populate('authorId', 'name role ');
+
+    const instructors = await UserModel.find({
+        name: regex,
+        role: 'instructor'
+    }).select('name role avatar');
+
+    res.status(200).json({
+        success: true,
+        courses,
+        instructors
+    });
+});
 export const generateVideoCloudinarySignature = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { folder } = req.body;
 

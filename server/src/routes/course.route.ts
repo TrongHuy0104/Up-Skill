@@ -17,6 +17,7 @@ import {
     updateCourse,
     uploadCourse,
     getCourseStatistics,
+    searchCoursesAndInstructors,
     getUploadedCourseByInstructor,
     createSection,
     reorderSection,
@@ -54,6 +55,8 @@ router.put('/unpublish-course/:id', updateAccessToken, isAuthenticated, unpublis
 router.get('/pagination', getCoursesLimitWithPagination);
 
 router.get('/count', getCourseStatistics);
+
+router.post('/search', searchCoursesAndInstructors);
 
 router.get('/top-courses', getTopCourses);
 
