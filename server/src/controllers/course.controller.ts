@@ -1404,6 +1404,35 @@ export const getTopCourses = catchAsync(async (req: Request, res: Response, next
     });
 });
 
+export const searchCoursesAndInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { search } = req.body;
+
+    if (!search) {
+        return res.status(400).json({
+            success: false,
+            message: 'Search query is required'
+        });
+    }
+
+    const regex = new RegExp(search, 'i');
+
+    const courses = await CourseModel.find({
+        $or: [{ name: regex }, { description: regex }]
+    })
+        .select('name description authorId thumbnail')
+        .populate('authorId', 'name role ');
+
+    const instructors = await UserModel.find({
+        name: regex,
+        role: 'instructor'
+    }).select('name role avatar');
+
+    res.status(200).json({
+        success: true,
+        courses,
+        instructors
+    });
+});
 export const generateVideoCloudinarySignature = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { folder } = req.body;
 
