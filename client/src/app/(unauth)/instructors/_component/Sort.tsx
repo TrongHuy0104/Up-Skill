@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import ModalComponent from './ModalComponent';
 import Image from 'next/image';
 import arrowDownIcon from '@/public/assets/icons/arrow-down.svg';
+import { DashboardSkeleton } from '@/components/ui/Skeleton';
 
 export default function Sort() {
     const [isSortOpen, setIsSortOpen] = useState(false);
@@ -62,24 +63,26 @@ export default function Sort() {
     };
 
     return (
-        <div className="items-center relative">
-            <div className="flex items-center h-[45px] gap-2">
-                <p className="text-primary-600">Sort by</p>
-                <button
-                    className="flex gap-2 cursor-pointer focus:outline-none"
-                    onClick={() => setIsSortOpen(!isSortOpen)}
-                    aria-label="Toggle Sort Options"
-                >
-                    <span className="text-primary-800">{displaySortType}</span>
-                    <Image className="cursor-pointer" src={arrowDownIcon} alt="Arrow Down Icon" />
-                </button>
-            </div>
-
-            {isSortOpen && (
-                <div ref={dropdownRef}>
-                    <ModalComponent closeModal={() => setIsSortOpen(false)} onSelectSort={handleSortSelect} />
+        <Suspense fallback={<DashboardSkeleton />}>
+            <div className="items-center relative">
+                <div className="flex items-center h-[45px] gap-2">
+                    <p className="text-primary-600">Sort by</p>
+                    <button
+                        className="flex gap-2 cursor-pointer focus:outline-none"
+                        onClick={() => setIsSortOpen(!isSortOpen)}
+                        aria-label="Toggle Sort Options"
+                    >
+                        <span className="text-primary-800">{displaySortType}</span>
+                        <Image className="cursor-pointer" src={arrowDownIcon} alt="Arrow Down Icon" />
+                    </button>
                 </div>
-            )}
-        </div>
+
+                {isSortOpen && (
+                    <div ref={dropdownRef}>
+                        <ModalComponent closeModal={() => setIsSortOpen(false)} onSelectSort={handleSortSelect} />
+                    </div>
+                )}
+            </div>
+        </Suspense>
     );
 }
