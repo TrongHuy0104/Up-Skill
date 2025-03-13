@@ -200,11 +200,11 @@ export const getUserOrders = catchAsync(async (req: Request, res: Response, next
         orders = JSON.parse(isCacheExist);
     } else {
         orders = await OrderModel.find({userId})
-        .populate({
-            path: 'courseIds',
-            select: 'name price'
-        })
-        .sort({ createdAt: -1 });
+            .populate({
+                path: 'courseIds',
+                select: 'name price'
+            })
+            .sort({ createdAt: -1 });
         redis.set(`allOrders ${req.user?._id}`, JSON.stringify(orders));
     }
     res.status(200).json({

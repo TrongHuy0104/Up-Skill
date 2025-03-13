@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 import { Badge } from '@/components/ui/Badge';
+import IncomeChart from '../_components/IncomeChart';
 import PaginationComponent from '@/components/custom/PaginationComponent';
 
 interface Course {
@@ -33,8 +34,11 @@ const Dashboard = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [bestSellingCourses, setBestSellingCourses] = useState<Course[]>([]);
+    const [userId, setUserId] = useState<string | null>(null);
 
     const totalPages = Math.max(1, Math.ceil(bestSellingCourses.length / 4));
+
+
 
     useEffect(() => {
         const fetchCourseStats = async () => {
@@ -46,7 +50,6 @@ const Dashboard = () => {
                 if (response.data.success) {
                     const purchasedCourses: Course[] = response.data.purchasedCourses;
                     const uploadedCourses: Course[] = response.data.uploadedCourses;
-                    const courses = [...purchasedCourses, ...uploadedCourses];
 
                     //Course Stats
                     const publishedCourses = uploadedCourses.filter((course: Course) => course.isPublished);
@@ -54,7 +57,7 @@ const Dashboard = () => {
 
                     setStats((prevStats) => ({
                         ...prevStats,
-                        totalCourses: courses.length,
+                        totalCourses: uploadedCourses.length,
                         publishedCourses: publishedCourses.length,
                         pendingCourses: uploadedCourses.length - publishedCourses.length,
                         totalStudent: totalStudent,
@@ -85,11 +88,13 @@ const Dashboard = () => {
                 if (response.data.success) {
                     const user = response.data.user;
                     const courseEnrolled = user.purchasedCourses.length;
+                    const userId = user._id;
 
                     setStats((prevStats) => ({
                         ...prevStats,
                         courseEnrolled: courseEnrolled
                     }));
+                    setUserId(userId);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -149,6 +154,13 @@ const Dashboard = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Income Chart */}
+            <div className="container bg-primary-50 rounded-lg p-[34px] border border-primary-100 mb-8">
+                <h1 className="text-[22px] text-primary-800 font-medium">Total Income</h1>
+                {userId && <IncomeChart userId={userId} />} {/* Pass userId to IncomeChart */}
+
             </div>
 
             {/* Best Selling Courses Section */}
