@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import PaginationComponent from '@/components/custom/PaginationComponent';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+
 import { Badge } from '@/components/ui/Badge';
+import PaginationComponent from '@/components/custom/PaginationComponent';
 import IncomeChart from '../_components/IncomeChart';
 
 interface Course {
@@ -166,8 +167,6 @@ const Dashboard = () => {
             <div className="bg-primary-50 rounded-lg p-[34px] border border-primary-100">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-[22px] text-primary-800 font-medium">Best Selling Courses</h2>
-                    {/* <a href="#" className="text-[16px] text-primary-800 font-medium flex justify-center items-center hover:text-accent-900">
-            View All <HiArrowUpRight className="text-[16px] ml-2"/></a> */}
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full">
