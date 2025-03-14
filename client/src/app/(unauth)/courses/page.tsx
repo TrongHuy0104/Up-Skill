@@ -23,6 +23,8 @@ export default async function Page({ searchParams = {} }: any) {
     const apiUrl = `${process.env.NEXT_PUBLIC_SERVER_URI}/courses/pagination?${safeParams.toString()}`;
     const countUrl = `${process.env.NEXT_PUBLIC_SERVER_URI}/courses/count`;
 
+    console.log('Fetching data from:', apiUrl);
+
     const [coursesRes, countRes] = await Promise.all([
         fetch(apiUrl, { credentials: 'include', headers: { Cookie: cookie } }),
         fetch(countUrl, { credentials: 'include', headers: { Cookie: cookie } })
@@ -33,6 +35,10 @@ export default async function Page({ searchParams = {} }: any) {
 
     const { courses, totalPages, totalCourses, limit, page } = await coursesRes.json();
     const { data } = await countRes.json();
+
+    console.log('Fetched courses:', courses);
+    console.log('Fetched filter data:', data);
+
     return (
         <div className="w-full pb-40">
             <Banner />

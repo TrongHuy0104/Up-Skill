@@ -71,6 +71,11 @@ export default function HorizontalCoursesList({
     limit,
     page
 }: HorizontalCoursesListProps) {
+    console.log('Initial courses:', initialCourses);
+    console.log('Initial total courses:', initialTotalCourses);
+    console.log('Total pages:', totalPages);
+    console.log('Limit:', limit);
+    console.log('Page:', page);
     const [isClient, setIsClient] = useState(false);
     const [currentPage, setCurrentPage] = useState(page);
     const [courses, setCourses] = useState(initialCourses);

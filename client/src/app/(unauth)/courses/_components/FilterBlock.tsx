@@ -18,6 +18,7 @@ type FilterBlockProps = {
     type?: 'checkbox' | 'radio';
     name?: string;
 };
+
 function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockProps) {
     const [isOpen, setIsOpen] = useState(true);
     const [visibleCount, setVisibleCount] = useState(3);
@@ -37,6 +38,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
         Language: 'language',
         Author: 'authorId'
     };
+
     const getInitialSelectedCategories = useCallback(() => {
         const params = new URLSearchParams(searchParams.toString());
         const selectedSet = new Set<string>();
@@ -53,8 +55,9 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
             });
         });
 
+        console.log('Initial selected categories:', selectedSet);
         return selectedSet;
-    }, [searchParams, options, title]); // 🔥 Đưa vào dependency array
+    }, [searchParams, options, title]);
 
     useEffect(() => {
         setSelectedCategories(getInitialSelectedCategories());
@@ -78,7 +81,6 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
             if (newSet.has(optionKey)) {
                 newSet.delete(optionKey);
 
-                // Nếu bỏ chọn Category, cũng xóa hết subCategory của nó
                 if (!isSubCategory) {
                     const category = options.find((opt) => opt.label === optionKey);
                     category?.subCategories?.forEach((sub) => newSet.delete(sub.label));
@@ -87,6 +89,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                 newSet.add(optionKey);
             }
 
+            console.log('Updated selected categories:', newSet);
             return newSet;
         });
 
@@ -114,6 +117,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
             existingValues.forEach((val) => params.append(paramKey, val));
         }
 
+        console.log('Updated searchParams:', params.toString());
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
