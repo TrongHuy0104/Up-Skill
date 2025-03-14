@@ -81,7 +81,6 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                 newSet.add(optionKey);
             }
 
-            console.log('Updated selected categories:', newSet);
             return newSet;
         });
 
@@ -109,7 +108,6 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
             existingValues.forEach((val) => params.append(paramKey, val));
         }
 
-        console.log('Updated searchParams:', params.toString());
         router.replace(`?${params.toString()}`, { scroll: false });
     };
 
