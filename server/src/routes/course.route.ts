@@ -17,6 +17,7 @@ import {
     updateCourse,
     uploadCourse,
     getCourseStatistics,
+    getCoursesByUser,
     searchCoursesAndInstructors,
     getUploadedCourseByInstructor,
     createSection,
@@ -39,9 +40,11 @@ import {
     getAllUploadedAndPurchasedCoursesOfInstructor,
     getCoursesWithSort
 } from '@/controllers/course.controller';
-import { updateAccessToken } from '@/controllers/user.controller';
+import { getUserInfo, updateAccessToken } from '@/controllers/user.controller';
 
 const router = express.Router();
+
+router.get('/user-courses', updateAccessToken, isAuthenticated, getCoursesByUser, getUserInfo);
 
 router.get('/sort', getCoursesWithSort as RequestHandler);
 
@@ -130,5 +133,8 @@ router.put('/upload-lesson-video/:id', updateAccessToken, isAuthenticated, uploa
 router.post('/sign-upload', generateVideoCloudinarySignature);
 
 router.post('/sign-delete', getSignatureForDelete);
+
+// Add new route for updating lesson completion status
+// router.put('/update-lesson-completion/:id', updateAccessToken, isAuthenticated, updateLessonCompletionStatus);
 
 export = router;
