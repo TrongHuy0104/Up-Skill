@@ -7,6 +7,7 @@ import layoutRoutes from '@/routes/layout.route';
 import categoryRoutes from '@/routes/category.route';
 import levelRoutes from '@/routes/level.route';
 import incomeRoutes from '@/routes/income.route';
+import cartRoutes from '@/routes/cart.route';
 
 const router = express.Router();
 
@@ -25,5 +26,7 @@ router.use('/level', levelRoutes);
 router.use('/category', categoryRoutes);
 
 router.use('/income', incomeRoutes);
+
+router.use('/cart', cartRoutes);
 
 export default router;
