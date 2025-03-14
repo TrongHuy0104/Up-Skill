@@ -1,42 +1,14 @@
 'use client';
 
-import { layoutStyles } from '@/styles/styles';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { TfiArrowTopRight } from 'react-icons/tfi';
+
+import { layoutStyles } from '@/styles/styles';
 import InstructorCard from '../custom/Instructor';
-import { VerticalCardSkeleton } from '../ui/Skeleton';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 
-function TopInstructors() {
-    const [topInstructors, setTopInstructors] = useState<any[]>([]);  
-    const [loading, setLoading] = useState<boolean>(true); 
-
-    useEffect(() => {
-        const fetchTopInstructors = async () => {
-            try {
-                const res = await fetch('http://localhost:8000/api/user/top-instructors', {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-
-                if (!res.ok) {
-                    throw new Error('Failed to fetch top instructors');
-                }
-
-                const data = await res.json(); 
-
-                setTopInstructors(data.topInstructors); 
-                setLoading(false); 
-            } catch (error) {
-                console.error('Error fetching top instructors:', error);
-                setLoading(false); 
-            }
-        };
-
-        fetchTopInstructors(); 
-    }, []);
-
+function TopInstructors({ instructors }: any) {
     return (
         <section className="border-top border-primary-100 pb-[64px] pt-[80px]">
             <div className={layoutStyles.container}>
@@ -57,38 +29,22 @@ function TopInstructors() {
                             </div>
 
                             <div className="mt-6">
-                                {loading ? (
-                                    // Display skeleton loading state
-                                    <Carousel className="w-full">
-                                        <CarouselContent className="-ml-1">
-                                            {[...Array(5)].map((_, index) => (
-                                                <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
-                                                    <div className="p-1">
-                                                        <VerticalCardSkeleton />
-                                                    </div>
-                                                </CarouselItem>
-                                            ))}
-                                        </CarouselContent>
-                                    </Carousel>
-                                ) : (
-                                    // Display actual data
-                                    <Carousel className="w-full">
-                                        <CarouselContent className="-ml-1">
-                                            {topInstructors.map((instructor) => (
-                                                <CarouselItem key={instructor._id} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
-                                                    <div className="p-1">
-                                                        <InstructorCard
-                                                            key={instructor._id}
-                                                            instructor={instructor}
-                                                        />
-                                                    </div>
-                                                </CarouselItem>
-                                            ))}
-                                        </CarouselContent>
-                                        <CarouselPrevious />
-                                        <CarouselNext />
-                                    </Carousel>
-                                )}
+                                <Carousel className="w-full">
+                                    <CarouselContent className="-ml-1">
+                                        {instructors.map((instructor: any) => (
+                                            <CarouselItem
+                                                key={instructor?._id}
+                                                className={`pl-1 md:basis-1/2 lg:basis-1/5`}
+                                            >
+                                                <div className="p-1">
+                                                    <InstructorCard key={instructor?._id} instructor={instructor} />
+                                                </div>
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                    <CarouselPrevious />
+                                    <CarouselNext />
+                                </Carousel>
                             </div>
                         </div>
                     </div>

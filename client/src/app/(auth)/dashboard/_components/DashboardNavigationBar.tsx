@@ -37,12 +37,12 @@ const navbarList = [
     },
     {
         title: 'Order',
-        href: '/dashboard/instructor/order',
+        href: '/dashboard/orders',
         icon: <PiBagBold className="text-[20px]" />
     },
     {
         title: 'Settings',
-        href: '/dashboard/instructor/settings',
+        href: '/dashboard/settings',
         icon: <IoSettingsOutline className="text-[20px]" />
     }
 ];
@@ -55,12 +55,12 @@ const navbarListForUser = [
     },
     {
         title: 'Order',
-        href: '/dashboard/user/order',
+        href: '/dashboard/orders',
         icon: <PiBagBold className="text-[20px]" />
     },
     {
         title: 'Settings',
-        href: '/dashboard/user/settings',
+        href: '/dashboard/settings',
         icon: <IoSettingsOutline className="text-[20px]" />
     }
 ];

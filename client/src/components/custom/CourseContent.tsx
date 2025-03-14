@@ -107,7 +107,7 @@ export default function CourseContent({ data }: Props) {
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm text-primary-800">
-                                                    {getMinutes(lessonLength.toFixed(0))}
+                                                    {getMinutes(lessonLength?.toFixed(0))}
                                                 </span>
                                                 {item.isFree ? (
                                                     <div className="text-accent-900 border border-accent-900 px-2 py-1 text-sm rounded">

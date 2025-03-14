@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IComment, ICommentReply, ICourse, ICourseData, ILink, IReview, IReviewReply } from '@/interfaces/Course';
+import { IComment, ICourse, ICourseData, ILink, IReview, IReviewReply } from '@/interfaces/Course';
 
 const ReviewReplySchema = new Schema<IReviewReply>(
     {
@@ -27,24 +27,14 @@ const LinkSchema = new Schema<ILink>({
     url: String
 });
 
-const CommentReplySchema = new Schema<ICommentReply>(
-    {
-        user: Object,
-        answer: String
-    },
-    { timestamps: true }
-);
-
-const CommentSchema = new Schema<IComment>(
-    {
-        user: Object,
-        question: String,
-        questionReplies: [CommentReplySchema]
-    },
-    { timestamps: true }
-);
+const CommentSchema = new Schema<IComment>({
+    user: Object,
+    question: String,
+    questionReplies: [Object]
+});
 
 const CourseDataSchema = new Schema<ICourseData>({
+    order: Number,
     title: String,
     description: String,
     videoUrl: {
@@ -61,6 +51,12 @@ const CourseDataSchema = new Schema<ICourseData>({
     links: [LinkSchema],
     suggestion: String,
     questions: [CommentSchema],
+    quizzes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Quiz'
+        }
+    ],
     isCompleted: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: false },
     isPublishedSection: { type: Boolean, default: false },
@@ -80,7 +76,6 @@ const CourseSchema = new Schema<ICourse>(
         },
         description: {
             type: String
-            // required: true
         },
         authorId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -89,7 +84,6 @@ const CourseSchema = new Schema<ICourse>(
         },
         price: {
             type: Number
-            // required: true
         },
         estimatedPrice: {
             type: Number
@@ -104,7 +98,6 @@ const CourseSchema = new Schema<ICourse>(
         },
         tags: {
             type: String
-            // required: true
         },
         level: {
             type: mongoose.Schema.Types.ObjectId,

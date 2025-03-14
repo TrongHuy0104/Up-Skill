@@ -16,6 +16,33 @@ import CategoryModel from '@/models/Category.model';
 import SubCategoryModel from '@/models/SubCategory.model';
 import UserModel from '@/models/User.model';
 
+export const getCoursesByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return next(new ErrorHandler('Unauthorized - user not found', 401));
+    }
+
+    // Lấy user để truy cập user.uploadedCourses
+    const user = await UserModel.findById(userId).select('uploadedCourses');
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    // uploadedCourses là mảng ObjectId/string => tìm tất cả các khóa học có _id thuộc mảng này
+    const courses = await CourseModel.find({
+        _id: { $in: user.uploadedCourses }
+    });
+
+    // Nếu muốn bắt lỗi khi không có course nào
+    if (!courses || courses.length === 0) {
+        return next(new ErrorHandler('No courses found for this user', 404));
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: courses
+    });
+});
 export const getTopRatedCoursesController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { id: instructorId } = req.params; // Lấy giá trị `id` từ req.params
 
@@ -1252,22 +1279,22 @@ export const getCoursesLimitWithPagination = catchAsync(async (req: Request, res
     const filter: CourseFilter = { isPublished: true };
 
     if (req.query.level) {
-        const levelDoc = await LevelModel.findOne({ name: req.query.level as string });
+        const levelDoc = await LevelModel.findOne({ name: new RegExp(`^${req.query.level}$`, 'i') });
         if (levelDoc) filter.level = levelDoc._id;
     }
 
     if (req.query.category) {
-        const categoryDoc = await CategoryModel.findOne({ title: req.query.category as string });
+        const categoryDoc = await CategoryModel.findOne({ title: new RegExp(`^${req.query.category}$`, 'i') });
         if (categoryDoc) filter.category = categoryDoc._id;
     }
 
     if (req.query.subCategory) {
-        const subCategoryDoc = await SubCategoryModel.findOne({ title: req.query.subCategory as string });
+        const subCategoryDoc = await SubCategoryModel.findOne({ title: new RegExp(`^${req.query.subCategory}$`, 'i') });
         if (subCategoryDoc) filter.subCategory = subCategoryDoc._id;
     }
 
     if (req.query.authorId) {
-        const authorDoc = await UserModel.findOne({ name: req.query.authorId as string });
+        const authorDoc = await UserModel.findOne({ name: new RegExp(`^${req.query.authorId}$`, 'i') });
         if (authorDoc) filter.authorId = authorDoc._id;
     }
 
@@ -1432,6 +1459,35 @@ export const getTopCourses = catchAsync(async (req: Request, res: Response, next
     });
 });
 
+export const searchCoursesAndInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { search } = req.body;
+
+    if (!search) {
+        return res.status(400).json({
+            success: false,
+            message: 'Search query is required'
+        });
+    }
+
+    const regex = new RegExp(search, 'i');
+
+    const courses = await CourseModel.find({
+        $or: [{ name: regex }, { description: regex }]
+    })
+        .select('name description authorId thumbnail')
+        .populate('authorId', 'name role ');
+
+    const instructors = await UserModel.find({
+        name: regex,
+        role: 'instructor'
+    }).select('name role avatar');
+
+    res.status(200).json({
+        success: true,
+        courses,
+        instructors
+    });
+});
 export const generateVideoCloudinarySignature = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { folder } = req.body;
 
@@ -1472,4 +1528,37 @@ export const getSignatureForDelete = catchAsync(async (req: Request, res: Respon
     const signature = cloudinary.v2.utils.api_sign_request(params, process.env.CLOUD_API_SECRET || '');
 
     res.status(200).json({ timestamp, signature });
+});
+
+// update lesson completion status
+export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const courseId = req.params.id;
+    const { lessonId, isCompleted } = req.body;
+
+    if (!courseId || !lessonId) {
+        return next(new ErrorHandler('Course ID and Lesson ID are required', 400));
+    }
+
+    // Find the course
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+
+    // Find the lesson in courseData and update its isCompleted status
+    const lesson = course.courseData.id(lessonId);
+    if (!lesson) {
+        return next(new ErrorHandler('Lesson not found', 404));
+    }
+
+    lesson.isCompleted = isCompleted;
+    await course.save();
+
+    // Update redis cache
+    await redis.set(courseId, JSON.stringify(course));
+
+    res.status(200).json({
+        success: true,
+        message: 'Lesson completion status updated successfully'
+    });
 });

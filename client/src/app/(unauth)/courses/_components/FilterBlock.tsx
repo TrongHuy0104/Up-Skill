@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IoIosStar } from 'react-icons/io';
 import Image from 'next/image';
@@ -26,16 +26,18 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const paramMap: Record<string, string> = {
-        Categories: 'category',
-        Rating: 'rating',
-        Price: 'price',
-        Level: 'level',
-        Language: 'language',
-        Author: 'authorId'
-    };
+    const paramMap: any = useMemo(
+        () => ({
+            Categories: 'category',
+            Rating: 'rating',
+            Price: 'price',
+            Level: 'level',
+            Language: 'language',
+            Author: 'authorId'
+        }),
+        []
+    );
 
-    // Hàm lấy giá trị ban đầu từ URL
     const getInitialSelectedCategories = useCallback(() => {
         const params = new URLSearchParams(searchParams.toString());
         const selectedSet = new Set<string>();
