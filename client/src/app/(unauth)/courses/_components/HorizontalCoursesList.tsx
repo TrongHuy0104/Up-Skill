@@ -105,27 +105,30 @@ export default function HorizontalCoursesList({
 
     useEffect(() => {
         const fetchCourses = async () => {
-            if (!sortType) return;
             setIsLoading(true);
             try {
-                let apiUrl = `http://localhost:8000/api/courses}`;
                 if (sortType) {
-                    apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
+                    // Nếu có sortType, fetch dữ liệu từ API
+                    const apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
+                    const res = await fetch(apiUrl);
+
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
+                    }
+
+                    const data = await res.json();
+
+                    if (!data.courses) {
+                        throw new Error('Invalid data format: courses not found');
+                    }
+
+                    setCourses(data.courses || []);
+                    setTotalCourses(data.courses.length || 0);
+                } else {
+                    // Nếu không có sortType, sử dụng initialCourses
+                    setCourses(initialCourses);
+                    setTotalCourses(initialTotalCourses);
                 }
-                const res = await fetch(apiUrl);
-
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
-                }
-
-                const data = await res.json();
-
-                if (!data.courses) {
-                    throw new Error('Invalid data format: courses not found');
-                }
-
-                setCourses(data.courses || []);
-                setTotalCourses(data.courses.length || 0);
             } catch (error) {
                 console.error('❌ Fetch Error:', error);
                 setCourses([]);
@@ -136,7 +139,7 @@ export default function HorizontalCoursesList({
         };
 
         fetchCourses();
-    }, [sortType]);
+    }, [sortType, initialCourses, initialTotalCourses]); // Theo dõi thay đổi của sortType, initialCourses và initialTotalCourses
 
     if (!isClient) {
         return (

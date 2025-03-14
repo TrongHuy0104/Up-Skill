@@ -22,13 +22,9 @@ type FilterBlockProps = {
 function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockProps) {
     const [isOpen, setIsOpen] = useState(true);
     const [visibleCount, setVisibleCount] = useState(3);
-
+    const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
     const router = useRouter();
     const searchParams = useSearchParams();
-
-    useEffect(() => {
-        setSelectedCategories(getInitialSelectedCategories());
-    }, [searchParams]);
 
     const paramMap: Record<string, string> = {
         Categories: 'category',
@@ -39,6 +35,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
         Author: 'authorId'
     };
 
+    // Hàm lấy giá trị ban đầu từ URL
     const getInitialSelectedCategories = useCallback(() => {
         const params = new URLSearchParams(searchParams.toString());
         const selectedSet = new Set<string>();
@@ -54,16 +51,11 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                 }
             });
         });
-
-        console.log('Initial selected categories:', selectedSet);
         return selectedSet;
     }, [searchParams, options, title]);
-
     useEffect(() => {
         setSelectedCategories(getInitialSelectedCategories());
-    }, [getInitialSelectedCategories]);
-
-    const [selectedCategories, setSelectedCategories] = useState<Set<string>>(getInitialSelectedCategories);
+    }, [searchParams, getInitialSelectedCategories]);
 
     const toggleCategory = (
         event: React.ChangeEvent<HTMLInputElement>,
