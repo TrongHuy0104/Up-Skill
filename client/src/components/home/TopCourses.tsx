@@ -1,61 +1,18 @@
 'use client';
 
-import { layoutStyles } from '@/styles/styles';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import Link from 'next/link';
-import React, { Suspense, useEffect, useState } from 'react';
+import React from 'react';
 import { TfiArrowTopRight } from 'react-icons/tfi';
+
+import { layoutStyles } from '@/styles/styles';
 import CourseVerticalCard from '../custom/CourseCard';
-import { VerticalCardSkeleton } from '../ui/Skeleton';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 
-function TopCoursesContent() {
-    const [topCourses, setTopCourses] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchTopCourses = async () => {
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/top-courses`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-
-                if (!res.ok) {
-                    throw new Error('Failed to fetch top courses');
-                }
-
-                const data = await res.json();
-                setTopCourses(data.data.topCourses);
-            } catch (error) {
-                console.error('Error fetching top courses:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchTopCourses();
-    }, []);
-
-    if (isLoading) {
-        return (
-            <Carousel className="w-full">
-                <CarouselContent className="-ml-1">
-                    {[...Array(5)].map((_, index) => (
-                        <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
-                            <div className="p-1">
-                                <VerticalCardSkeleton />
-                            </div>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-            </Carousel>
-        );
-    }
-
+function TopCoursesContent({ courses }: any) {
     return (
         <Carousel className="w-full">
             <CarouselContent className="-ml-1">
-                {topCourses.map((course) => (
+                {courses?.map((course: any) => (
                     <CarouselItem key={course._id} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
                         <div className="p-1">
                             <CourseVerticalCard key={course._id} course={course} />
@@ -69,7 +26,7 @@ function TopCoursesContent() {
     );
 }
 
-function TopCourses() {
+function TopCourses({ courses }: any) {
     return (
         <section className="border-top border-primary-100 pb-[64px] pt-[80px]">
             <div className={layoutStyles.container}>
@@ -89,17 +46,7 @@ function TopCourses() {
                                 </Link>
                             </div>
                             <div className="mt-6">
-                                <Suspense
-                                    fallback={[...Array(5)].map((_, index) => (
-                                        <CarouselItem key={index} className={`pl-1 md:basis-1/2 lg:basis-1/5`}>
-                                            <div className="p-1">
-                                                <VerticalCardSkeleton />
-                                            </div>
-                                        </CarouselItem>
-                                    ))}
-                                >
-                                    <TopCoursesContent />
-                                </Suspense>
+                                <TopCoursesContent courses={courses} />
                             </div>
                         </div>
                     </div>
