@@ -9,10 +9,10 @@ const CountUserChart = ({totalUser}: any) => {
 
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-lg w-1/3 h-[150px] flex items-center justify-between text-white">
+    <div className="bg-white p-6 rounded-xl shadow-lg w-1/4 h-[150px] flex items-center justify-between text-white">
       {/* Left Side */}
       <div className="flex items-center gap-4">
-        <Image src={studentsIcon} alt="Students Icon" width={32} height={32} className="w-8 h-8" />
+        <Image src={studentsIcon} alt="Users Icon" width={32} height={32} className="w-8 h-8" />
         <div>
           <h2 className="text-2xl font-bold text-black">{totalUser}</h2>
           <p className="text-sm text-green-400">New Users</p>

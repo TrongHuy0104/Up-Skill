@@ -646,8 +646,9 @@ export const getInstructorsWithSort = catchAsync(async (req: Request, res: Respo
 
 //get data for analysis
 export const getUserStatisticsByMonth = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const totalUser = await UserModel.countDocuments({ role: 'user' });
+    const totalStudent = await UserModel.countDocuments({ role: 'user' });
     const totalInstructor = await UserModel.countDocuments({ role: 'instructor' });
+    const totalUser = totalStudent + totalInstructor;
     const totalCourse = await CourseModel.countDocuments({ isPublished: true });
 
     const users = await UserModel.find({ role: 'user' }).select('createdAt');
@@ -677,6 +678,7 @@ export const getUserStatisticsByMonth = catchAsync(async (req: Request, res: Res
 
     res.status(200).json({
         success: true,
+        totalStudent,
         totalUser,
         totalInstructor,
         totalCourse,

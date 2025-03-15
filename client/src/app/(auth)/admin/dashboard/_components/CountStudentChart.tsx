@@ -1,19 +1,21 @@
 'use client';
 
 import Image from 'next/image';
-import courseIcon from '@/public/assets/icons/course.svg';
+import studentsIcon from '@/public/assets/icons/students.svg';
 
-const CourseChart = ({totalCourse}: any) => {
+const CountStudentChart = ({totalStudent}: any) => {
   const growthRate = 150; // % tăng trưởng
 
+
+
   return (
-    <div className="bg-white p-6 rounded-xl w-1/4 h-[150px] flex items-center justify-between text-black">
+    <div className="bg-white p-6 rounded-xl shadow-lg w-1/4 h-[150px] flex items-center justify-between text-white">
       {/* Left Side */}
       <div className="flex items-center gap-4">
-        <Image src={courseIcon} alt="Course Icon" width={32} height={32} className="w-8 h-8" />
+        <Image src={studentsIcon} alt="Students Icon" width={32} height={32} className="w-8 h-8" />
         <div>
-          <h2 className="text-2xl font-bold">{totalCourse}</h2>
-          <p className="text-sm text-green-400">New Courses</p>
+          <h2 className="text-2xl font-bold text-black">{totalStudent}</h2>
+          <p className="text-sm text-green-400">New Students</p>
         </div>
       </div>
       {/* Right Side - Growth Indicator */}
@@ -26,4 +28,4 @@ const CourseChart = ({totalCourse}: any) => {
   );
 };
 
-export default CourseChart;
+export default CountStudentChart;

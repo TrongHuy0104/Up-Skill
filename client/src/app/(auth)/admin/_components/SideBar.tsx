@@ -8,6 +8,7 @@ import manageCourse from '@/public/assets/icons/timetable.svg';
 import dashboard from '@/public/assets/icons/dashboard.svg';
 import { useSelector } from 'react-redux';
 import manageInstructor from '@/public/assets/icons/students.svg';
+import logoutIcon from '@/public/assets/icons/logout.svg';
 
 const menuItems = [
     {
@@ -24,11 +25,11 @@ const menuItems = [
     },
     {
         title: 'CONTENT',
-        items: [{ icon: dashboard, label: 'Instructor Request', path: '/admin/dashboard' }]
+        items: [{ icon: dashboard, label: 'Instructor Request', path: '/admin/instructor-request' }]
     },
     {
         title: 'OTHER',
-        items: [{ icon: dashboard, label: 'Logout', path: {} }]
+        items: [{ icon: logoutIcon, label: 'Logout', path: {} }]
     }
 ];
 
@@ -61,7 +62,7 @@ const Sidebar = () => {
             <div className="w-full max-h-screen overflow-y-auto overflow-x-hidden text-black">
                 {menuItems.map((i) => (
                     <div className="flex flex-col gap-2 w-full" key={i.title}>
-                        <span className="hidden lg:block font-light my-4">{i.title}</span>
+                        <span className="hidden lg:block font-bold my-4">{i.title}</span>
                         {i.items.map((item) => (
                             <Link
                                 href={item.path}

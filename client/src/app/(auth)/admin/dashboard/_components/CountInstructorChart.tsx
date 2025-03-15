@@ -6,7 +6,7 @@ const CountInstructorChart = ({totalInstructor}: any) => {
   const growthRate = 150; // % tăng trưởng
 
   return (
-    <div className="bg-white p-6 rounded-xl w-1/3 h-[150px] flex items-center justify-between text-white">
+    <div className="bg-white p-6 rounded-xl w-1/4 h-[150px] flex items-center justify-between text-white">
       {/* Left Side */}
       <div className="flex items-center gap-4">
         <PiChalkboardTeacher className="w-10 h-10 text-gray-500" />
