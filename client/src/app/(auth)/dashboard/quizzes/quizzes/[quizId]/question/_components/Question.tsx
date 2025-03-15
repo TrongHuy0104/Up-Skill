@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import arrow from '@/public/assets/icons/arrow-top-right.svg';
@@ -24,12 +24,7 @@ export default function QuestionList({ quizId }: Readonly<Props>) {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
 
-    useEffect(() => {
-        if (!quizId) return;
-        fetchQuestions();
-    }, [quizId]);
-
-    const fetchQuestions = async () => {
+    const fetchQuestions = useCallback(async () => {
         try {
             setLoading(true);
             const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}/questions`);
@@ -41,7 +36,12 @@ export default function QuestionList({ quizId }: Readonly<Props>) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [quizId, setLoading, setQuestions]);
+
+    useEffect(() => {
+        if (!quizId) return;
+        fetchQuestions();
+    }, [quizId, fetchQuestions]);
 
     const openModal = (question?: Question) => {
         setSelectedQuestion(question || null);

@@ -78,7 +78,7 @@ router.get(
     '/instructor/all',
     updateAccessToken,
     isAuthenticated,
-    authorizeRoles('instructor'),
+    authorizeRoles('instructor', 'user'),
     getAllUploadedAndPurchasedCoursesOfInstructor
 );
 

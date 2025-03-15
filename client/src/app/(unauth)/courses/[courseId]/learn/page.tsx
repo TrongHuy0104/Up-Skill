@@ -3,19 +3,21 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 import CourseContent from './_components/CourseContent';
 
-export default async function Page({ params }: any) {
-    const { courseId } = await params;
+interface User {
+    purchasedCourses: string[];
+}
 
-    const cookieStore = await cookies();
+export default async function Page({ params }: any) {
+    const { courseId } = params;
+
+    const cookieStore = cookies();
     const cookie = cookieStore.toString();
 
     try {
         // Fetch user data
         const userRes = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
             credentials: 'include',
-            headers: {
-                Cookie: cookie
-            },
+            headers: { Cookie: cookie },
             cache: 'no-store' // Disable caching
         });
 
@@ -23,8 +25,7 @@ export default async function Page({ params }: any) {
             throw new Error(`Failed to fetch user data: ${userRes.status} ${userRes.statusText}`);
         }
 
-        const userData = await userRes.json();
-        const { user } = userData;
+        const { user }: { user: User } = await userRes.json();
 
         if (!user) {
             throw new Error('User data is undefined');

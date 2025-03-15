@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import CreateEditCourse from './_components/CreateEditCourse';
 import { ROLE } from '@/lib/constants';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
 interface Category {
     _id: string;
@@ -64,7 +65,9 @@ export default async function page({ params }: any) {
 
     return (
         <div className="pt-8 px-10 pb-10 ml-auto max-w-[1000px] border border-primary-100 rounded-xl">
-            <CreateEditCourse courseId={courseId} levels={formattedLevels} categories={formattedCategories} />
+            <Suspense fallback={<p>Loading...</p>}>
+                <CreateEditCourse courseId={courseId} levels={formattedLevels} categories={formattedCategories} />
+            </Suspense>
         </div>
     );
 }
