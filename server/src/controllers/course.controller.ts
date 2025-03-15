@@ -1505,3 +1505,40 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
         message: 'Lesson completion status updated successfully'
     });
 });
+
+// get purchased courses of user
+export const getAllPurchasedCoursesOfUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req?.user?.purchasedCourses);
+
+    const course = await CourseModel.find({
+        _id: { $in: req?.user?.purchasedCourses }
+    })
+        .populate('authorId', 'name email')
+        .populate('category', 'name')
+        .lean();
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+    const coursesWithDetails = course.map((course) => {
+        const lessonsCount = course.courseData?.length || 0;
+
+        const duration =
+            course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
+                return acc + (curr.videoLength || 0);
+            }, 0) || 0;
+
+        const durationInHours = (duration / 60).toFixed(1);
+
+        return {
+            ...course,
+            lessonsCount,
+            duration: `${durationInHours} hours`
+        };
+    });
+    res.status(200).json({
+        success: true,
+        data: {
+            course: coursesWithDetails
+        }
+    });
+});
