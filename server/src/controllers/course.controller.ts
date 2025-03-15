@@ -921,8 +921,7 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
 
     // Filter out unpublished or invalid course data
     course.courseData = course.courseData.filter(
-        (c: any) =>
-            c?.videoUrl?.url && c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
+        (c: any) => c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
     );
 
     // Sort courseData by sectionOrder and lessonOrder
@@ -942,16 +941,29 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
         sections[item.videoSection].push(item);
     });
 
-    // Insert quizzes into the correct position in each section
+    // Insert quizzes into the correct position in each section and calculate section durations
     const finalCourseData: any[] = [];
     for (const sectionName in sections) {
         const sectionItems = sections[sectionName];
 
+        // Calculate total duration of videos in the section
+        const sectionVideoLength = sectionItems.reduce(
+            (totalLength: number, item: any) => totalLength + (item?.videoLength || 0),
+            0
+        );
+
+        // Find the quizzes for this section and calculate their total duration
+        const quizzes = sectionItems.flatMap((item: any) => item.quizzes);
+        const sectionQuizDuration = quizzes.reduce(
+            (totalDuration: number, quiz: any) => totalDuration + (quiz.duration || 0),
+            0
+        );
+
+        // Total section duration
+        const totalSectionLength = sectionVideoLength + sectionQuizDuration;
+
         // Add lessons to the final course data
         finalCourseData.push(...sectionItems);
-
-        // Find the quizzes for this section
-        const quizzes = sectionItems.flatMap((item: any) => item.quizzes);
 
         // Add quizzes to the final course data (at the end of the section)
         if (quizzes.length > 0) {
@@ -963,9 +975,15 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
                 isQuiz: true, // Flag to identify quizzes
                 quizzes: quizzes,
                 sectionOrder: sectionItems[0].sectionOrder,
-                lessonOrder: sectionItems.length + 1 // Place quizzes at the end of the section
+                lessonOrder: sectionItems.length + 1, // Place quizzes at the end of the section
+                videoLength: sectionQuizDuration // Assign quiz duration to videoLength for consistency
             });
         }
+
+        // Add section duration to each section item
+        sectionItems.forEach((item: any) => {
+            item.sectionDuration = totalSectionLength;
+        });
     }
 
     // Update the course data with the final structure
