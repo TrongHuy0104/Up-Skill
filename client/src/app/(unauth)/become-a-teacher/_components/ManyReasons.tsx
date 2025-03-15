@@ -26,8 +26,8 @@ export default function ManyReasons() {
             <h2 className="text-4xl font-bold font-cardo text-primary-800 mb-2">So Many Reasons To Start</h2>
             <p className="text-base text-primary-800 mb-4">Become a valuable expert with UpSkill.</p>
             <div className="flex justify-center gap-[100px]">
-                {reasons.map((reason, index) => (
-                    <div key={index} className="flex flex-col items-center max-w-xs mx-8">
+                {reasons.map((reason) => (
+                    <div key={reason.title} className="flex flex-col items-center max-w-xs mx-8">
                         <div className="  p-6 mb-4">
                             <Image src={reason.icon} alt={reason.title} width={60} height={60} />
                         </div>
