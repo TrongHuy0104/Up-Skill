@@ -21,7 +21,7 @@ export default async function page() {
         const { totalUser, totalInstructor,totalStudent, totalCourse, data } = await res.json();
     return (
         <div>
-            <div className='flex gap-6'>
+            <div className='flex gap-2'>
                 <CountStudentChart totalStudent={totalStudent}/>
                 <CountInstructorChart totalInstructor={totalInstructor}/>
                 <CountUserChart totalUser={totalUser}/>
