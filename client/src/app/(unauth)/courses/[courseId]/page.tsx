@@ -25,8 +25,8 @@ export default async function page({ params }: any) {
     const { course } = await res.json();
 
     return (
-        <div className="container mx-auto px-4 flex flex-col md:flex-row gap-24 py-10">
-            <div className="left-content ml-7">
+        <div className="container mx-auto px-4 flex flex-col lg:flex-row gap-24 py-10">
+            <div className="left-content ml-7 ">
                 <CoursesDetailBanner course={course} />
                 <CoursesDetailLine />
 
@@ -48,8 +48,8 @@ export default async function page({ params }: any) {
 
                 <Review />
             </div>
-            <div className="right-content w-full md:w-1/3 ">
-                <div className="sticky top-[20px]">
+            <div className="right-content w-full lg:w-1/3 ">
+                <div className="sticky top-[20px] ">
                     <CourseSidebar course={course} />
                 </div>
             </div>

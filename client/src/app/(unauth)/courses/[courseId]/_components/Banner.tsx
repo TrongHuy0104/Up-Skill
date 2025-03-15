@@ -17,7 +17,7 @@ interface Props {
 
 export default function Banner({ course }: Props) {
     return (
-        <div>
+        <div className="w-full sm:min-w-[375px] sm:max-w[767px] md:min-w-[700px] md:max-w-[900px] mx-auto">
             <CoursesDetailBanner
                 title={course?.name}
                 breadcrumbs={[
@@ -28,24 +28,24 @@ export default function Banner({ course }: Props) {
                 backgroundColor="bg-white"
             >
                 <p className="text-primary-800 py-5">{course?.tags}</p>
-                <div className="flex items-center text-primary-800 mt-2 pb-4">
-                    <Image alt="Star Icon" src={star} className="relative -top-0.5" />
-                    <span className="pl-[6px] pr-6">
+                <div className="flex items-center text-primary-800 mt-2 pb-4 ">
+                    <Image alt="Star Icon" src={star} className="relative -top-0.5 hidden sm:inline" />
+                    <span className="pl-[6px] pr-6 hidden sm:inline">
                         {' '}
                         {course?.rating} ({course?.reviews?.length} rating)
                     </span>
-                    <Image alt="Time Table Icon" src={timeTable} width={20} height={20} />
-                    <span className="pl-[6px] pr-6">
+                    <Image alt="Time Table Icon" src={timeTable} width={20} height={20} className="hidden sm:inline" />
+                    <span className="pl-[6px] pr-6 hidden sm:inline">
                         {' '}
                         {course?.courseData?.length}{' '}
                         {course?.courseData?.length && course?.courseData?.length <= 1 ? 'Lesson' : 'Lessons'}
                     </span>
-                    <Image alt="Student Icon" src={student} />
-                    <span className="pl-[6px] pr-6">
+                    <Image alt="Student Icon" src={student} className="hidden sm:inline" />
+                    <span className="pl-[6px] pr-6 hidden sm:inline">
                         {course.purchased} {course.purchased <= 1 ? 'Student' : 'Students'}{' '}
                     </span>
-                    <Image alt="Time Icon" src={time} />
-                    <span className="pl-[6px] pr-6">
+                    <Image alt="Time Icon" src={time} className="hidden sm:inline" />
+                    <span className="pl-[6px] pr-6 hidden sm:inline">
                         Last updated {format(new Date(course.updatedAt), 'MM/dd/yyyy')}
                     </span>
                 </div>
