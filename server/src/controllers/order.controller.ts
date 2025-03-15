@@ -195,11 +195,11 @@ export const getUserOrders = catchAsync(async (req: Request, res: Response, next
     const userId = req.user?._id;
     const isCacheExist = await redis.get(`allOrders ${req.user?._id}`);
     let orders;
-    
-    if(isCacheExist){
+
+    if (isCacheExist) {
         orders = JSON.parse(isCacheExist);
     } else {
-        orders = await OrderModel.find({userId})
+        orders = await OrderModel.find({ userId })
             .populate({
                 path: 'courseIds',
                 select: 'name price'

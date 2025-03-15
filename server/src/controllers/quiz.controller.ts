@@ -103,6 +103,86 @@ export const getQuizbyId = catchAsync(async (req, res, next) => {
 });
 
 // POST /api/quizzes - Create a new quiz
+// export const createQuiz = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const {
+//         title,
+//         description,
+//         difficulty,
+//         duration,
+//         passingScore,
+//         maxAttempts,
+//         isPublished,
+//         questions,
+//         lessonOrder,
+//         videoSection,
+//         courseId,
+//         instructorId // Get instructorId from the request body
+//     } = req.body;
+//     console.log(req.body);
+
+//     // Validate required fields
+//     if (
+//         !title ||
+//         !difficulty ||
+//         !duration ||
+//         !passingScore ||
+//         !maxAttempts ||
+//         questions ||
+//         !lessonOrder ||
+//         !videoSection ||
+//         !courseId ||
+//         !instructorId // Ensure instructorId is provided
+//     ) {
+//         return next(new ErrorHandler('Missing required fields', 400));
+//     }
+
+//     // Check if the course exists
+//     const course = await Course.findById(courseId);
+//     if (!course) {
+//         return next(new ErrorHandler('Course not found', 404));
+//     }
+
+//     // Create a new quiz
+//     const newQuiz = new Quiz({
+//         title,
+//         description,
+//         difficulty,
+//         duration,
+//         passingScore,
+//         maxAttempts,
+//         isPublished,
+//         instructorId, // Include instructorId in the quiz document
+//         questions,
+//         lessonOrder,
+//         videoSection,
+//         courseId
+//     });
+
+//     // Save the quiz to the database
+//     const savedQuiz = await newQuiz.save();
+
+//     // Add the quiz to the selected course's section
+//     const courseData = course.courseData.find((data: any) => data.videoSection === videoSection);
+//     if (courseData) {
+//         courseData.quizzes.push(savedQuiz._id); // Add quiz to the section
+//     } else {
+//         // If the section doesn't exist, create a new section and add the quiz
+//         course.courseData.push({
+//             videoSection,
+//             quizzes: [savedQuiz._id]
+//         });
+//     }
+
+//     // Save the updated course
+//     await course.save();
+
+//     // Send response
+//     res.status(201).json({
+//         success: true,
+//         data: savedQuiz
+//     });
+// });
+
 export const createQuiz = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
         title,
@@ -113,12 +193,10 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         maxAttempts,
         isPublished,
         questions,
-        lessonOrder,
         videoSection,
         courseId,
-        instructorId // Get instructorId from the request body
+        instructorId
     } = req.body;
-    console.log(req.body);
 
     // Validate required fields
     if (
@@ -127,11 +205,9 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         !duration ||
         !passingScore ||
         !maxAttempts ||
-        questions ||
-        !lessonOrder ||
         !videoSection ||
         !courseId ||
-        !instructorId // Ensure instructorId is provided
+        !instructorId
     ) {
         return next(new ErrorHandler('Missing required fields', 400));
     }
@@ -142,7 +218,30 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         return next(new ErrorHandler('Course not found', 404));
     }
 
-    // Create a new quiz
+    // Check if a quiz already exists for this videoSection in the course
+    const existingQuiz = await Quiz.findOne({ videoSection, courseId });
+    if (existingQuiz) {
+        return next(new ErrorHandler('A quiz already exists for this section', 400));
+    }
+
+    // Find the relevant section in the course
+    const section = course.courseData.find((data: any) => data.videoSection === videoSection);
+    if (!section) {
+        return next(new ErrorHandler('Section not found in course', 404));
+    }
+
+    // Get all lessons in the section to determine the highest lessonOrder
+    const lessonsInSection = course.courseData.filter(
+        (data: any) => data.videoSection === videoSection && data.lessonOrder !== undefined
+    );
+
+    // Find the highest lessonOrder in the section
+    const maxLessonOrder = lessonsInSection.reduce(
+        (max: number, lesson: any) => Math.max(max, lesson.lessonOrder || 0),
+        0
+    );
+
+    // Create a new quiz with lessonOrder set to the final position
     const newQuiz = new Quiz({
         title,
         description,
@@ -151,32 +250,22 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
-        instructorId, // Include instructorId in the quiz document
+        instructorId,
         questions,
-        lessonOrder,
         videoSection,
-        courseId
+        courseId,
+        lessonOrder: maxLessonOrder + 1 // Set lessonOrder to the final position
     });
 
     // Save the quiz to the database
     const savedQuiz = await newQuiz.save();
 
-    // Add the quiz to the selected course's section
-    const courseData = course.courseData.find((data: any) => data.videoSection === videoSection);
-    if (courseData) {
-        courseData.quizzes.push(savedQuiz._id); // Add quiz to the section
-    } else {
-        // If the section doesn't exist, create a new section and add the quiz
-        course.courseData.push({
-            videoSection,
-            quizzes: [savedQuiz._id]
-        });
-    }
+    // Add quiz to the section
+    section.quizzes.push(savedQuiz._id);
 
     // Save the updated course
     await course.save();
 
-    // Send response
     res.status(201).json({
         success: true,
         data: savedQuiz
