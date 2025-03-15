@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react';
+import { cookies } from 'next/headers';
+
 import Banner from './_components/Banner';
-import PopularInstructor from './_components/PopularInstructor';
 import FilterCourses from './_components/FilterCourses';
 import HorizontalCoursesList from './_components/HorizontalCoursesList';
-import { cookies } from 'next/headers';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 
 export default async function Page({ searchParams = {} }: any) {
@@ -37,14 +37,13 @@ export default async function Page({ searchParams = {} }: any) {
     return (
         <div className="w-full pb-40">
             <Banner />
-            <PopularInstructor />
             <div className="flex w-[1400px] mx-auto pt-[54px] relative">
                 <Suspense fallback={<DashboardSkeleton />}>
                     <FilterCourses filterData={data} />
                     <HorizontalCoursesList
-                        courses={courses}
+                        initialCourses={courses}
                         totalPages={totalPages}
-                        totalCourses={totalCourses}
+                        initialTotalCourses={totalCourses}
                         limit={limit}
                         page={page}
                     />
