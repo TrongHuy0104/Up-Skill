@@ -119,20 +119,6 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
         }
     };
 
-    // Kiểm tra bài học hiện tại đã hoàn thành chưa
-    const canProceedToNext = videoProgress >= 80;
-    //Proceed VideoProgress
-    const handleVideoProgress = (progress: number) => {
-        setVideoProgress(progress);
-    };
-
-    const handleNextLesson = async () => {
-        if (activeVideo < content.length - 1) {
-            setActiveVideo(activeVideo + 1);
-            setVideoProgress(0);
-        }
-    };
-
     useEffect(() => {
         const completedLessonIds = progressData?.completedLessons?.flatMap(
             (section: any) => section.section.lessons.map((lesson: any) => lesson.toString())
@@ -141,25 +127,40 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
     }, [progressData]);
 
     const isCurrentLessonCompleted = completedLessons.includes(content[activeVideo]._id);
-    console.log("isCurrentLessonCompleted", isCurrentLessonCompleted);
-    console.log("completedLessonIds", completedLessons);
 
+    // Enable "Next Lesson" button if:
+    // 1. Lesson is already completed OR
+    // 2. Video progress reaches 80%
+    const canProceedToNext = isCurrentLessonCompleted || videoProgress >= 80;
 
-    const handleMarkAsCompleted = async () => {
-        try {
-            await updateLessonCompletion({
-                courseId: course?._id,
-                lessonId: content[activeVideo]._id,
-                isCompleted: true
-            }).unwrap();
-            // Cập nhật danh sách bài học hoàn thành
-            setCompletedLessons([...completedLessons, content[activeVideo]._id]);
-            await reload();
-        } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: `Unable to update lesson status, ${error}`
-            });
+    const handleVideoProgress = async (progress: number) => {
+        setVideoProgress(progress);
+
+        // Auto-mark lesson as completed when 80% is watched
+        if (progress >= 80 && !isCurrentLessonCompleted) {
+            try {
+                await updateLessonCompletion({
+                    courseId: course?._id,
+                    lessonId: content[activeVideo]._id,
+                    isCompleted: true
+                }).unwrap();
+
+                // Update completed lessons
+                setCompletedLessons([...completedLessons, content[activeVideo]._id]);
+                await reload();
+            } catch (error) {
+                toast({
+                    variant: 'destructive',
+                    title: `Unable to update lesson status, ${error}`
+                });
+            }
+        }
+    };
+
+    const handleNextLesson = () => {
+        if (activeVideo < content.length - 1) {
+            setActiveVideo(activeVideo + 1);
+            setVideoProgress(0);
         }
     };
 
@@ -263,27 +264,17 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                     <HiArrowLeft />
                     Prev Lesson
                 </Button>
-                {!isCurrentLessonCompleted ? (
-                    <Button
-                        size={'rounded'}
-                        className={'opacity-80 bg-accent-600 hover:bg-primary-800'}
-                        onClick={handleMarkAsCompleted}
-                        title={!canProceedToNext ? 'You need to watch at least 30% of the video to mark this lesson as completed' : ''}
-                        disabled={!canProceedToNext}
-                    >
-                        Mark it Completed
-                        <HiArrowRight />
-                    </Button>
-                ) : (
-                    <Button
-                        size={'rounded'}
-                        className={'bg-accent-600 hover:bg-primary-800'}
-                        onClick={handleNextLesson}
-                    >
-                        Next Lesson
-                        <HiArrowRight />
-                    </Button>
-                )}
+
+                {/* Next Lesson Button */}
+                <Button
+                    size={'rounded'}
+                    className={`bg-accent-600 hover:bg-primary-800 ${!canProceedToNext ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={handleNextLesson}
+                    disabled={!canProceedToNext}
+                >
+                    Next Lesson
+                    <HiArrowRight />
+                </Button>
 
             </div>
             <h1 className="pt-3 text-[25px] font-semibold mb-8">{content?.[activeVideo]?.title}</h1>
