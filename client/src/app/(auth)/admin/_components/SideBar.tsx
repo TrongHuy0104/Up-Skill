@@ -21,6 +21,14 @@ const menuItems = [
             { icon: manageInstructor, label: 'Instructors', path: '/admin/instructors' },
             { icon: manageCourse, label: 'Manage Course', path: '/admin/courses' }
         ]
+    },
+    {
+        title: 'CONTENT',
+        items: [{ icon: dashboard, label: 'Instructor Request', path: '/admin/dashboard' }]
+    },
+    {
+        title: 'OTHER',
+        items: [{ icon: dashboard, label: 'Logout', path: {} }]
     }
 ];
 
@@ -37,7 +45,7 @@ const Sidebar = () => {
             </div>
 
             {/* Avatar and Role */}
-            <div className="mt-4 text-black px-4 py-8 flex flex-col items-center gap-2">
+            <div className="text-black px-4 py-8 flex flex-col items-center gap-2">
                 <Image
                     src={user?.avatar?.url || '/assets/images/avatar/default-avatar.jpg'}
                     alt="User Avatar"

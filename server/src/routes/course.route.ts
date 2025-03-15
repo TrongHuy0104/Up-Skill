@@ -60,6 +60,8 @@ router.post('/search', searchCoursesAndInstructors);
 
 router.get('/top-courses', getTopCourses);
 
+router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCourses);
+
 router.get('/:id', getSingleCourse);
 
 router.get('/', getAllCoursesWithoutPurchase);
@@ -85,8 +87,6 @@ router.put('/add-review/:id', updateAccessToken, isAuthenticated, addReview);
 router.put('/add-reply', updateAccessToken, isAuthenticated, addReplyToReview);
 
 // router.get('/top-courses', getTopCourses);
-
-router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCourses);
 
 router.delete(
     '/delete-course/:id',
