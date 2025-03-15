@@ -903,31 +903,73 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
     const userCourseList = req.user?.purchasedCourses;
     const courseId = req.params.id;
 
+    // Check if the user has purchased the course
     const courseExists = userCourseList?.find((c: any) => c === courseId.toString());
-
     if (!courseExists) {
         return next(new ErrorHandler('You are not eligible to access this course', 404));
     }
 
-    const course = await CourseModel.findById(courseId);
+    // Fetch the course
+    const course = await CourseModel.findById(courseId).populate({
+        path: 'courseData.quizzes',
+        model: 'Quiz'
+    });
 
     if (!course) {
         return next(new ErrorHandler('Course not found', 404));
     }
 
+    // Filter out unpublished or invalid course data
     course.courseData = course.courseData.filter(
         (c: any) =>
             c?.videoUrl?.url && c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
     );
 
-    const sortedCourseData = (course.courseData = course.courseData.sort((a: any, b: any) => {
+    // Sort courseData by sectionOrder and lessonOrder
+    const sortedCourseData = course.courseData.sort((a: any, b: any) => {
         if (a.sectionOrder !== b.sectionOrder) {
             return a.sectionOrder - b.sectionOrder; // Sort by sectionOrder first
         }
         return a.lessonOrder - b.lessonOrder; // If sectionOrder is the same, sort by lessonOrder
-    }));
+    });
 
-    course.courseData = sortedCourseData;
+    // Group courseData by section
+    const sections: { [key: string]: any[] } = {};
+    sortedCourseData.forEach((item: any) => {
+        if (!sections[item.videoSection]) {
+            sections[item.videoSection] = [];
+        }
+        sections[item.videoSection].push(item);
+    });
+
+    // Insert quizzes into the correct position in each section
+    const finalCourseData: any[] = [];
+    for (const sectionName in sections) {
+        const sectionItems = sections[sectionName];
+
+        // Add lessons to the final course data
+        finalCourseData.push(...sectionItems);
+
+        // Find the quizzes for this section
+        const quizzes = sectionItems.flatMap((item: any) => item.quizzes);
+
+        // Add quizzes to the final course data (at the end of the section)
+        if (quizzes.length > 0) {
+            finalCourseData.push({
+                _id: `quiz-section-${sectionName}`,
+                title: `Quiz for ${sectionName}`,
+                description: `Quiz for ${sectionName}`,
+                videoSection: sectionName,
+                isQuiz: true, // Flag to identify quizzes
+                quizzes: quizzes,
+                sectionOrder: sectionItems[0].sectionOrder,
+                lessonOrder: sectionItems.length + 1 // Place quizzes at the end of the section
+            });
+        }
+    }
+
+    // Update the course data with the final structure
+    course.courseData = finalCourseData;
 
     res.status(200).json({
         success: true,

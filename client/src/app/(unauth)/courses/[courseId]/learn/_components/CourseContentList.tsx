@@ -54,9 +54,12 @@ export default function CourseContentList({ data, progressData, activeVideo, set
             {videoSections.map((section: string) => {
                 const isSectionVisible = visibleSections.has(section);
 
-                const sectionVideos: any[] = data.filter((item: any) => item.videoSection === section);
-                const sectionVideoCount = sectionVideos.length;
-                const sectionVideoLength = sectionVideos.reduce(
+                const sectionItems: any[] = data.filter((item: any) => item.videoSection === section);
+                const sectionLessons = sectionItems.filter((item: any) => !item.isQuiz); // Filter out quizzes
+                const sectionQuizzes = sectionItems.filter((item: any) => item.isQuiz); // Filter quizzes
+
+                const sectionVideoCount = sectionLessons.length;
+                const sectionVideoLength = sectionLessons.reduce(
                     (totalLength: number, item: any) => totalLength + item?.videoLength,
                     0
                 );
@@ -92,7 +95,8 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                         </button>
                         {isSectionVisible && (
                             <div className="mt-2 border-t pt-2 space-y-2">
-                                {sectionVideos.map((item: any, index: number) => {
+                                {/* Render Lessons */}
+                                {sectionLessons.map((item: any, index: number) => {
                                     const videoIndex = sectionStartIndex + index;
                                     const lessonLength = item?.videoLength;
 
@@ -138,6 +142,46 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                                             <div className="flex items-center gap-2">
                                                 <span className="text-sm text-[#131836]">
                                                     {getMinutes(lessonLength?.toFixed(0))}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
+                                {/* Render Quizzes */}
+                                {sectionQuizzes.map((quiz: any, index: number) => {
+                                    const isCompleted = completedLessonIds.includes(quiz._id.toString());
+
+                                    return (
+                                        <div
+                                            key={quiz.title + index}
+                                            className="flex justify-between items-center h-[35px]"
+                                        >
+                                            <span className="flex items-center gap-2">
+                                                <span className="p-5 relative">
+                                                    {isCompleted ? (
+                                                        <IoCheckmarkCircle className="text-accent-600 text-lg" />
+                                                    ) : <Image src={PlayContent} alt="play content" />}
+                                                </span>
+                                                <button
+                                                    className={`hover:text-accent-600 ${isCompleted
+                                                        ? 'text-accent-600'
+                                                        : 'text-gray-700'
+                                                        }`}
+                                                    onClick={() => {
+                                                        // Handle quiz click (e.g., navigate to quiz page)
+                                                        toast({
+                                                            title: 'Quiz Clicked',
+                                                            description: `You clicked on the quiz: ${quiz.title}`,
+                                                        });
+                                                    }}
+                                                >
+                                                    {quiz.title}
+                                                </button>
+                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm text-[#131836]">
+                                                    Quiz
                                                 </span>
                                             </div>
                                         </div>

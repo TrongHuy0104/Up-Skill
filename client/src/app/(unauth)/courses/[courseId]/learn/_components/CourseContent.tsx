@@ -11,6 +11,7 @@ export default function CourseContent({ courseId, user }: any) {
     const { data, isLoading, refetch } = useGetCourseContentQuery(courseId, { refetchOnMountOrArgChange: true });
     const { data: progressData, refetch: reload } = useGetProgressDataQuery(courseId);
     const [activeVideo, setActiveVideo] = useState(0);
+    console.log(data?.course?.courseData);
 
     return (
         <>
