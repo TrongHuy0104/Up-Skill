@@ -1,7 +1,14 @@
 import express from 'express';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
-import { createOrder, getAllOrders, getOrder, getUserOrders, newPayment, sendStripePublishKey } from '@/controllers/order.controller';
+import {
+    createOrder,
+    getAllOrders,
+    getOrder,
+    getUserOrders,
+    newPayment,
+    sendStripePublishKey
+} from '@/controllers/order.controller';
 import { updateAccessToken } from '@/controllers/user.controller';
 
 const router = express.Router();

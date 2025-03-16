@@ -1,9 +1,24 @@
 import React, { ReactNode, Suspense } from 'react';
 import InstructorDashboardBanner from '@/app/(auth)/dashboard/_components/Banner';
 import DashboardNavigationBar from '@/app/(auth)/dashboard/_components/DashboardNavigationBar';
-import { DashboardSkeleton } from '@/components/ui/Skeleton';
+import { DashboardNavigationSkeleton, DashboardSkeleton } from '@/components/ui/Skeleton';
+import { cookies } from 'next/headers';
 
 export default async function ProfileLayout({ children }: { children: ReactNode }) {
+    // Fetch user data on the server
+    const cookieStore = cookies();
+    const cookie = cookieStore.toString();
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
+        credentials: 'include',
+        headers: { Cookie: cookie }
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch user data');
+    }
+
+    const { user } = await res.json();
     return (
         <>
             <Suspense fallback={<DashboardSkeleton />}>
@@ -13,7 +28,9 @@ export default async function ProfileLayout({ children }: { children: ReactNode 
                 <div className="relative mx-auto px-[14px] w-[1428px] max-w-full">
                     <div className="-mx-[14px] flex flex-wrap -mt-0 -mr-[0.75rem] -ml-[0.75rem]">
                         <div className="px-[14px] xl:w-1/4 w-full flex-none">
-                            <DashboardNavigationBar />
+                            <Suspense fallback={<DashboardNavigationSkeleton />}>
+                                <DashboardNavigationBar user={user} />
+                            </Suspense>
                         </div>
                         <div className="px-[14px] xl:w-3/4 w-full flex-none">{children}</div>
                     </div>

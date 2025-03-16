@@ -15,21 +15,24 @@ import {
     useAddAnswerInQuestionMutation,
     useAddNewQuestionMutation,
     useAddReplyInReviewMutation,
-    useAddReviewInCourseMutation
+    useAddReviewInCourseMutation,
 } from '@/lib/redux/features/course/courseApi';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 import Ratings from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/Ratings';
+import { useUpdateLessonCompletionMutation } from '@/lib/redux/features/progress/progressApi';
 
 type Props = {
     readonly course: any;
     readonly user: any;
     readonly activeVideo: number;
     setActiveVideo(value: number): void;
-    refetch: any;
+    readonly refetch: any;
+    readonly reload: any;
+    readonly progressData: any;
 };
 
-function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch }: Props) {
+function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progressData, refetch, reload }: Props) {
     const content = course?.courseData;
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
@@ -39,6 +42,10 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
     const [rating, setRating] = useState(0);
     const [isReviewReply, setIsReviewReply] = useState(false);
     const [reviewReply, setReviewReply] = useState('');
+    const [videoProgress, setVideoProgress] = useState(0);
+
+    // Cập nhật danh sách bài học hoàn thành từ `progressData`
+    const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
     const [addNewQuestion, { isSuccess, error, isLoading: isCreateQuestionLoading }] = useAddNewQuestionMutation();
     const [addAnswerInQuestion, { isSuccess: isAnswerSuccess, error: answerError, isLoading: isAddAnswerLoading }] =
@@ -51,6 +58,8 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
         addReviewInCourse,
         { isSuccess: isAddReviewSuccess, error: addReviewError, isLoading: isAddReviewLoading, reset }
     ] = useAddReviewInCourseMutation();
+
+    const [updateLessonCompletion] = useUpdateLessonCompletionMutation();
 
     const isReviewExists = course?.reviews?.find((item: any) => item.user._id === user._id);
 
@@ -109,6 +118,52 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
             addReplyInReview({ comment: reviewReply, reviewId, courseId: course?._id });
         }
     };
+
+    useEffect(() => {
+        const completedLessonIds = progressData?.completedLessons?.flatMap(
+            (section: any) => section.section.lessons.map((lesson: any) => lesson.toString())
+        ) || [];
+        setCompletedLessons(completedLessonIds);
+    }, [progressData]);
+
+    const isCurrentLessonCompleted = completedLessons.includes(content[activeVideo]._id);
+
+    // Enable "Next Lesson" button if:
+    // 1. Lesson is already completed OR
+    // 2. Video progress reaches 80%
+    const canProceedToNext = isCurrentLessonCompleted || videoProgress >= 80;
+
+    const handleVideoProgress = async (progress: number) => {
+        setVideoProgress(progress);
+
+        // Auto-mark lesson as completed when 80% is watched
+        if (progress >= 80 && !isCurrentLessonCompleted) {
+            try {
+                await updateLessonCompletion({
+                    courseId: course?._id,
+                    lessonId: content[activeVideo]._id,
+                    isCompleted: true
+                }).unwrap();
+
+                // Update completed lessons
+                setCompletedLessons([...completedLessons, content[activeVideo]._id]);
+                await reload();
+            } catch (error) {
+                toast({
+                    variant: 'destructive',
+                    title: `Unable to update lesson status, ${error}`
+                });
+            }
+        }
+    };
+
+    const handleNextLesson = () => {
+        if (activeVideo < content.length - 1) {
+            setActiveVideo(activeVideo + 1);
+            setVideoProgress(0);
+        }
+    };
+
 
     useEffect(() => {
         if (isSuccess) {
@@ -197,7 +252,9 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
 
     return (
         <div className="w-[95%] md:w-[90%] py-4 m-auto">
-            <VideoPlayer videoUrl={content?.[activeVideo]?.videoUrl?.url} />
+            <VideoPlayer videoUrl={content?.[activeVideo]?.videoUrl?.url}
+                onProgress={handleVideoProgress}
+            />
             <div className="w-full flex items-center justify-between my-5">
                 <Button
                     size={'rounded'}
@@ -207,16 +264,18 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
                     <HiArrowLeft />
                     Prev Lesson
                 </Button>
+
+                {/* Next Lesson Button */}
                 <Button
                     size={'rounded'}
-                    className={content && content.length - 1 === activeVideo ? '!cursor-no-drop opacity-80' : ''}
-                    onClick={() => {
-                        setActiveVideo(activeVideo === content.length - 1 ? 0 : activeVideo + 1);
-                    }}
+                    className={`bg-accent-600 hover:bg-primary-800 ${!canProceedToNext ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={handleNextLesson}
+                    disabled={!canProceedToNext}
                 >
                     Next Lesson
                     <HiArrowRight />
                 </Button>
+
             </div>
             <h1 className="pt-3 text-[25px] font-semibold mb-8">{content?.[activeVideo]?.title}</h1>
             <Tabs defaultValue="overview">
@@ -347,72 +406,72 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, refetch
                         <div className="w-full">
                             {course?.reviews
                                 ? [...course.reviews].reverse().map((item: any, index: number) => (
-                                      <>
-                                          <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
-                                              <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                              <div className="w-full">
-                                                  <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                                  <div className="ml-[10px]">
-                                                      <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
-                                                  </div>
-                                                  <p className="pl-3">{item?.comment}</p>
-                                                  <small className="pl-3 text-primary-500">
-                                                      {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                                  </small>
-                                              </div>
-                                          </div>
-                                          {user?._id === course?.authorId && (
-                                              <div className="w-full flex">
-                                                  <button
-                                                      className="md:pl-[60px] cursor-pointer mr-2"
-                                                      onClick={() => {
-                                                          setIsReviewReply(!isReviewReply);
-                                                          setReviewId(item._id);
-                                                      }}
-                                                  >
-                                                      {!isReviewReply ? 'Add a reply' : 'Hide replies'}
-                                                  </button>
-                                              </div>
-                                          )}
-                                          {isReviewReply && (
-                                              <div className="w-full flex relative">
-                                                  <input
-                                                      type="text"
-                                                      placeholder="Enter your answer..."
-                                                      value={reviewReply}
-                                                      onChange={(e) => setReviewReply(e.target.value)}
-                                                      className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
-                                                  />
-                                                  <button
-                                                      onClick={handleReviewReply}
-                                                      className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
+                                    <>
+                                        <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
+                                            <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                            <div className="w-full">
+                                                <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                <div className="ml-[10px]">
+                                                    <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
+                                                </div>
+                                                <p className="pl-3">{item?.comment}</p>
+                                                <small className="pl-3 text-primary-500">
+                                                    {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        {user?._id === course?.authorId && (
+                                            <div className="w-full flex">
+                                                <button
+                                                    className="md:pl-[60px] cursor-pointer mr-2"
+                                                    onClick={() => {
+                                                        setIsReviewReply(!isReviewReply);
+                                                        setReviewId(item._id);
+                                                    }}
+                                                >
+                                                    {!isReviewReply ? 'Add a reply' : 'Hide replies'}
+                                                </button>
+                                            </div>
+                                        )}
+                                        {isReviewReply && (
+                                            <div className="w-full flex relative">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter your answer..."
+                                                    value={reviewReply}
+                                                    onChange={(e) => setReviewReply(e.target.value)}
+                                                    className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
+                                                />
+                                                <button
+                                                    onClick={handleReviewReply}
+                                                    className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
                                                     cursor-pointer rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all 
                                                     duration-300 hover:scale-110"
-                                                      disabled={isReplyReviewLoading}
-                                                  >
-                                                      {isReplyReviewLoading ? (
-                                                          <SpinnerMini />
-                                                      ) : (
-                                                          <Image src={arrowRightIcon} alt="arrow right icon" />
-                                                      )}
-                                                  </button>
-                                              </div>
-                                          )}
+                                                    disabled={isReplyReviewLoading}
+                                                >
+                                                    {isReplyReviewLoading ? (
+                                                        <SpinnerMini />
+                                                    ) : (
+                                                        <Image src={arrowRightIcon} alt="arrow right icon" />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        )}
 
-                                          {item?.commentReplies.map((i: any, index: number) => (
-                                              <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
-                                                  <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                                  <div className="w-full">
-                                                      <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                                      <p className="pl-3">{i?.comment}</p>
-                                                      <small className="pl-3 text-primary-500">
-                                                          {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                                      </small>
-                                                  </div>
-                                              </div>
-                                          ))}
-                                      </>
-                                  ))
+                                        {item?.commentReplies.map((i: any, index: number) => (
+                                            <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
+                                                <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                                <div className="w-full">
+                                                    <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                    <p className="pl-3">{i?.comment}</p>
+                                                    <small className="pl-3 text-primary-500">
+                                                        {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                ))
                                 : null}
                         </div>
                     </div>

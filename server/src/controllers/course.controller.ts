@@ -16,6 +16,33 @@ import CategoryModel from '@/models/Category.model';
 import SubCategoryModel from '@/models/SubCategory.model';
 import UserModel from '@/models/User.model';
 
+export const getCoursesByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return next(new ErrorHandler('Unauthorized - user not found', 401));
+    }
+
+    // Lấy user để truy cập user.uploadedCourses
+    const user = await UserModel.findById(userId).select('uploadedCourses');
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    // uploadedCourses là mảng ObjectId/string => tìm tất cả các khóa học có _id thuộc mảng này
+    const courses = await CourseModel.find({
+        _id: { $in: user.uploadedCourses }
+    });
+
+    // Nếu muốn bắt lỗi khi không có course nào
+    if (!courses || courses.length === 0) {
+        return next(new ErrorHandler('No courses found for this user', 404));
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: courses
+    });
+});
 export const getTopRatedCoursesController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { id: instructorId } = req.params; // Lấy giá trị `id` từ req.params
 
@@ -528,16 +555,16 @@ export const deleteLesson = catchAsync(async (req: Request, res: Response, next:
             const match = c._id === lesson._id;
             return match
                 ? {
-                    ...c,
-                    title: null,
-                    description: null,
-                    videoLength: null,
-                    isFree: false,
-                    videoUrl: null,
-                    links: [],
-                    isPublished: false,
-                    isPublishedSection: false
-                }
+                      ...c,
+                      title: null,
+                      description: null,
+                      videoLength: null,
+                      isFree: false,
+                      videoUrl: null,
+                      links: [],
+                      isPublished: false,
+                      isPublishedSection: false
+                  }
                 : c;
         });
     } else {
@@ -589,9 +616,9 @@ export const publishLesson = catchAsync(async (req: Request, res: Response, next
         const match = c._id === lesson._id;
         return match
             ? {
-                ...c,
-                isPublished: true
-            }
+                  ...c,
+                  isPublished: true
+              }
             : c;
     });
 
@@ -638,9 +665,9 @@ export const unPublishLesson = catchAsync(async (req: Request, res: Response, ne
         const match = c._id === lesson._id;
         return match
             ? {
-                ...c,
-                isPublished: false
-            }
+                  ...c,
+                  isPublished: false
+              }
             : c;
     });
 
@@ -684,9 +711,9 @@ export const publishSection = catchAsync(async (req: Request, res: Response, nex
         const match = c.videoSection === data.videoSection;
         return match
             ? {
-                ...c,
-                isPublishedSection: true
-            }
+                  ...c,
+                  isPublishedSection: true
+              }
             : c;
     });
 
@@ -730,9 +757,9 @@ export const unpublishSection = catchAsync(async (req: Request, res: Response, n
         const match = c.videoSection === data.videoSection;
         return match
             ? {
-                ...c,
-                isPublishedSection: false
-            }
+                  ...c,
+                  isPublishedSection: false
+              }
             : c;
     });
 
@@ -827,12 +854,12 @@ export const uploadLessonVideo = catchAsync(async (req: Request, res: Response, 
             const match = c._id === lesson._id;
             return match
                 ? {
-                    ...c,
-                    videoUrl: {
-                        public_id: myCloud.public_id,
-                        url: myCloud.secure_url
-                    }
-                }
+                      ...c,
+                      videoUrl: {
+                          public_id: myCloud.public_id,
+                          url: myCloud.secure_url
+                      }
+                  }
                 : c;
         });
     }
@@ -876,31 +903,91 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
     const userCourseList = req.user?.purchasedCourses;
     const courseId = req.params.id;
 
+    // Check if the user has purchased the course
     const courseExists = userCourseList?.find((c: any) => c === courseId.toString());
-
     if (!courseExists) {
         return next(new ErrorHandler('You are not eligible to access this course', 404));
     }
 
-    const course = await CourseModel.findById(courseId);
+    // Fetch the course
+    const course = await CourseModel.findById(courseId).populate({
+        path: 'courseData.quizzes',
+        model: 'Quiz'
+    });
 
     if (!course) {
         return next(new ErrorHandler('Course not found', 404));
     }
 
+    // Filter out unpublished or invalid course data
     course.courseData = course.courseData.filter(
-        (c: any) =>
-            c?.videoUrl?.url && c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
+        (c: any) => c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
     );
 
-    const sortedCourseData = (course.courseData = course.courseData.sort((a: any, b: any) => {
+    // Sort courseData by sectionOrder and lessonOrder
+    const sortedCourseData = course.courseData.sort((a: any, b: any) => {
         if (a.sectionOrder !== b.sectionOrder) {
             return a.sectionOrder - b.sectionOrder; // Sort by sectionOrder first
         }
         return a.lessonOrder - b.lessonOrder; // If sectionOrder is the same, sort by lessonOrder
-    }));
+    });
 
-    course.courseData = sortedCourseData;
+    // Group courseData by section
+    const sections: { [key: string]: any[] } = {};
+    sortedCourseData.forEach((item: any) => {
+        if (!sections[item.videoSection]) {
+            sections[item.videoSection] = [];
+        }
+        sections[item.videoSection].push(item);
+    });
+
+    // Insert quizzes into the correct position in each section and calculate section durations
+    const finalCourseData: any[] = [];
+    for (const sectionName in sections) {
+        const sectionItems = sections[sectionName];
+
+        // Calculate total duration of videos in the section
+        const sectionVideoLength = sectionItems.reduce(
+            (totalLength: number, item: any) => totalLength + (item?.videoLength || 0),
+            0
+        );
+
+        // Find the quizzes for this section and calculate their total duration
+        const quizzes = sectionItems.flatMap((item: any) => item.quizzes);
+        const sectionQuizDuration = quizzes.reduce(
+            (totalDuration: number, quiz: any) => totalDuration + (quiz.duration || 0),
+            0
+        );
+
+        // Total section duration
+        const totalSectionLength = sectionVideoLength + sectionQuizDuration;
+
+        // Add lessons to the final course data
+        finalCourseData.push(...sectionItems);
+
+        // Add quizzes to the final course data (at the end of the section)
+        if (quizzes.length > 0) {
+            finalCourseData.push({
+                _id: `quiz-section-${sectionName}`,
+                title: `Quiz for ${sectionName}`,
+                description: `Quiz for ${sectionName}`,
+                videoSection: sectionName,
+                isQuiz: true, // Flag to identify quizzes
+                quizzes: quizzes,
+                sectionOrder: sectionItems[0].sectionOrder,
+                lessonOrder: sectionItems.length + 1, // Place quizzes at the end of the section
+                videoLength: sectionQuizDuration // Assign quiz duration to videoLength for consistency
+            });
+        }
+
+        // Add section duration to each section item
+        sectionItems.forEach((item: any) => {
+            item.sectionDuration = totalSectionLength;
+        });
+    }
+
+    // Update the course data with the final structure
+    course.courseData = finalCourseData;
 
     res.status(200).json({
         success: true,
@@ -1501,4 +1588,74 @@ export const getSignatureForDelete = catchAsync(async (req: Request, res: Respon
     const signature = cloudinary.v2.utils.api_sign_request(params, process.env.CLOUD_API_SECRET || '');
 
     res.status(200).json({ timestamp, signature });
+});
+
+// update lesson completion status
+export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const courseId = req.params.id;
+    const { lessonId, isCompleted } = req.body;
+
+    if (!courseId || !lessonId) {
+        return next(new ErrorHandler('Course ID and Lesson ID are required', 400));
+    }
+
+    // Find the course
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+
+    // Find the lesson in courseData and update its isCompleted status
+    const lesson = course.courseData.id(lessonId);
+    if (!lesson) {
+        return next(new ErrorHandler('Lesson not found', 404));
+    }
+
+    lesson.isCompleted = isCompleted;
+    await course.save();
+
+    // Update redis cache
+    await redis.set(courseId, JSON.stringify(course));
+
+    res.status(200).json({
+        success: true,
+        message: 'Lesson completion status updated successfully'
+    });
+});
+
+// get purchased courses of user
+export const getAllPurchasedCoursesOfUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req?.user?.purchasedCourses);
+
+    const course = await CourseModel.find({
+        _id: { $in: req?.user?.purchasedCourses }
+    })
+        .populate('authorId', 'name email')
+        .populate('category', 'name')
+        .lean();
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+    const coursesWithDetails = course.map((course) => {
+        const lessonsCount = course.courseData?.length || 0;
+
+        const duration =
+            course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
+                return acc + (curr.videoLength || 0);
+            }, 0) || 0;
+
+        const durationInHours = (duration / 60).toFixed(1);
+
+        return {
+            ...course,
+            lessonsCount,
+            duration: `${durationInHours} hours`
+        };
+    });
+    res.status(200).json({
+        success: true,
+        data: {
+            course: coursesWithDetails
+        }
+    });
 });
