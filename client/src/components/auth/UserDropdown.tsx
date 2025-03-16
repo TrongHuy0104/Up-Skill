@@ -19,17 +19,14 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from '@/components/ui/DropdownMenu';
-import { User } from '@/types/User';
 import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 
-interface UserDropdownProps {
-    user: User;
-}
-
-export function UserDropdown({ user }: UserDropdownProps) {
+export function UserDropdown() {
     const [logout, setLogout] = useState(false);
+    const { data, isLoading } = useLoadUserQuery(undefined);
     useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data: session } = useSession();
 
@@ -40,6 +37,12 @@ export function UserDropdown({ user }: UserDropdownProps) {
         setLogout(true);
         redirect('/');
     };
+
+    if (isLoading) {
+        return null;
+    }
+
+    const { user } = data;
 
     return (
         <DropdownMenu>
@@ -60,7 +63,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href="/dashboard/settings">
+                    <Link href={`/dashboard/${user.role}`}>
                         <DropdownMenuItem>
                             Profile
                             <DropdownMenuShortcut>
@@ -68,7 +71,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
                             </DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <Link href="/ui">
+                    <Link href="/dashboard/instructor/reviews">
                         <DropdownMenuItem>
                             Settings
                             <DropdownMenuShortcut>

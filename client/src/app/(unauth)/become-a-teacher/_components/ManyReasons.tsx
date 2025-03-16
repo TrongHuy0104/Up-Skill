@@ -22,7 +22,7 @@ const reasons = [
 
 export default function ManyReasons() {
     return (
-        <section className="py-16  text-center">
+        <section className="py-16  text-center ">
             <h2 className="text-4xl font-bold font-cardo text-primary-800 mb-2">So Many Reasons To Start</h2>
             <p className="text-base text-primary-800 mb-4">Become a valuable expert with UpSkill.</p>
             <div className="flex justify-center gap-[100px]">

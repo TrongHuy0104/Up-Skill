@@ -7,12 +7,18 @@ import UserModel from '@/models/User.model';
 import { catchAsync } from '@/utils/catchAsync';
 import ErrorHandler from '@/utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
+
 import path from 'path';
 import sendMail from '@/utils/sendMail';
 import { UserT } from '@/interfaces/User';
 import { accessTokenOptions, refreshTokenOptions, sendToken } from '@/utils/jwt';
 import { redis } from '@/utils/redis';
-import { getAllUsersService, getUserById, updateUserRoleService } from '@/services/user.service';
+import {
+    getUserById,
+    getAllUsersService,
+    updateUserRoleService,
+    getAllInstructorsService
+} from '@/services/user.service';
 
 dotenv.config();
 
@@ -52,6 +58,14 @@ interface ISocialAuthBody {
 interface IUpdateUserInfo {
     name?: string;
     avatar: string;
+    email: string;
+    age: number;
+    profession: string;
+    introduce: string;
+    address: string;
+    phoneNumber: string;
+    rating: number;
+    student: number;
 }
 
 interface IUpdatePassword {
@@ -62,6 +76,58 @@ interface IUpdatePassword {
 interface IProfilePicture {
     avatar: string;
 }
+
+export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+
+    if (!userId) {
+        return next(new ErrorHandler('Please provide a user ID', 400));
+    }
+
+    const user = await UserModel.findById(userId).populate('uploadedCourses'); // Populate uploadedCourses
+
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+    const uploadedCoursesCount = Array.isArray(user.uploadedCourses) ? user.uploadedCourses.length : 0;
+    res.status(200).json({
+        success: true,
+        data: {
+            user,
+            uploadedCoursesCount
+        }
+    });
+});
+
+export const updateUserSocialLinks = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { data } = req.body; // Đảm bảo rằng bạn nhận được đúng đối tượng `socialLinks`
+    const userId = req.user?._id as RedisKey;
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    // Cập nhật các liên kết mạng xã hội
+    if (data.facebook) user.socialLinks.facebook = data.facebook;
+    if (data.twitter) user.socialLinks.twitter = data.twitter;
+    if (data.linkedin) user.socialLinks.linkedin = data.linkedin;
+    if (data.instagram) user.socialLinks.instagram = data.instagram;
+
+    // Lưu thông tin vào database
+    await user.save();
+
+    // Lưu lại dữ liệu vào Redis
+    await redis.del(userId);
+
+    await redis.set(userId, JSON.stringify(user));
+
+    // Trả về kết quả thành công
+    res.status(200).json({
+        success: true,
+        user
+    });
+});
 
 export const registrationUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { name, email, password } = req.body;
@@ -206,11 +272,48 @@ export const updateAccessToken = catchAsync(async (req: Request, res: Response, 
 
     next();
 });
+export const refreshToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const refresh_token = req.cookies.refresh_token as string;
+    const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
+
+    const message = 'Could not refresh token';
+
+    if (!decoded) {
+        return next(new ErrorHandler(message, 400));
+    }
+
+    const session = await redis.get(decoded.id as string);
+
+    if (!session) {
+        return next(new ErrorHandler(message, 400));
+    }
+
+    const user = JSON.parse(session);
+
+    const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN as string, {
+        expiresIn: '1m'
+    });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN as string, {
+        expiresIn: '3d'
+    });
+
+    req.user = user;
+    req.access_token = accessToken;
+
+    res.cookie('access_token', accessToken, accessTokenOptions);
+    res.cookie('refresh_token', refreshToken, refreshTokenOptions);
+
+    res.status(200).json({
+        success: true,
+        accessToken
+    });
+});
 
 export const getUserInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !req.user._id) {
         return next(new ErrorHandler('User not authenticated', 500));
     }
+
     const userId = req.user._id;
     getUserById(userId, res);
 });
@@ -227,40 +330,49 @@ export const socialAuth = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const updateUserInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { name, avatar } = req.body as IUpdateUserInfo;
+    const { name, avatar, email, introduce, profession, age, phoneNumber, address } = req.body as IUpdateUserInfo;
     const userId = req.user?._id as RedisKey;
     const user = await UserModel.findById(userId);
 
-    // if (user && email) {
-    //     const isEmailExist = await UserModel.findOne({email});
-    //     if (isEmailExist) {
-    //         return next(new ErrorHandler("Email already exists", 400))
-    //     }
-    //     user.email = email
-    // }
-
-    if (user && name) {
-        user.name = name;
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
     }
 
-    if (user && avatar) {
-        // If user already have avatar
-        if (user?.avatar?.public_id) {
-            await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+    // Kiểm tra và cập nhật email (nếu email mới không trùng)
+    if (email && email !== user.email) {
+        const isEmailExist = await UserModel.findOne({ email });
+        if (isEmailExist) {
+            return next(new ErrorHandler('Email already exists', 400));
+        }
+        user.email = email;
+    }
+
+    // Cập nhật các trường khác
+    if (name) user.name = name;
+    if (introduce) user.introduce = introduce;
+    if (profession) user.profession = profession;
+    if (age) user.age = age;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if (address) user.address = address;
+
+    // Cập nhật avatar nếu có
+    if (avatar) {
+        if (user.avatar?.public_id) {
+            await cloudinary.v2.uploader.destroy(user.avatar.public_id);
         }
 
         const myCloud = await cloudinary.v2.uploader.upload(avatar, {
             folder: 'avatars',
             width: 150
         });
+
         user.avatar = {
             public_id: myCloud.public_id,
             url: myCloud.secure_url
         };
     }
 
-    await user?.save();
-
+    await user.save();
     await redis.set(userId, JSON.stringify(user));
 
     res.status(200).json({
@@ -426,8 +538,6 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
         return next(new ErrorHandler('Invalid or expired reset token', 400));
     }
 
-    console.log(decoded.user.email);
-
     const user = await UserModel.findOne({ email: decoded?.user?.email });
     if (!user) {
         return next(new ErrorHandler('User not found', 404));
@@ -439,5 +549,99 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
     res.status(200).json({
         success: true,
         message: 'Password has been reset successfully'
+    });
+});
+
+export const getTopInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const topInstructors = await UserModel.aggregate([
+        { $match: { role: 'instructor' } },
+        {
+            $lookup: {
+                from: 'courses',
+                localField: 'uploadedCourses',
+                foreignField: '_id',
+                as: 'uploadedCoursesData'
+            }
+        },
+        {
+            $addFields: {
+                totalStudents: {
+                    $sum: {
+                        $map: {
+                            input: '$uploadedCoursesData',
+                            as: 'course',
+                            in: { $ifNull: ['$$course.purchased', 0] }
+                        }
+                    }
+                },
+                averageRating: {
+                    $avg: {
+                        $map: {
+                            input: '$uploadedCoursesData',
+                            as: 'course',
+                            in: { $ifNull: ['$$course.rating', 0] }
+                        }
+                    }
+                },
+                uploadedCoursesCount: { $size: '$uploadedCoursesData' }
+            }
+        },
+        { $sort: { totalStudents: -1, averageRating: -1 } },
+        { $limit: 10 },
+        {
+            $project: {
+                _id: 1,
+                name: 1,
+                email: 1,
+                role: 1,
+                avatar: 1,
+                uploadedCourses: 1,
+                totalStudents: 1,
+                averageRating: 1,
+                uploadedCoursesCount: 1,
+                createdAt: 1,
+                updatedAt: 1
+            }
+        }
+    ]);
+
+    if (!topInstructors || topInstructors.length === 0) {
+        return next(new ErrorHandler('No instructors found', 404));
+    }
+
+    res.status(200).json({
+        success: true,
+        topInstructors
+    });
+});
+export const getAllInstructors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    getAllInstructorsService(res);
+});
+
+export const getInstructorsWithSort = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { type } = req.query;
+
+    if (!type || (type !== 'recent' && type !== 'oldest')) {
+        return next(new ErrorHandler('Invalid type parameter. Use "recent" or "oldest".', 400));
+    }
+
+    let users;
+
+    if (type === 'recent') {
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setUTCDate(threeDaysAgo.getUTCDate() - 3);
+
+        users = await UserModel.find({ createdAt: { $gte: threeDaysAgo }, role: 'instructor' })
+            .sort({ createdAt: -1 })
+            .limit(3);
+    } else {
+        users = await UserModel.find({ role: 'instructor' })
+            .sort({ createdAt: 1 }) // Sắp xếp tăng dần
+            .limit(10);
+    }
+
+    res.status(200).json({
+        success: true,
+        instructors: users
     });
 });

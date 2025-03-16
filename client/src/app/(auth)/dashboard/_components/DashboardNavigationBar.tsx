@@ -8,36 +8,12 @@ import { FaRegCircleQuestion, FaRegHeart } from 'react-icons/fa6';
 import { PiBagBold } from 'react-icons/pi';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
 
-const navbarList = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: <MdOutlineDashboardCustomize className="text-[20px]" />
-    },
-    {
-        title: 'My Course',
-        href: '/dashboard/my-course',
-        icon: <MdOutlineSlowMotionVideo className="text-[20px]" />
-    },
-    {
-        title: 'Reviews',
-        href: '/dashboard/reviews',
-        icon: <TbMessageDots className="text-[20px]" />
-    },
-    {
-        title: 'Wishlist',
-        href: '/dashboard/wishlist',
-        icon: <FaRegHeart className="text-[20px]" />
-    },
-    {
-        title: 'Quizzes',
-        href: '/dashboard/quizzes',
-        icon: <FaRegCircleQuestion className="text-[20px]" />
-    },
+const commonNavbarItems = [
     {
         title: 'Order',
-        href: '/dashboard/order',
+        href: '/dashboard/orders',
         icon: <PiBagBold className="text-[20px]" />
     },
     {
@@ -47,22 +23,76 @@ const navbarList = [
     }
 ];
 
-const DashboardNavigationBar = () => {
+const instructorNavbarItems = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard/instructor',
+        icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+    },
+    {
+        title: 'My Course',
+        href: '/dashboard/instructor/my-course',
+        icon: <MdOutlineSlowMotionVideo className="text-[20px]" />
+    },
+    {
+        title: 'Reviews',
+        href: '/dashboard/instructor/reviews',
+        icon: <TbMessageDots className="text-[20px]" />
+    },
+    {
+        title: 'Wishlist',
+        href: '/dashboard/instructor/wishlist',
+        icon: <FaRegHeart className="text-[20px]" />
+    },
+    {
+        title: 'Quizzes',
+        href: '/dashboard/instructor/quizzes',
+        icon: <FaRegCircleQuestion className="text-[20px]" />
+    }
+];
+
+const userNavbarItems = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard/user',
+        icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+    }
+];
+
+interface DashboardNavigationBarProps {
+    user: {
+        role: 'instructor' | 'user';
+    };
+}
+
+const DashboardNavigationBar = ({ user }: DashboardNavigationBarProps) => {
     const pathName = usePathname();
+
+    const currentNavbarList =
+        user.role === 'instructor'
+            ? [...instructorNavbarItems, ...commonNavbarItems]
+            : [...userNavbarItems, ...commonNavbarItems];
 
     return (
         <div>
             <div className="bg-primary-800 rounded-xl pb-5">
-                <div className="text-primary-50 opacity-50 pt-[21px] px-[30px] pb-[11px]">STUDENT DASHBOARD</div>
-                {navbarList.map((item) => (
+                <div className="text-primary-50 opacity-50 pt-[21px] px-[30px] pb-[11px]">
+                    {user.role === 'instructor' ? 'INSTRUCTOR DASHBOARD' : 'USER DASHBOARD'}
+                </div>
+                {currentNavbarList.map((item) => (
                     <Link
                         href={item.href}
                         key={item.href}
-                        className={`px-[30px] py-[14px] flex items-center gap-[10px] text-primary-50 text-base font-medium relative
-                            hover:bg-primary-50/10 transition duration-300
-                            before:absolute before:content-[''] before:left-0 before:bottom-0 before:w-[2px] before:h-0 before:bg-accent-600 
-                            before:transition-all before:duration-300 hover:before:h-full hover:before:top-0 hover:before:bottom-auto
-                            ${pathName === item.href ? 'bg-primary-50/10 before:h-full before:top-0 before:bottom-auto' : ''}`}
+                        className={clsx(
+                            'px-[30px] py-[14px] flex items-center gap-[10px] text-primary-50 text-base font-medium relative',
+                            'hover:bg-primary-50/10 transition duration-300',
+                            'before:absolute before:content-[""] before:left-0 before:bottom-0 before:w-[2px] before:h-0 before:bg-accent-600',
+                            'before:transition-all before:duration-300 hover:before:h-full hover:before:top-0 hover:before:bottom-auto',
+                            {
+                                'bg-primary-50/10 before:h-full before:top-0 before:bottom-auto': pathName === item.href
+                            }
+                        )}
+                        aria-current={pathName === item.href ? 'page' : undefined}
                     >
                         <i>{item.icon}</i>
                         <span>{item.title}</span>
