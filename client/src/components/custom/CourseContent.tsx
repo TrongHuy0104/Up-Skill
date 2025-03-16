@@ -36,11 +36,7 @@ export default function CourseContent({ data }: Props) {
     const filterVideoSection = isShowAllSections ? videoSections : videoSections.slice(0, 3);
 
     return (
-        <section
-            className={
-                'w-full sm:min-w-[375px] sm:max-w[767px] md:min-w-[700px] md:max-w-[900px] mx-auto px-[14px] text-primary-800'
-            }
-        >
+        <section className={'w-full  text-primary-800'}>
             <h2 className="text-2xl font-bold mb-4 font-cardo">Course Content</h2>
             {filterVideoSection.map((section: string) => {
                 const isSectionVisible = visibleSections.has(section);

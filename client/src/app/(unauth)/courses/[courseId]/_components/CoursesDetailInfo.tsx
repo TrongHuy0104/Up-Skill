@@ -16,9 +16,9 @@ const CoursesDetailInfo = ({ benefits, prerequisites, description }: Props) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        <div className="w-full sm:min-w-[375px] sm:max-w[767px] md:min-w-[700px] md:max-w-[900px] mx-auto px-[14px] mr-0 text-primary-800 ">
+        <div className="w-full mx-auto sm: mr-0 text-primary-800 ">
             {/* What you'll learn */}
-            <section className="mb-[61px] w-full lg:min-w-[900px] sm:max-w-[430px] sm:min-w-[375px] md:max-w-[820px] md:min-w-[768px]">
+            <section className="mb-[61px] w-full ">
                 <h2 className="text-2xl font-bold mb-4 font-cardo">What you will learn</h2>
                 <div className="pb-[61px]">
                     <div className="grid md:grid-cols-2 gap-3">
@@ -34,7 +34,7 @@ const CoursesDetailInfo = ({ benefits, prerequisites, description }: Props) => {
             </section>
 
             {/* Requirements */}
-            <section className="mb-[61px] w-full lg:min-w-[900px] sm:max-w-[430px] sm:min-w-[375px] md:max-w-[820px] md:min-w-[768px]">
+            <section className="mb-[61px] w-full ">
                 <h2 className="text-2xl font-bold mb-4 font-cardo">Requirements</h2>
                 <ul className="list-disc pl-6 pb-[61px] grid md:grid-cols-2 gap-y-3 gap-x-6">
                     {prerequisites?.map((prerequisite, index) => (
@@ -45,7 +45,7 @@ const CoursesDetailInfo = ({ benefits, prerequisites, description }: Props) => {
             </section>
 
             {/* About This Course */}
-            <section className="pb-[61px] leading-7 w-full sm:min-w-[375px] sm:max-w[767px] md:min-w-[700px] md:max-w-[900px] mx-auto">
+            <section className="pb-[61px] leading-7 w-full  mx-auto">
                 <h2 className="text-2xl font-bold mb-4 font-cardo">About This Course</h2>
 
                 {/* Nội dung có thể thu gọn */}
