@@ -9,11 +9,7 @@ import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTr
 import { Button } from '@/components/ui/Button';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import { toast } from '@/hooks/use-toast';
-import {
-    useDeleteCourseMutation,
-    usePublishCourseMutation,
-    useUnpublishCourseMutation
-} from '@/lib/redux/features/course/courseApi';
+import { useDeleteCourseMutation, useUnpublishCourseMutation } from '@/lib/redux/features/course/courseApi';
 
 type Props = { course: any; refetchCourse: any };
 
@@ -21,8 +17,6 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
     const router = useRouter();
 
     // Mutation + Query
-    const [publishCourse, { isLoading: isLoadingPublish, isSuccess: isSuccessPublish, error: errorPublish }] =
-        usePublishCourseMutation();
     const [unpublishCourse, { isLoading: isLoadingUnPublish, isSuccess: isSuccessUnPublish, error: errorUnPublish }] =
         useUnpublishCourseMutation();
     const [deleteCourse, { isLoading: isLoadingDelete, isSuccess: isSuccessDelete, error: errorDelete }] =
@@ -88,12 +82,28 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
             return response.data; // Return the response data
         } catch (error) {
             console.error('Error deleting video:', error);
-            return null; // Return null if there's an error
+            return null;
         }
     };
 
     const handlePublishCourse = async () => {
-        await publishCourse({ id: course._id }).unwrap();
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/create-request`, {
+                courseId: course._id
+            });
+
+            toast({
+                variant: 'success',
+                title: 'Publish request sent successfully. Waiting for admin approval.'
+            });
+
+            refetchCourse();
+        } catch {
+            toast({
+                variant: 'destructive',
+                title: 'Failed to send publish request'
+            });
+        }
     };
 
     const handleUnPublishCourse = async () => {
@@ -139,27 +149,6 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
         // Finally, delete the course
         await deleteCourse(course._id);
     };
-
-    // Effect
-    useEffect(() => {
-        if (isSuccessPublish) {
-            toast({
-                variant: 'success',
-                title: 'Course publish successfully'
-            });
-            refetchCourse();
-        }
-        if (errorPublish) {
-            if ('data' in errorPublish) {
-                const errorData = errorPublish as any;
-                toast({
-                    variant: 'destructive',
-                    title: 'Uh oh! Something went wrong.',
-                    description: errorData.data.message
-                });
-            }
-        }
-    }, [isSuccessPublish, errorPublish, isLoadingPublish, refetchCourse]);
 
     useEffect(() => {
         if (isSuccessUnPublish) {
@@ -226,10 +215,15 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
                         <Button
                             onClick={() => (course.isPublished ? handleUnPublishCourse() : handlePublishCourse())}
                             className="px-4 py-2 text-sm"
-                            disabled={!checkIsValidCourse() || isLoadingPublish || isLoadingUnPublish}
+                            disabled={!checkIsValidCourse() || isLoadingUnPublish}
                         >
-                            {course.isPublished ? 'Unpublish' : 'Publish'}
+                            {!course.isPublished
+                                ? 'Publish'
+                                : course.isPublished === 'pending'
+                                  ? 'Pending'
+                                  : 'Unpublish'}
                         </Button>
+                        ;
                         <Dialog>
                             <DialogTrigger
                                 disabled={isLoadingDelete}
