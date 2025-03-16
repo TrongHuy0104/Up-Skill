@@ -7,11 +7,6 @@ const CartItemSchema = new Schema<ICartItem>({
         ref: 'Course',
         required: true
     },
-    quantity: {
-        type: Number,
-        required: true,
-        default: 1
-    }
 });
 
 const CartSchema = new Schema<ICartModel>({

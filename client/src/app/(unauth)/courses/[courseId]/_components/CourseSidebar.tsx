@@ -18,6 +18,8 @@ import { orderCreatePaymentIntent } from '@/lib/redux/features/order/orderSlice'
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import { CourseSidebarSkeleton } from '@/components/ui/Skeleton';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
+import axios from 'axios';
+import { toast } from '@/hooks/use-toast';
 
 interface CourseSidebarProps {
     course: Course;
@@ -42,6 +44,31 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         await createPaymentIntent(amount);
         dispatch(orderCreatePaymentIntent({ course }));
     };
+
+    const addToCart = async () => {
+        if (!user) {
+            redirect('/');
+        }
+    
+        try {
+        const response = await axios .post(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`, 
+            { courseId: course._id},
+            { withCredentials: true });
+            if (response.data.success) {
+                toast({
+                    variant: 'success',
+                    title: 'Course added to cart successfully!'
+                });
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Failed to add course to cart!'
+                });
+            }
+        } catch (error) {
+            console.error("Error adding course to cart:", error);
+        }
+    }
 
     const checkCourseExist = () => {
         if (user) {
@@ -115,12 +142,12 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                             </Link>
                         ) : (
                             <>
-                                <a
-                                    href="#"
+                                <button
+                                    onClick={addToCart}
                                     className="w-[320px] bg-primary-800 text-primary-50 px-6 py-4 rounded-md hover:bg-accent-900 transition-colors duration-300 flex items-center justify-center gap-2 text-base font-medium m-auto mb-4"
                                 >
                                     Add To Cart <HiArrowUpRight />
-                                </a>
+                                </button>
                                 <button
                                     onClick={createPayment}
                                     className="w-[320px] bg-primary-50 text-primary-800 px-6 py-4 rounded-md border border-primary-800 transition-colors duration-300 hover:border-accent-900 flex items-center justify-center gap-2 text-base font-medium m-auto mb-4"

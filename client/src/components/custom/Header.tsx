@@ -51,7 +51,7 @@ export default function Header() {
                         ) : user ? (
                             <>
                                 {/* Cart */}
-                                <Link href="#!" className="mr-[10px]">
+                                <Link href="/shop-cart" className="mr-[10px]">
                                     <svg
                                         className="hover:text-accent-900 transition-colors"
                                         width="17"

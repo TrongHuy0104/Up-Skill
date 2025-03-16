@@ -3,7 +3,6 @@ import { ICourse } from './Course';
 
 export interface ICartItem {
     courseId: mongoose.Schema.Types.ObjectId | ICourse;
-    quantity: number;
 }
 
 export interface ICart {
