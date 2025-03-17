@@ -1,3 +1,4 @@
+// checkout/[clientSecret]/page.tsx
 'use client';
 
 import { Elements } from '@stripe/react-stripe-js';
@@ -19,7 +20,7 @@ interface Course {
 
 export default function PaymentPage() {
     const params = useParams();
-    const { courses } = useSelector((state: any) => state.order);
+    const { courses } = useSelector((state: any) => state.order); // Get courses from Redux store
 
     if (courses.length === 0) redirect('/');
 
@@ -29,7 +30,7 @@ export default function PaymentPage() {
     // Extract clientSecret from params
     const clientSecret = typeof params.clientSecret === 'string' ? params.clientSecret : undefined;
 
-    // Calculate total price
+    // Calculate total price based on courses from Redux
     const totalPrice = courses.reduce((total: number, course: Course) => total + course.price, 0);
 
     // Load Stripe asynchronously
@@ -90,7 +91,7 @@ export default function PaymentPage() {
                                         <p className="text-sm leading-7">Subtotal</p>
                                     </div>
                                     <ul className="mb-6">
-                                        {courses.map((course: Course) => (
+                                        {courses.map((course: Course) => ( // Map through courses from Redux
                                             <li key={course._id} className="mb-1 flex items-center justify-between">
                                                 <p className="leading-7">{course.name}</p>
                                                 <p className="leading-7">${course.price}</p>

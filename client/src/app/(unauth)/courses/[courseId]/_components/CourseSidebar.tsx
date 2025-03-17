@@ -8,8 +8,7 @@ import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import { computeSalePercent } from '@/lib/utils';
 import { Course } from '@/types/Course';
@@ -19,7 +18,7 @@ import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import { CourseSidebarSkeleton } from '@/components/ui/Skeleton';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 import axios from 'axios';
-import { toast } from '@/hooks/use-toast';
+import { addCartItem } from '@/lib/redux/features/cart/cartSlice';
 
 interface CourseSidebarProps {
     course: Course;
@@ -27,9 +26,13 @@ interface CourseSidebarProps {
 
 const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     const dispatch = useDispatch();
+    const { items: cartItems } = useSelector((state: any) => state.cart);
     const [createPaymentIntent, { data: paymentIntentData, isLoading }] = useCreatePaymentIntentMutation();
     const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
     const [user, setUser] = useState<any>({});
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [cartItemCount, setCartItemCount] = useState<number>(0);
+
     useEffect(() => {
         setUser(userData?.user);
     }, [isLoadingUser, userData?.user]);
@@ -45,30 +48,60 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         dispatch(orderCreatePaymentIntent({ course }));
     };
 
+    const checkCourseExistInCart = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`,
+                { withCredentials: true }
+            );
+            const cartItems = response.data.cart.items;
+            const courseExists = cartItems.some((item: any) => item.courseId === course._id);
+            setCartItemCount(cartItems.length);
+            return courseExists;
+        } catch (error) {
+            console.error('Error checking if course is in cart:', error);
+            return false;
+        }
+    };
+
     const addToCart = async () => {
         if (!user) {
             redirect('/');
         }
     
+        if (!course?._id) {
+            console.error('Course ID is undefined');
+            return;
+        }
+    
         try {
-        const response = await axios .post(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`, 
-            { courseId: course._id},
-            { withCredentials: true });
-            if (response.data.success) {
-                toast({
-                    variant: 'success',
-                    title: 'Course added to cart successfully!'
-                });
+            const isCourseInCart = cartItems.some((item: any) => item.courseId === course._id);
+    
+            if (!isCourseInCart) {
+                const addResponse = await axios.post(
+                    `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`, 
+                    { courseId: course._id },
+                    { withCredentials: true }
+                );
+    
+                if (addResponse.data.success) {
+                    dispatch(addCartItem({ courseId: course._id }));
+                    console.log('Course added to cart');
+                }
             } else {
-                toast({
-                    variant: 'destructive',
-                    title: 'Failed to add course to cart!'
-                });
+                console.log('Course already in cart');
             }
         } catch (error) {
-            console.error("Error adding course to cart:", error);
+            console.error('Error adding to cart:', error);
         }
-    }
+    };
+
+    useEffect(() => {
+        if (user) {
+            checkCourseExistInCart();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     const checkCourseExist = () => {
         if (user) {
@@ -82,7 +115,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             redirect(`/checkout/${paymentIntentData?.client_secret}`);
         }
     }, [paymentIntentData, stripePromise, isLoading]);
-    // if (isLoadingUser) return <CourseSideBarSkeleton />;
+
     return (
         <div className="w-[400px] rounded-2xl shadow-lg bg-primary-50 border">
             <div className="relative w-full h-[260px] flex justify-center items-center">
