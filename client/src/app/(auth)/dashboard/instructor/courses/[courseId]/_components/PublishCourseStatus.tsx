@@ -1,7 +1,7 @@
 'use client';
 
 import { Trash, TriangleAlert } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -10,11 +10,14 @@ import { Button } from '@/components/ui/Button';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import { toast } from '@/hooks/use-toast';
 import { useDeleteCourseMutation, useUnpublishCourseMutation } from '@/lib/redux/features/course/courseApi';
+import { useSelector } from 'react-redux';
 
 type Props = { course: any; refetchCourse: any };
 
 function PublishCourseStatus({ course, refetchCourse }: Props) {
     const router = useRouter();
+    const [status, setStatus] = useState('');
+    const { user } = useSelector((state: any) => state.auth);
 
     // Mutation + Query
     const [unpublishCourse, { isLoading: isLoadingUnPublish, isSuccess: isSuccessUnPublish, error: errorUnPublish }] =
@@ -88,9 +91,11 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
 
     const handlePublishCourse = async () => {
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/create-request`, {
-                courseId: course._id
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/create-request`, {
+                courseId: course._id,
+                instructorId: user._id
             });
+            setStatus(response?.data?.data?.status);
 
             toast({
                 variant: 'success',
@@ -203,7 +208,9 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
                     </div>
                 )}
                 <div className="flex justify-between items-center">
-                    {checkIsValidCourse() ? (
+                    {status === 'pending' ? (
+                        <p className="text-yellow-600">Your request has been sent. Please wait for admin approval.</p>
+                    ) : checkIsValidCourse() ? (
                         <p>Your course is available to publish</p>
                     ) : (
                         <p>
@@ -211,17 +218,14 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
                             <strong>{getPublishCourseStatusMessage()}</strong> part
                         </p>
                     )}
+
                     <div className="flex gap-2">
                         <Button
                             onClick={() => (course.isPublished ? handleUnPublishCourse() : handlePublishCourse())}
                             className="px-4 py-2 text-sm"
-                            disabled={!checkIsValidCourse() || isLoadingUnPublish}
+                            disabled={status === 'pending' || isLoadingUnPublish}
                         >
-                            {!course.isPublished
-                                ? 'Publish'
-                                : course.isPublished === 'pending'
-                                  ? 'Pending'
-                                  : 'Unpublish'}
+                            {status === 'pending' ? 'Pending' : status === 'approved' ? 'Unpublish' : 'Publish'}
                         </Button>
                         ;
                         <Dialog>

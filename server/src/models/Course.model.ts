@@ -58,7 +58,7 @@ const CourseDataSchema = new Schema<ICourseData>({
         }
     ],
     isCompleted: { type: Boolean, default: false },
-    isPublished: { type: Boolean, default: null },
+    isPublished: { type: Boolean, default: null, nullable: true },
     isPublishedSection: { type: Boolean, default: false },
     isFree: { type: Boolean, default: false },
     sectionOrder: Number,

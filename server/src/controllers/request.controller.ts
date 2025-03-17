@@ -4,10 +4,8 @@ import ErrorHandler from '@/utils/ErrorHandler';
 import RequestModel from '@/models/Request.model';
 
 export const createRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { courseId } = req.body;
-    const userId = req.user?._id;
-
-    if (!userId) {
+    const { courseId, instructorId } = req.body;
+    if (!instructorId) {
         return next(new ErrorHandler('Unauthorized access', 401));
     }
 
@@ -15,15 +13,15 @@ export const createRequest = catchAsync(async (req: Request, res: Response, next
         return next(new ErrorHandler('Course ID is required', 400));
     }
 
-    const existingRequest = await RequestModel.findOne({ course: courseId, user: userId, status: 'pending' });
+    const existingRequest = await RequestModel.findOne({ courseId, instructorId, status: 'pending' });
 
     if (existingRequest) {
         return next(new ErrorHandler('A request for this course is already pending', 400));
     }
 
     const newRequest = await RequestModel.create({
-        course: courseId,
-        user: userId,
+        courseId,
+        instructorId,
         status: 'pending'
     });
 
