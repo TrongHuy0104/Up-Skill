@@ -64,6 +64,7 @@ export const getQuizbyId = catchAsync(async (req, res, next) => {
                 passingScore: 1,
                 maxAttempts: 1,
                 isPublished: 1,
+                isCompleted: 1,
                 order: 1,
                 videoSection: 1,
                 courseId: 1,
@@ -102,87 +103,6 @@ export const getQuizbyId = catchAsync(async (req, res, next) => {
     });
 });
 
-// POST /api/quizzes - Create a new quiz
-// export const createQuiz = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     const {
-//         title,
-//         description,
-//         difficulty,
-//         duration,
-//         passingScore,
-//         maxAttempts,
-//         isPublished,
-//         questions,
-//         lessonOrder,
-//         videoSection,
-//         courseId,
-//         instructorId // Get instructorId from the request body
-//     } = req.body;
-//     console.log(req.body);
-
-//     // Validate required fields
-//     if (
-//         !title ||
-//         !difficulty ||
-//         !duration ||
-//         !passingScore ||
-//         !maxAttempts ||
-//         questions ||
-//         !lessonOrder ||
-//         !videoSection ||
-//         !courseId ||
-//         !instructorId // Ensure instructorId is provided
-//     ) {
-//         return next(new ErrorHandler('Missing required fields', 400));
-//     }
-
-//     // Check if the course exists
-//     const course = await Course.findById(courseId);
-//     if (!course) {
-//         return next(new ErrorHandler('Course not found', 404));
-//     }
-
-//     // Create a new quiz
-//     const newQuiz = new Quiz({
-//         title,
-//         description,
-//         difficulty,
-//         duration,
-//         passingScore,
-//         maxAttempts,
-//         isPublished,
-//         instructorId, // Include instructorId in the quiz document
-//         questions,
-//         lessonOrder,
-//         videoSection,
-//         courseId
-//     });
-
-//     // Save the quiz to the database
-//     const savedQuiz = await newQuiz.save();
-
-//     // Add the quiz to the selected course's section
-//     const courseData = course.courseData.find((data: any) => data.videoSection === videoSection);
-//     if (courseData) {
-//         courseData.quizzes.push(savedQuiz._id); // Add quiz to the section
-//     } else {
-//         // If the section doesn't exist, create a new section and add the quiz
-//         course.courseData.push({
-//             videoSection,
-//             quizzes: [savedQuiz._id]
-//         });
-//     }
-
-//     // Save the updated course
-//     await course.save();
-
-//     // Send response
-//     res.status(201).json({
-//         success: true,
-//         data: savedQuiz
-//     });
-// });
-
 export const createQuiz = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
         title,
@@ -192,6 +112,7 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
+        isCompleted,
         questions,
         videoSection,
         courseId,
@@ -250,6 +171,7 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
+        isCompleted,
         instructorId,
         questions,
         videoSection,

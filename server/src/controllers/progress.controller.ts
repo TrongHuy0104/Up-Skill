@@ -4,6 +4,7 @@ import ErrorHandler from '@/utils/ErrorHandler';
 import ProgressModel from '@/models/Progress.model';
 import CourseModel from '@/models/Course.model';
 import { redis } from '@/utils/redis';
+import QuizModel from '@/models/Quiz.model';
 
 // Update lesson completion status via Progress model
 export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -98,6 +99,36 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
         success: true,
         message: 'Lesson completion status updated successfully',
         data: progress
+    });
+});
+
+export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const quizId = req.params.id; // Lấy quizId từ URL
+    const { isCompleted } = req.body; // Lấy trạng thái hoàn thành từ request body
+
+    // Kiểm tra quizId có tồn tại không
+    if (!quizId) {
+        return next(new ErrorHandler('Quiz ID is required', 400));
+    }
+
+    // Tìm quiz trong database
+    const quiz = await QuizModel.findById(quizId);
+    if (!quiz) {
+        return next(new ErrorHandler('Quiz not found', 404));
+    }
+
+    // Cập nhật trạng thái hoàn thành của quiz
+    quiz.isCompleted = isCompleted;
+    await quiz.save();
+
+    // Cập nhật Redis cache (nếu cần)
+    await redis.set(`quiz:${quizId}`, JSON.stringify(quiz));
+
+    // Trả về phản hồi thành công
+    res.status(200).json({
+        success: true,
+        message: 'Quiz completion status updated successfully',
+        data: quiz
     });
 });
 

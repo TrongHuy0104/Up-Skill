@@ -120,14 +120,32 @@ export default function Practice({ quizId }: { quizId: string }) {
 
         if (currentQuestionIndex === questions.length - 1) {
             setIsQuizFinished(true);
+
+            // Kiểm tra xem điểm có đạt trên 70% không
+            const totalPoints = questions.reduce((sum, question) => sum + question.points, 0);
+            const percentage = (score / totalPoints) * 100;
+
+            // Nếu đạt trên 70%, cập nhật trạng thái quiz
+            if (percentage >= 70) {
+                const userId = await getUserInfo();
+                await updateQuizCompletionStatus(quizId, userId); // Cập nhật trạng thái quiz thành hoàn thành
+            }
         } else {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
-            form.reset({ answer: '', answers: [] }); // Reset form về trạng thái ban đầu
+            form.reset({ answer: '', answers: [] });
         }
 
         // Update the user's score in userScores
-        const userId = await getUserInfo(); // Get the logged-in user's ID
-        await updateQuizScore(quizId, userId, score + currentQuestion.points); // Update quiz score
+        const userId = await getUserInfo();
+        await updateQuizScore(quizId, userId, score + currentQuestion.points);
+    };
+
+    // Hàm cập nhật trạng thái hoàn thành của quiz
+    const updateQuizCompletionStatus = async (quizId: string, userId: string) => {
+        await axios.put(`http://localhost:8000/api/progress/update-quiz-completion/${quizId}`, {
+            isCompleted: true,
+            userId: userId
+        });
     };
 
     const handleRestart = () => {

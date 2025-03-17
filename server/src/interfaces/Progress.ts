@@ -13,4 +13,12 @@ export interface IProgress extends Document {
             totalCompletedPerSection?: number;
         };
     }[];
+    completedQuizzes: {
+        section: {
+            name: string;
+            sectionLength: number;
+            quizzes: mongoose.Schema.Types.ObjectId[];
+            totalCompletedPerSection?: number;
+        };
+    }[];
 }

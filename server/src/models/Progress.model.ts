@@ -42,6 +42,26 @@ const ProgressSchema = new Schema<IProgress>(
                     }
                 }
             }
+        ],
+        completedQuizzes: [
+            {
+                section: {
+                    name: { type: String, required: true },
+                    sectionLength: { type: Number, required: true },
+                    quizzes: [
+                        {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'Quiz'
+                        }
+                    ],
+                    totalCompletedPerSection: {
+                        type: Number,
+                        default: function (this: any) {
+                            return this.quizzes ? this.quizzes.length : 0;
+                        }
+                    }
+                }
+            }
         ]
     },
     { timestamps: true }

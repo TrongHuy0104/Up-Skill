@@ -45,6 +45,7 @@ const quizSchema = new Schema<IQuiz>(
         passingScore: { type: Number, required: true },
         maxAttempts: { type: Number, required: true },
         isPublished: { type: Boolean, default: false },
+        isCompleted: { type: Boolean, default: false },
         instructorId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

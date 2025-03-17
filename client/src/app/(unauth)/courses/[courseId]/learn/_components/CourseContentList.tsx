@@ -108,6 +108,8 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                                     const lessonLength = item?.videoLength || 0;
 
                                     const isCompleted = completedLessonIds.includes(item._id.toString());
+                                    // const isQuizCompleted = item.isQuiz && item.isCompleted;
+                                    // console.log('isQuizCompleted', isQuizCompleted);
 
                                     const isPreviousCompleted =
                                         videoIndex === 0 ||
@@ -125,7 +127,7 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                                                     {isCompleted ? (
                                                         <IoCheckmarkCircle className="text-accent-600 text-lg" />
                                                     ) : isQuiz ? (
-                                                        <MdOutlineQuiz className="text-lg" />
+                                                        <MdOutlineQuiz className="text-lg text-accent-600" />
                                                     ) : (
                                                         <Image src={PlayContent} alt="play content" />
                                                     )}
