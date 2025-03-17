@@ -2,8 +2,8 @@
 
 import { PiChalkboardTeacher } from 'react-icons/pi';
 
-const CountInstructorChart = ({totalInstructor}: any) => {
-  const growthRate = 150; // % tăng trưởng
+const CountInstructorChart = ({totalInstructor, growthRate}: any) => {
+    
 
   return (
     <div className="bg-white p-6 rounded-xl w-1/4 h-[150px] flex items-center justify-between text-white">

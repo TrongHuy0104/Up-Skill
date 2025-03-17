@@ -7,31 +7,39 @@ import { cookies } from 'next/headers';
 import CountStudentChart from './_components/CountStudentChart';
 import RevenueChart from './_components/RevenueChart';
 
-export default async function page() {
-        const cookieStore = await cookies();
-        const cookie = cookieStore.toString();
-    
-        const res = await fetch(`http://localhost:8000/api/user/user-analysis`, {
-            credentials: 'include',
-            headers: {
-                Cookie: cookie
-            }
-        });
-    
-        const { totalUser, totalInstructor,totalStudent, totalCourse, data } = await res.json();
+export default async function Page() {
+    const cookieStore = await cookies();
+    const cookie = cookieStore.toString();
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/user-analysis`, {
+        credentials: 'include',
+        headers: {
+            Cookie: cookie
+        }
+    });
+
+    const { 
+        totalUser, 
+        totalInstructor, 
+        totalStudent, 
+        totalCourse, 
+        growthRates,  // Lấy dữ liệu growthRates từ API
+        data 
+    } = await res.json();
+
     return (
         <div>
-            <div className='flex gap-2'>
-                <CountStudentChart totalStudent={totalStudent}/>
-                <CountInstructorChart totalInstructor={totalInstructor}/>
-                <CountUserChart totalUser={totalUser}/>
-                <CourseChart totalCourse={totalCourse}/>
+            <div className='flex gap-4'>
+                <CountStudentChart totalStudent={totalStudent} growthRate={parseFloat(growthRates.studentGrowthRate)} />
+                <CountInstructorChart totalInstructor={totalInstructor} growthRate={parseFloat(growthRates.instructorGrowthRate)} />
+                <CountUserChart totalUser={totalUser} growthRate={parseFloat(growthRates.userGrowthRate)} />
+                <CourseChart totalCourse={totalCourse} growthRate={parseFloat(growthRates.courseGrowthRate)} />
             </div>
-            <div className="mt-2">
-                <UserAnalyticsChart data={data}/>
+            <div className="mt-4">
+                <UserAnalyticsChart data={data} />
             </div>
-            <div className="mt-2">
-                <RevenueChart />
+            <div className="mt-4">
+                <RevenueChart data={data} />
             </div>
         </div>
     );

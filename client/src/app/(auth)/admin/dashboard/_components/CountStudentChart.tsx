@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import studentsIcon from '@/public/assets/icons/students.svg';
 
-const CountStudentChart = ({totalStudent}: any) => {
-  const growthRate = 150; // % tăng trưởng
+const CountStudentChart = ({totalStudent, growthRate}: any) => {
+  
 
 
 

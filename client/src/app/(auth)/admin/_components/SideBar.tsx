@@ -24,12 +24,8 @@ const menuItems = [
         ]
     },
     {
-        title: 'CONTENT',
-        items: [{ icon: dashboard, label: 'Instructor Request', path: '/admin/instructor-request' }]
-    },
-    {
         title: 'OTHER',
-        items: [{ icon: logoutIcon, label: 'Logout', path: {} }]
+        items: [{ icon: logoutIcon, label: 'Logout', path: '/' }]
     }
 ];
 

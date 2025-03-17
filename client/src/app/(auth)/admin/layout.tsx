@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                         <Sidebar />
                     </div>
                     {/* RIGHT - Nội dung động */}
-                    <div className="w-4/5 flex-1 p-2 bg-gray-200 overflow-auto">{children}</div>
+                    <div className="w-4/5 flex-1 p-4 bg-gray-200 overflow-auto">{children}</div>
                 </div>
             </body>
         </html>

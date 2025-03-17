@@ -22,7 +22,8 @@ import {
     updateUserSocialLinks,
     getUser,
     getTopInstructors,
-    getUserStatisticsByMonth
+    getUserStatisticsByMonth,
+    getRevenueStatistics
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -59,7 +60,7 @@ router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialL
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
-router.get('/user-analysis', isAuthenticated, authorizeRoles('admin'), getUserStatisticsByMonth);
+router.get('/user-analysis', isAuthenticated, authorizeRoles('admin'), getUserStatisticsByMonth, getRevenueStatistics);
 
 router.get('/top-instructors', getTopInstructors);
 
