@@ -7,8 +7,9 @@ import manageUser from '@/public/assets/icons/students.svg';
 import manageCourse from '@/public/assets/icons/timetable.svg';
 import dashboard from '@/public/assets/icons/dashboard.svg';
 import { useSelector } from 'react-redux';
-import manageInstructor from '@/public/assets/icons/students.svg';
+import manageInstructor from '@/public/assets/icons/instructor.svg';
 import logoutIcon from '@/public/assets/icons/logout.svg';
+import courseRequest from '@/public/assets/icons/request.svg';
 
 const menuItems = [
     {
@@ -21,6 +22,12 @@ const menuItems = [
             { icon: manageUser, label: 'User', path: '/admin/users' },
             { icon: manageInstructor, label: 'Instructors', path: '/admin/instructors' },
             { icon: manageCourse, label: 'Manage Course', path: '/admin/courses' }
+        ]
+    },
+    {
+        title: 'CONTENT',
+        items: [
+            { icon: courseRequest, label: 'Courses Request', path: '/admin/course-request' },
         ]
     },
     {
