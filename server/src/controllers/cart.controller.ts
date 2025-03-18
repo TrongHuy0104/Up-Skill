@@ -75,3 +75,24 @@ export const removeCartItem = async (req: Request, res: Response, next: NextFunc
         next(error);
     }
 };
+
+export const clearCart = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id;
+
+    if (!userId) {
+        return next(new ErrorHandler('User not authenticated', 401));
+    }
+
+    try {
+        const cart = await CartModel.findOne({ userId });
+        if (cart) {
+            cart.items = [];
+            await cart.save();
+            res.status(200).json({ success: true, message: 'Cart cleared successfully' });
+        } else {
+            res.status(200).json({ success: true, message: 'Cart cleared successfully (no cart found)' });
+        }
+    } catch (error) {
+        next(error);
+    }
+};

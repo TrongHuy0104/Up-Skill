@@ -1,4 +1,3 @@
-// ShopCart.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -114,9 +113,8 @@ const ShopCart: React.FC = () => {
         dispatch(removeCartItem(courseId));
         setCartItems((prev) => prev.filter((items) => {
           return items.courseId._id !== courseId }));
-      } else {
-        console.error("Failed to remove item from cart");
       }
+      fetchCartItems();
     } catch (error) {
       console.error("Error removing item from cart:", error);
     }
@@ -144,7 +142,7 @@ const ShopCart: React.FC = () => {
       <div className="max-w-full mx-auto py-16 px-8">
         <div className="flex gap-8">
         {filteredCartItems.length === 0 ? (
-            <div className="w-full flex justify-center"> {/* Take full width and center content */}
+            <div className="w-full flex justify-center">
               <div className="flex flex-col items-center justify-center py-20">
                 <p className="text-center text-primary-800 font-medium text-xl">Your cart is empty</p>
                 <Link href="/courses" className="mt-4 bg-primary-800 text-primary-50 px-6 py-3 rounded-md hover:bg-accent-900 flex items-center justify-center gap-2 text-base font-medium">
