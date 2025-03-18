@@ -13,6 +13,7 @@ import { loadStripe } from "@stripe/stripe-js/pure";
 import { orderCreatePaymentIntent } from "@/lib/redux/features/order/orderSlice";
 import { useDispatch } from "react-redux";
 import { removeCartItem } from '@/lib/redux/features/cart/cartSlice';
+import Link from "next/link";
 
 interface Course {
   _id: string;
@@ -61,7 +62,6 @@ const ShopCart: React.FC = () => {
 
   useEffect(() => {
     if (paymentIntentData && stripePromise && !isLoading) {
-      fetchCartItems();
       redirect(`/checkout/${paymentIntentData?.client_secret}`);
     }
   }, [paymentIntentData, stripePromise, isLoading]);
@@ -88,9 +88,9 @@ const ShopCart: React.FC = () => {
       const filteredItems = cartItems.filter(item => !purchasedCourseIds.includes(item.courseId._id));
       setFilteredCartItems(filteredItems);
     } else {
-      setFilteredCartItems(cartItems); // Nếu userData chưa load, hiển thị toàn bộ cartItems
+      setFilteredCartItems(cartItems);
     }
-  }, [cartItems, userData?.user]); // Corrected dependency array, using userData?.user instead of user
+  }, [cartItems, userData?.user]);
 
   const subtotal = filteredCartItems.reduce((acc, item) => acc + (item.courseId.price || 0), 0);
   const discountedTotal = isCouponApplied ? subtotal * 0.5 : subtotal;
@@ -100,28 +100,20 @@ const ShopCart: React.FC = () => {
       setIsCouponApplied(true);
     } else {
       setIsCouponApplied(false);
-      alert("Invalid coupon code.");
     }
   };
 
-  const handleUpdateCart = () => {
-    if (couponCode === "UPSKILL50") {
-      setIsCouponApplied(true);
-    } else {
-      setIsCouponApplied(false);
-    }
-  };
-
-  const handleRemoveItem = async (id: string) => {
+  const handleRemoveItem = async (courseId: string) => {
     try {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/remove-item`, {
-        data: { courseId: id },
+        data: { courseId: courseId },
         withCredentials: true,
       });
 
       if (response.data.success) {
-        dispatch(removeCartItem(id));
-        setCartItems((prev) => prev.filter((item) => item._id !== id));
+        dispatch(removeCartItem(courseId));
+        setCartItems((prev) => prev.filter((items) => {
+          return items.courseId._id !== courseId }));
       } else {
         console.error("Failed to remove item from cart");
       }
@@ -151,12 +143,20 @@ const ShopCart: React.FC = () => {
 
       <div className="max-w-full mx-auto py-16 px-8">
         <div className="flex gap-8">
+        {filteredCartItems.length === 0 ? (
+            <div className="w-full flex justify-center"> {/* Take full width and center content */}
+              <div className="flex flex-col items-center justify-center py-20">
+                <p className="text-center text-primary-800 font-medium text-xl">Your cart is empty</p>
+                <Link href="/courses" className="mt-4 bg-primary-800 text-primary-50 px-6 py-3 rounded-md hover:bg-accent-900 flex items-center justify-center gap-2 text-base font-medium">
+                  Back to Course page
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Cart Items */}
           <div className="w-[940px] ml-8 mr-5">
             <div className="">
-              {filteredCartItems.length === 0 ? (
-                <p className="text-center text-primary-800 font-medium">Your cart is empty</p>
-              ) : (
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-accent-100 text-primary-800">
@@ -181,7 +181,7 @@ const ShopCart: React.FC = () => {
                         <td className="py-4 px-4 text-sm text-primary-800">${item.courseId.price?.toFixed(2) || "N/A"}</td>
                         <td className="py-4 px-4 justify-items-center">
                           <button
-                            onClick={() => handleRemoveItem(item._id)}
+                            onClick={() => handleRemoveItem(item.courseId._id)}
                             className="text-xl flex items-center justify-center w-8 h-8 rounded-full border border-primary-100 text-primary-800 transition duration-200"
                           >
                             ×
@@ -191,7 +191,7 @@ const ShopCart: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
-              )}
+              {/* )} */}
             </div>
 
             {/* Coupon Code */}
@@ -219,7 +219,7 @@ const ShopCart: React.FC = () => {
                   Apply Coupon <HiArrowUpRight />
                 </button>
                 <button
-                  onClick={handleUpdateCart}
+                  onClick={handleApplyCoupon}
                   className="w-[200px] border border-primary-800 text-primary-800 px-6 py-4 rounded-md hover:bg-primary-800 hover:text-primary-50 flex items-center justify-center gap-2 text-base font-medium"
                 >
                   Update Cart <HiArrowUpRight />
@@ -247,6 +247,8 @@ const ShopCart: React.FC = () => {
               </button>
             </div>
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>

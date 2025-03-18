@@ -30,8 +30,6 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     const [createPaymentIntent, { data: paymentIntentData, isLoading }] = useCreatePaymentIntentMutation();
     const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
     const [user, setUser] = useState<any>({});
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [cartItemCount, setCartItemCount] = useState<number>(0);
 
     useEffect(() => {
         setUser(userData?.user);
@@ -55,8 +53,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 { withCredentials: true }
             );
             const cartItems = response.data.cart.items;
-            const courseExists = cartItems.some((item: any) => item.courseId === course._id);
-            setCartItemCount(cartItems.length);
+            const courseExists = cartItems.some((items: any) => items.courseId === course._id);
             return courseExists;
         } catch (error) {
             console.error('Error checking if course is in cart:', error);
@@ -75,8 +72,8 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         }
     
         try {
-            const isCourseInCart = cartItems.some((item: any) => item.courseId === course._id);
-    
+            const isCourseInCart = cartItems.some((items: any) => {   
+                return items.courseId._id === course._id});
             if (!isCourseInCart) {
                 const addResponse = await axios.post(
                     `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`, 
@@ -101,11 +98,11 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             checkCourseExistInCart();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+    }, [user, course._id]);
 
     const checkCourseExist = () => {
         if (user) {
-            return user?.purchasedCourses?.find((purchasedCourse: any) => purchasedCourse === course._id);
+            return user?.purchasedCourses?.find((purchasedCourses: any) => purchasedCourses === course._id);
         }
         return false;
     };

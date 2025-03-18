@@ -17,13 +17,17 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         addCartItem: (state, action: PayloadAction<CartItem>) => {
-            const existingItem = state.items.find(item => item.courseId === action.payload.courseId);
+            const existingItem = state.items.find(item => {
+               return item.courseId === action.payload.courseId
+            });
             if (!existingItem) {
                 state.items.push(action.payload);
             }
         },
         removeCartItem: (state, action: PayloadAction<string>) => {
-            state.items = state.items.filter(item => item.courseId !== action.payload);
+            state.items = state.items.filter(items => {
+                return items.courseId !== action.payload
+            });
         },
         setCartItems: (state, action: PayloadAction<CartItem[]>) => {
             state.items = action.payload;
