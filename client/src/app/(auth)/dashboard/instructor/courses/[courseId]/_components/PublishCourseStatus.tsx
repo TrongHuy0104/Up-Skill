@@ -89,27 +89,28 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
         }
     };
 
-    const handlePublishCourse = async () => {
-        try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/create-request`, {
-                courseId: course._id,
-                instructorId: user._id
-            });
-            setStatus(response?.data?.data?.status);
+        const handlePublishCourse = async () => {
+            try {
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/create-request`, {
+                    courseId: course._id,
+                    instructorId: user._id
+                },
+                { withCredentials: true });
+                setStatus(response?.data?.data?.status);
 
-            toast({
-                variant: 'success',
-                title: 'Publish request sent successfully. Waiting for admin approval.'
-            });
+                toast({
+                    variant: 'success',
+                    title: 'Publish request sent successfully. Waiting for admin approval.'
+                });
 
-            refetchCourse();
-        } catch {
-            toast({
-                variant: 'destructive',
-                title: 'Failed to send publish request'
-            });
-        }
-    };
+                refetchCourse();
+            } catch {
+                toast({
+                    variant: 'destructive',
+                    title: 'Failed to send publish request'
+                });
+            }
+        };
 
     const handleUnPublishCourse = async () => {
         await unpublishCourse({ id: course._id }).unwrap();
@@ -154,6 +155,21 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
         // Finally, delete the course
         await deleteCourse(course._id);
     };
+    const fetchRequestStatus = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/get-request/${course._id}`,
+                { withCredentials: true });
+            setStatus(response.data?.data?.status || '');
+        } catch (error) {
+            console.error('Error fetching request status:', error);
+        }
+    };
+    useEffect(() => {
+        if (course?._id) {
+            fetchRequestStatus();
+        }
+    }, [course?._id]);
+    
 
     useEffect(() => {
         if (isSuccessUnPublish) {
