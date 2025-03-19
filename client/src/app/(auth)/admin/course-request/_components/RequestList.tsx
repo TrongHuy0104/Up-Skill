@@ -1,13 +1,14 @@
 'use client';
 
 
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/DropdownMenu';
 import { Button } from '@/components/ui/Button';
 import { FaEllipsisV, FaChevronDown } from 'react-icons/fa';
-import CourseContent from './CourseContent';
-import CoursePreview from './CoursePreview';
+import CoursePreview from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/CoursePreview';
+import axios from 'axios';
+import CourseContent from '@/components/custom/CourseContent';
 
 
 
@@ -61,8 +62,22 @@ const initialData: Request[] = [
 export default function RequestList() {
     const [requests, setRequests] = useState(initialData);
     const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+    const [active, setActive] = useState(4);
+    const [course, setCourse] = useState<any>();
 
 
+    useEffect(() => {
+        const fetchRequests = async () => {
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/67d688d76fa0dac8d7d416a7`);
+                setCourse(response.data.course); 
+            } catch (error) {
+                console.error('Error fetching requests:', error);
+            }
+        };
+
+        fetchRequests();
+    }, []);
     const handleActionChange = (id: number, newAction: 'accept' | 'reject') => {
         setRequests((prev) =>
             prev.map((user) => (user.id === id ? { ...user, action: newAction } : user))
@@ -143,8 +158,8 @@ export default function RequestList() {
                                 {expandedRows.has(user.id) && (
                                     <TableRow className="bg-gray-50">
                                         <TableCell colSpan={5}>
-                                            <CoursePreview/>
-                                            <CourseContent />
+                                            <CoursePreview active={active} setActive={setActive} course={course} />
+                                            <CourseContent data={course?.courseData} />
                                         </TableCell>
                                     </TableRow>
                                 )}
