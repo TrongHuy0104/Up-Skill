@@ -1,6 +1,5 @@
 'use client';
 
-
 import { useState, Fragment, useEffect } from 'react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/DropdownMenu';
@@ -9,9 +8,6 @@ import { FaEllipsisV, FaChevronDown } from 'react-icons/fa';
 import CoursePreview from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/CoursePreview';
 import axios from 'axios';
 import CourseContent from '@/components/custom/CourseContent';
-
-
-
 
 interface Request {
     id: number;
@@ -23,7 +19,6 @@ interface Request {
     registeredAt: string;
     status: string;
 }
-
 
 const initialData: Request[] = [
     {
@@ -58,19 +53,19 @@ const initialData: Request[] = [
     }
 ];
 
-
 export default function RequestList() {
     const [requests, setRequests] = useState(initialData);
     const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
     const [active, setActive] = useState(4);
     const [course, setCourse] = useState<any>();
 
-
     useEffect(() => {
         const fetchRequests = async () => {
             try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/67d688d76fa0dac8d7d416a7`);
-                setCourse(response.data.course); 
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_SERVER_URI}/courses/67d688d76fa0dac8d7d416a7`
+                );
+                setCourse(response.data.course);
             } catch (error) {
                 console.error('Error fetching requests:', error);
             }
@@ -79,11 +74,8 @@ export default function RequestList() {
         fetchRequests();
     }, []);
     const handleActionChange = (id: number, newAction: 'accept' | 'reject') => {
-        setRequests((prev) =>
-            prev.map((user) => (user.id === id ? { ...user, action: newAction } : user))
-        );
+        setRequests((prev) => prev.map((user) => (user.id === id ? { ...user, action: newAction } : user)));
     };
-
 
     const toggleRow = (id: number) => {
         setExpandedRows((prev) => {
@@ -97,7 +89,6 @@ export default function RequestList() {
         });
     };
 
-
     return (
         <div className="p-6">
             <h2 className="text-2xl font-semibold mb-4">List of Courses Requests</h2>
@@ -108,6 +99,7 @@ export default function RequestList() {
                             <TableHead>Name</TableHead>
                             <TableHead>Address</TableHead>
                             <TableHead>Phone</TableHead>
+                            <TableHead>Status</TableHead>
                             <TableHead>Action</TableHead>
                             <TableHead>Details</TableHead>
                         </TableRow>
@@ -119,21 +111,27 @@ export default function RequestList() {
                                     <TableCell className="font-semibold text-black">{user.name}</TableCell>
                                     <TableCell className="text-gray-600">{user.address}</TableCell>
                                     <TableCell className="text-gray-600">{user.phone}</TableCell>
-                                    <TableCell className="relative flex items-center">
+                                    <TableCell>
                                         <span
                                             className={`px-2 py-1 rounded text-white text-sm ${
                                                 user.action === 'accept'
                                                     ? 'bg-green-500'
                                                     : user.action === 'reject'
-                                                    ? 'bg-red-500'
-                                                    : 'bg-yellow-500'
+                                                      ? 'bg-red-500'
+                                                      : 'bg-yellow-500'
                                             }`}
                                         >
-                                            {user.action === 'accept' ? 'Accepted' : user.action === 'reject' ? 'Rejected' : 'Pending'}
+                                            {user.action === 'accept'
+                                                ? 'Accepted'
+                                                : user.action === 'reject'
+                                                  ? 'Rejected'
+                                                  : 'Pending'}
                                         </span>
+                                    </TableCell>
+                                    <TableCell className="relative">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="ml-2">
+                                                <Button variant="ghost" size="icon">
                                                     <FaEllipsisV />
                                                 </Button>
                                             </DropdownMenuTrigger>
@@ -150,15 +148,19 @@ export default function RequestList() {
                                     <TableCell>
                                         <Button variant="ghost" size="icon" onClick={() => toggleRow(user.id)}>
                                             <FaChevronDown
-                                                className={`transition-transform ${expandedRows.has(user.id) ? 'rotate-180' : ''}`}
+                                                className={`transition-transform ${
+                                                    expandedRows.has(user.id) ? 'rotate-180' : ''
+                                                }`}
                                             />
                                         </Button>
                                     </TableCell>
                                 </TableRow>
                                 {expandedRows.has(user.id) && (
                                     <TableRow className="bg-gray-50">
-                                        <TableCell colSpan={5}>
-                                            <CoursePreview active={active} setActive={setActive} course={course} />
+                                        <TableCell colSpan={6}>
+                                            <div className="p-4">
+                                                <CoursePreview active={active} setActive={setActive} course={course} />
+                                            </div>
                                             <CourseContent data={course?.courseData} />
                                         </TableCell>
                                     </TableRow>
