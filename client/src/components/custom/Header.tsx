@@ -47,7 +47,7 @@ export default function Header() {
                     `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`,
                     { withCredentials: true }
                 );
-                const cartItems = response.data.cart.items;
+                const cartItems = response.data?.cart?.items || [];
                 dispatch(setCartItems(cartItems));
             } catch (error) {
                 console.error('Error fetching cart items:', error);
