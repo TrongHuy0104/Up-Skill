@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
 import PaginationComponent from '@/components/custom/PaginationComponent';
 import IncomeChart from '../../_components/IncomeChart';
+import { useSelector } from 'react-redux';
 
 interface DashboardClientProps {
     stats: any;
@@ -18,6 +19,7 @@ interface DashboardClientProps {
 const DashboardClient = ({ stats, bestSellingCourses, userId }: DashboardClientProps) => {
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
+    const { user } = useSelector((state: any) => state.auth);
 
     const totalPages = Math.max(1, Math.ceil(bestSellingCourses.length / 4));
 
@@ -58,10 +60,14 @@ const DashboardClient = ({ stats, bestSellingCourses, userId }: DashboardClientP
             </div>
 
             {/* Income Chart */}
+            {user?.role === 'instructor' ? (
             <div className="container bg-primary-50 rounded-lg p-[34px] border border-primary-100 mb-8">
                 <h1 className="text-[22px] text-primary-800 font-medium">Total Income</h1>
-                {userId && <IncomeChart userId={userId} />}
-            </div>
+                    <IncomeChart userId={userId} />
+                    </div>
+                ) : (
+                    null
+                )}
 
             {/* Best Selling Courses Section */}
             <div className="bg-primary-50 rounded-lg p-[34px] border border-primary-100">

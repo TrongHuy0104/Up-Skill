@@ -13,6 +13,7 @@ import { orderCreatePaymentIntent } from "@/lib/redux/features/order/orderSlice"
 import { useDispatch } from "react-redux";
 import { removeCartItem } from '@/lib/redux/features/cart/cartSlice';
 import Link from "next/link";
+import empty from "@/public/assets/icons/empty-cart.svg";
 
 interface Course {
   _id: string;
@@ -70,7 +71,7 @@ const ShopCart: React.FC = () => {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`, {
         withCredentials: true,
       });
-      const items = response.data.cart.items || [];
+      const items = response.data?.cart?.items || [];
       setCartItems(items);
     } catch (error) {
       console.error("Error fetching cart items:", error);
@@ -132,18 +133,27 @@ const ShopCart: React.FC = () => {
         ]}
         contentAlignment="center"
         backgroundColor="bg-accent-100"
-        background="/images/shop-cart-banner.jpg"
+        background="https://creativelayers.net/themes/upskill-html/images/page-title/inner-page.png"
       >
         <p className="text-primary-800 text-base">
           Products that help beginner designers become true unicorns.
         </p>
       </Banner>
 
-      <div className="max-w-full mx-auto py-16 px-8">
+      <div className="max-w-full mx-auto py-6 px-8">
         <div className="flex gap-8">
         {filteredCartItems.length === 0 ? (
-            <div className="w-full flex justify-center">
-              <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-full flex justify-center ml-20">
+              <div className="flex flex-col items-center justify-center py-2">
+                {/* Empty Cart Image */}
+                <Image
+                  src={empty}
+                  alt="Empty Cart"
+                  width={180}
+                  height={180}
+                  className="mb-4 mr-8"
+                  priority
+                />
                 <p className="text-center text-primary-800 font-medium text-xl">Your cart is empty</p>
                 <Link href="/courses" className="mt-4 bg-primary-800 text-primary-50 px-6 py-3 rounded-md hover:bg-accent-900 flex items-center justify-center gap-2 text-base font-medium">
                   Back to Course page
