@@ -17,7 +17,6 @@ export interface IQuiz extends Document {
     passingScore: number;
     maxAttempts: number;
     isPublished: boolean;
-    isCompleted: boolean;
     instructorId: Types.ObjectId;
     questions: IQuestion[];
     sectionOrder: number;

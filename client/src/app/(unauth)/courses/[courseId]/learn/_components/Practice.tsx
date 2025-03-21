@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/Checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/Radio';
 import axios from 'axios';
+import { useUpdateQuizCompletionMutation } from '@/lib/redux/features/progress/progressApi';
 
 const singleChoiceSchema = z.object({
     answer: z.string().min(1, 'You need to select an option.')
@@ -21,12 +22,23 @@ type FormData = {
     answers?: string[];
 };
 
-export default function Practice({ quizId }: { quizId: string }) {
+export default function Practice({
+    quizId,
+    courseId,
+    questionArr
+}: {
+    quizId: string;
+    courseId: string;
+    questionArr: any[];
+}) {
     const [questions, setQuestions] = useState<any[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [isQuizFinished, setIsQuizFinished] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [userId, setUserId] = useState<string | null>(null);
+
+    const [updateQuizCompletion] = useUpdateQuizCompletionMutation();
 
     const form = useForm<FormData>({
         resolver: zodResolver(
@@ -39,15 +51,13 @@ export default function Practice({ quizId }: { quizId: string }) {
     });
 
     // Fetch user info (userId) from API
-
     const getUserInfo = async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
                 withCredentials: true
             });
             const userId = response.data.user._id;
-            console.log('userId', userId);
-            return userId;
+            setUserId(userId); // Lưu userId vào state
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
@@ -57,7 +67,6 @@ export default function Practice({ quizId }: { quizId: string }) {
     const updateQuizScore = async (quizId: string, userId: string, newScore: number) => {
         const currentQuestion = questions[currentQuestionIndex];
 
-        // Kiểm tra nếu userScores là mảng hợp lệ, nếu không thì gán giá trị mặc định là mảng rỗng
         const userScores = Array.isArray(currentQuestion.userScores) ? currentQuestion.userScores : [];
 
         const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}`, {
@@ -70,12 +79,12 @@ export default function Practice({ quizId }: { quizId: string }) {
                     ...userScores.map((scoreEntry: any) => {
                         if (scoreEntry.user === userId) {
                             if (scoreEntry.score < newScore) {
-                                return { ...scoreEntry, score: newScore }; // Update if new score is higher
+                                return { ...scoreEntry, score: newScore };
                             }
                         }
                         return scoreEntry;
                     }),
-                    { user: userId, score: newScore } // Add if not found
+                    { user: userId, score: newScore }
                 ]
             })
         });
@@ -84,23 +93,20 @@ export default function Practice({ quizId }: { quizId: string }) {
         return data;
     };
 
+    // Update questions when questionArr changes
     useEffect(() => {
-        const fetchQuestions = async () => {
-            try {
-                setLoading(true);
-                const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}/questions`);
-                if (!res.ok) throw new Error('Failed to fetch questions');
-                const data = await res.json();
-                setQuestions(data.questions);
-            } catch (error) {
-                console.error('Error fetching questions:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        if (questionArr && questionArr.length > 0) {
+            setQuestions(questionArr);
+            setLoading(false); // Stop loading once data is fetched
+        }
+    }, [questionArr]);
 
-        fetchQuestions();
-    }, [quizId]);
+    // Get user info once when component mounts
+    useEffect(() => {
+        if (!userId) {
+            getUserInfo();
+        }
+    }, [userId]);
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const currentQuestion = questions[currentQuestionIndex];
@@ -114,39 +120,52 @@ export default function Practice({ quizId }: { quizId: string }) {
             correctAnswers.every((ans: string) => selectedAnswers?.includes(ans)) &&
             selectedAnswers?.every((ans: string | undefined) => ans !== undefined && correctAnswers.includes(ans));
 
+        // Update score if the answer is correct
         if (isCorrect) {
-            setScore(score + currentQuestion.points);
+            if (currentQuestion && currentQuestion.points) {
+                setScore((prevScore) => prevScore + currentQuestion.points); // Sử dụng callback
+            }
         }
 
+        // Check if it's the last question
         if (currentQuestionIndex === questions.length - 1) {
             setIsQuizFinished(true);
 
-            // Kiểm tra xem điểm có đạt trên 70% không
-            const totalPoints = questions.reduce((sum, question) => sum + question.points, 0);
-            const percentage = (score / totalPoints) * 100;
+            const totalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);
+            const percentage = totalPoints > 0 ? (score / totalPoints) * 100 : 0;
 
-            // Nếu đạt trên 70%, cập nhật trạng thái quiz
-            if (percentage >= 70) {
-                const userId = await getUserInfo();
-                await updateQuizCompletionStatus(quizId, userId); // Cập nhật trạng thái quiz thành hoàn thành
+            if (percentage >= 70 && userId) {
+                try {
+                    await updateQuizCompletion({ quizId, courseId, isCompleted: true, userId });
+                } catch (error) {
+                    console.error('Error updating quiz completion:', error);
+                }
             }
         } else {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             form.reset({ answer: '', answers: [] });
         }
 
-        // Update the user's score in userScores
-        const userId = await getUserInfo();
-        await updateQuizScore(quizId, userId, score + currentQuestion.points);
+        if (userId) {
+            await updateQuizScore(quizId, userId, score + (currentQuestion.points || 0));
+        }
     };
 
-    // Hàm cập nhật trạng thái hoàn thành của quiz
-    const updateQuizCompletionStatus = async (quizId: string, userId: string) => {
-        await axios.put(`http://localhost:8000/api/progress/update-quiz-completion/${quizId}`, {
-            isCompleted: true,
-            userId: userId
-        });
-    };
+    useEffect(() => {
+        if (isQuizFinished) {
+            // Chỉ tính toán tỷ lệ phần trăm khi quiz hoàn thành
+            const totalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);
+            const percentage = totalPoints > 0 ? (score / totalPoints) * 100 : 0;
+
+            if (percentage >= 70 && userId) {
+                try {
+                    updateQuizCompletion({ quizId, courseId, isCompleted: true, userId });
+                } catch (error) {
+                    console.error('Error updating quiz completion:', error);
+                }
+            }
+        }
+    }, [isQuizFinished, score, questions]);
 
     const handleRestart = () => {
         setCurrentQuestionIndex(0);
@@ -155,8 +174,8 @@ export default function Practice({ quizId }: { quizId: string }) {
         form.reset();
     };
 
-    const totalPoints = questions.reduce((sum, question) => sum + question.points, 0);
-    const percentage = (score / totalPoints) * 100;
+    const totalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);
+    const percentage = totalPoints > 0 ? (score / totalPoints) * 100 : 0;
 
     if (loading) {
         return <div>Loading questions...</div>;

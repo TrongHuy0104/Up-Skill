@@ -4,7 +4,6 @@ import ErrorHandler from '@/utils/ErrorHandler';
 import ProgressModel from '@/models/Progress.model';
 import CourseModel from '@/models/Course.model';
 import { redis } from '@/utils/redis';
-import QuizModel from '@/models/Quiz.model';
 
 // Update lesson completion status via Progress model
 export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -104,31 +103,84 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
 
 export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const quizId = req.params.id; // Lấy quizId từ URL
-    const { isCompleted } = req.body; // Lấy trạng thái hoàn thành từ request body
+    const { isCompleted, courseId } = req.body; // Lấy trạng thái hoàn thành và courseId từ request body
+    const userId = req.user?._id; // Lấy userId từ middleware xác thực
 
-    // Kiểm tra quizId có tồn tại không
-    if (!quizId) {
-        return next(new ErrorHandler('Quiz ID is required', 400));
+    // Kiểm tra quizId và courseId có tồn tại không
+    if (!quizId || !courseId) {
+        return next(new ErrorHandler('Quiz ID and Course ID are required', 400));
     }
 
-    // Tìm quiz trong database
-    const quiz = await QuizModel.findById(quizId);
-    if (!quiz) {
-        return next(new ErrorHandler('Quiz not found', 404));
+    // Tìm khóa học
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+
+    // Tìm progress của user trong khóa học này
+    const progress = await ProgressModel.findOne({ user: userId, course: courseId });
+    if (!progress) {
+        return next(new ErrorHandler('Progress not found for the user in this course', 404));
+    }
+
+    // Tìm section chứa quiz
+    let quizSection = null;
+    for (const section of course.courseData) {
+        if (section.quizzes && section.quizzes.includes(quizId)) {
+            quizSection = section;
+            break;
+        }
+    }
+
+    if (!quizSection) {
+        return next(new ErrorHandler('Quiz not found in any section of the course', 404));
+    }
+
+    // Kiểm tra xem quiz đã tồn tại trong completedQuizzes chưa
+    let quizProgress = progress.completedQuizzes.find(
+        (quizProgress: any) => quizProgress.section.quizzes.some((q: any) => q.toString() === quizId.toString()) // So sánh đúng kiểu dữ liệu
+    );
+
+    if (!quizProgress) {
+        // Nếu quiz chưa có, tạo mới mục quiz trong completedQuizzes
+        quizProgress = {
+            section: {
+                name: quizSection.name,
+                isCompleted: false, // Default to false
+                quizzes: [quizId]
+            }
+        };
+        progress.completedQuizzes.push(quizProgress);
     }
 
     // Cập nhật trạng thái hoàn thành của quiz
-    quiz.isCompleted = isCompleted;
-    await quiz.save();
+    quizProgress.section.isCompleted = isCompleted;
+
+    // Cập nhật tổng số quiz đã hoàn thành trong khóa học
+    progress.totalCompleted = progress.completedQuizzes.reduce(
+        (sum: number, quizProgress: any) => sum + (quizProgress.section.isCompleted ? 1 : 0),
+        0
+    );
+
+    // Cập nhật lại tổng số quiz hoàn thành trong từng section
+    quizSection.totalCompletedPerSection = quizSection.quizzes.reduce((count: number, quizId: any) => {
+        const quizItem = progress.completedQuizzes.find(
+            (q: any) => q.section.quizzes.includes(quizId) && q.section.isCompleted
+        );
+        return quizItem ? count + 1 : count;
+    }, 0);
+
+    // Lưu vào database
+    await progress.save();
 
     // Cập nhật Redis cache (nếu cần)
-    await redis.set(`quiz:${quizId}`, JSON.stringify(quiz));
+    await redis.set(`progress:${userId}:${courseId}`, JSON.stringify(progress));
+    console.log('progress', progress);
 
-    // Trả về phản hồi thành công
     res.status(200).json({
         success: true,
         message: 'Quiz completion status updated successfully',
-        data: quiz
+        data: progress // Trả về toàn bộ progress sau khi cập nhật
     });
 });
 
@@ -165,7 +217,8 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
                 totalLessons,
                 totalCompleted,
                 completionPercentage,
-                completedLessons: []
+                completedLessons: [],
+                completedQuizzes: []
             }
         });
     }

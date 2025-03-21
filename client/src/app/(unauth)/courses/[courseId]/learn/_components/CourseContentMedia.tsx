@@ -15,24 +15,42 @@ import {
     useAddAnswerInQuestionMutation,
     useAddNewQuestionMutation,
     useAddReplyInReviewMutation,
-    useAddReviewInCourseMutation,
+    useAddReviewInCourseMutation
 } from '@/lib/redux/features/course/courseApi';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 import Ratings from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/Ratings';
 import { useUpdateLessonCompletionMutation } from '@/lib/redux/features/progress/progressApi';
+import Practice from './Practice';
+import { useParams } from 'next/navigation';
 
 type Props = {
     readonly course: any;
     readonly user: any;
-    readonly activeVideo: number;
+    readonly activeVideo: number; // Cho phép nhận string hoặc number
     setActiveVideo(value: number): void;
     readonly refetch: any;
     readonly reload: any;
     readonly progressData: any;
+    readonly selectedQuizId: string | null;
+    readonly quizQuestions: any[];
+    setSelectedQuizId: (quizId: string | null) => void; // Thêm vào props
+    setQuizQuestions: (questions: any[]) => void;
 };
 
-function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progressData, refetch, reload }: Props) {
+function CourseContentMedia({
+    course,
+    user,
+    activeVideo,
+    setActiveVideo,
+    progressData,
+    refetch,
+    reload,
+    selectedQuizId,
+    quizQuestions,
+    setSelectedQuizId,
+    setQuizQuestions
+}: Props) {
     const content = course?.courseData;
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
@@ -43,6 +61,37 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
     const [isReviewReply, setIsReviewReply] = useState(false);
     const [reviewReply, setReviewReply] = useState('');
     const [videoProgress, setVideoProgress] = useState(0);
+    const { courseId } = useParams();
+
+    // const handleQuizCompletion = async (quizId: string, userAnswers: any[], correctAnswers: any[]) => {
+    //     const correctCount = userAnswers.filter((answer, index) => answer === correctAnswers[index]).length;
+    //     const totalQuestions = correctAnswers.length;
+    //     const percentage = (correctCount / totalQuestions) * 100;
+
+    //     if (percentage >= 70) {
+    //         // Cập nhật trạng thái quiz đã hoàn thành
+    //         await updateQuizCompletion({
+    //             courseId: course?._id,
+    //             quizId: quizId,
+    //             isCompleted: true
+    //         }).unwrap();
+
+    //         // Cập nhật danh sách bài học hoàn thành
+    //         setCompletedLessons([...completedLessons, quizId]);
+    //         toast({
+    //             variant: 'success',
+    //             title: `You passed the quiz with ${correctCount} out of ${totalQuestions} correct answers!`
+    //         });
+
+    //         // Khi quiz đã hoàn thành, bạn có thể tự động chuyển qua video hoặc quiz tiếp theo
+    //         setActiveVideo(activeVideo + 1); // Chuyển qua video tiếp theo hoặc quiz tiếp theo
+    //     } else {
+    //         toast({
+    //             variant: 'destructive',
+    //             title: `You need to get at least 70% correct answers to pass the quiz.`
+    //         });
+    //     }
+    // };
 
     // Cập nhật danh sách bài học hoàn thành từ `progressData`
     const [completedLessons, setCompletedLessons] = useState<string[]>([]);
@@ -86,7 +135,12 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                 title: 'Question reply can not be empty.'
             });
         } else {
-            addAnswerInQuestion({ answer, questionId, contentId: content?.[activeVideo]._id, courseId: course?._id });
+            addAnswerInQuestion({
+                answer,
+                questionId,
+                contentId: content?.[activeVideo]._id,
+                courseId: course?._id
+            });
         }
     };
 
@@ -120,18 +174,29 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
     };
 
     useEffect(() => {
-        const completedLessonIds = progressData?.completedLessons?.flatMap(
-            (section: any) => section.section.lessons.map((lesson: any) => lesson.toString())
-        ) || [];
+        const completedLessonIds =
+            progressData?.completedLessons?.flatMap((section: any) =>
+                section.section.lessons.map((lesson: any) => lesson.toString())
+            ) || [];
         setCompletedLessons(completedLessonIds);
     }, [progressData]);
 
-    const isCurrentLessonCompleted = completedLessons.includes(content[activeVideo]._id);
+    const isCurrentLessonCompleted =
+        content && activeVideo !== null && content[activeVideo]
+            ? completedLessons.includes(content[activeVideo]._id)
+            : false;
 
+    const completedQuizIds = progressData?.completedQuizzes?.length
+        ? progressData.completedQuizzes.flatMap((section: any) =>
+              section.section.quizzes.map((quiz: any) => quiz.toString())
+          )
+        : [];
+
+    const isCurrentQuizCompleted = selectedQuizId ? completedQuizIds.includes(selectedQuizId) : false;
     // Enable "Next Lesson" button if:
     // 1. Lesson is already completed OR
     // 2. Video progress reaches 80%
-    const canProceedToNext = isCurrentLessonCompleted || videoProgress >= 80;
+    const canProceedToNext = isCurrentLessonCompleted || videoProgress >= 80 || isCurrentQuizCompleted;
 
     const handleVideoProgress = async (progress: number) => {
         setVideoProgress(progress);
@@ -157,14 +222,107 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
         }
     };
 
+    // const videoSections = [...new Set(content?.map((item: any) => item.videoSection))];
+
+    // const handleNextLesson = () => {
+    //     const currentVideoIndex = typeof activeVideo === 'number' ? activeVideo : Number(activeVideo);
+    //     console.log('currentVideoIndex', currentVideoIndex);
+
+    //     // Kiểm tra xem bài học hiện tại có phải là quiz hay không
+    //     const isCurrentLessonQuiz = content[currentVideoIndex]?.quizzes?.length > 0;
+    //     console.log('isCurrentLessonQuiz', isCurrentLessonQuiz);
+
+    //     if (isCurrentLessonQuiz) {
+    //         // Kiểm tra xem quiz đã được hoàn thành hay chưa
+    //         const quizCompleted = content[currentVideoIndex].quizzes.every((quiz: any) => quiz.isCompleted);
+    //         console.log('quizCompleted', quizCompleted);
+
+    //         if (quizCompleted) {
+    //             // Nếu quiz đã được hoàn thành, chuyển sang bài học đầu tiên của section tiếp theo
+    //             const currentSection = content[currentVideoIndex].videoSection;
+    //             const nextSection = videoSections[videoSections.indexOf(currentSection) + 1];
+
+    //             if (nextSection) {
+    //                 console.log('nextSection', nextSection);
+
+    //                 const nextSectionFirstLessonIndex = content.findIndex(
+    //                     (item: any) => item.videoSection === nextSection
+    //                 );
+    //                 console.log('nextSectionFirstLessonIndex', nextSectionFirstLessonIndex);
+
+    //                 if (nextSectionFirstLessonIndex !== -1) {
+    //                     console.log('Bài học đầu section mới:', content[nextSectionFirstLessonIndex]);
+    //                     console.log('Bài học đầu section mớiiiiiiiiiiiiii:', nextSectionFirstLessonIndex);
+
+    //                     setActiveVideo(nextSectionFirstLessonIndex);
+    //                     setVideoProgress(0);
+
+    //                     // Kiểm tra xem bài học đầu tiên của section tiếp theo có phải là quiz hay không
+    //                     const nextLesson = content[nextSectionFirstLessonIndex];
+    //                     if (nextLesson?.quizzes?.length > 0) {
+    //                         setActiveVideo(currentVideoIndex + 1);
+    //                         setVideoProgress(0);
+    //                         setSelectedQuizId(nextLesson.quizzes[0]._id); // Cập nhật quiz hiện tại
+    //                         setQuizQuestions(nextLesson.quizzes[0].questions); // Cập nhật câu hỏi
+    //                     } else {
+    //                         setActiveVideo(currentVideoIndex + 1);
+    //                         setVideoProgress(0);
+    //                         setSelectedQuizId(null); // Reset quiz hiện tại
+    //                         setQuizQuestions([]); // Reset câu hỏi
+    //                     }
+    //                     return; // Kết thúc hàm
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     // Nếu không phải quiz hoặc quiz chưa được hoàn thành, chuyển sang bài học tiếp theo
+    //     if (currentVideoIndex < content.length - 1) {
+    //         const nextLesson = content[currentVideoIndex + 1];
+    //         setActiveVideo(currentVideoIndex + 1);
+    //         setVideoProgress(0);
+    //         console.log('nextLesson', nextLesson);
+
+    //         // Kiểm tra xem bài học tiếp theo có phải là quiz hay không
+    //         if (nextLesson?.quizzes?.length > 0) {
+    //             setSelectedQuizId(nextLesson.quizzes[0]._id); // Cập nhật quiz hiện tại
+    //             setQuizQuestions(nextLesson.quizzes[0].questions); // Cập nhật câu hỏi
+    //         } else {
+    //             setSelectedQuizId(null); // Reset quiz hiện tại
+    //             setQuizQuestions([]); // Reset câu hỏi
+    //         }
+    //     }
+    // };
+
     const handleNextLesson = () => {
         if (activeVideo < content.length - 1) {
+            const nextVideoIndex = activeVideo + 1;
+            const nextLesson = content[nextVideoIndex];
+            console.log('nextLesson', nextLesson);
+
+            // Kiểm tra xem bài học tiếp theo có phải là quiz hay không
+            if (nextLesson?.quizzes?.length > 0) {
+                setSelectedQuizId(nextLesson.quizzes[0]._id); // Cập nhật quiz hiện tại
+                setQuizQuestions(nextLesson.quizzes[0].questions); // Cập nhật câu hỏi
+            } else {
+                setActiveVideo(nextVideoIndex);
+                setVideoProgress(0);
+                setSelectedQuizId(null); // Reset quiz hiện tại
+                setQuizQuestions([]); // Reset câu hỏi
+            }
+
+            // Chuyển sang bài học tiếp theo
             setActiveVideo(activeVideo + 1);
             setVideoProgress(0);
         }
     };
 
-
+    // const handleNextLesson = () => {
+    //     if (activeVideo < content.length - 1) {
+    //         setActiveVideo(activeVideo + 1);
+    //         setVideoProgress(0);
+    //     }
+    // };
     useEffect(() => {
         if (isSuccess) {
             setQuestion('');
@@ -252,14 +410,27 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
 
     return (
         <div className="w-[95%] md:w-[90%] py-4 m-auto">
-            <VideoPlayer videoUrl={content?.[activeVideo]?.videoUrl?.url}
-                onProgress={handleVideoProgress}
-            />
+            {/* <VideoPlayer videoUrl={content?.[activeVideo]?.videoUrl?.url} onProgress={handleVideoProgress} /> */}
+            {/* Kiểm tra xem activeVideo có phải là quizId không */}
+            {selectedQuizId ? (
+                <Practice
+                    questionArr={quizQuestions}
+                    quizId={selectedQuizId}
+                    courseId={typeof courseId === 'string' ? courseId : ''}
+                /> // Hiển thị quiz nếu selectedQuizId có giá trị
+            ) : (
+                <VideoPlayer
+                    videoUrl={content?.[activeVideo]?.videoUrl?.url} // Hiển thị video nếu không phải quiz
+                    onProgress={handleVideoProgress} // Gọi xử lý video progress nếu cần
+                />
+            )}
             <div className="w-full flex items-center justify-between my-5">
                 <Button
                     size={'rounded'}
                     className={activeVideo === 0 ? '!cursor-no-drop opacity-80 hover:bg-primary-800' : ''}
-                    onClick={() => setActiveVideo(activeVideo === 0 ? 0 : activeVideo - 1)}
+                    onClick={() =>
+                        setActiveVideo(typeof activeVideo === 'number' ? (activeVideo === 0 ? 0 : activeVideo - 1) : 0)
+                    }
                 >
                     <HiArrowLeft />
                     Prev Lesson
@@ -275,7 +446,6 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                     Next Lesson
                     <HiArrowRight />
                 </Button>
-
             </div>
             <h1 className="pt-3 text-[25px] font-semibold mb-8">{content?.[activeVideo]?.title}</h1>
             <Tabs defaultValue="overview">
@@ -406,72 +576,72 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                         <div className="w-full">
                             {course?.reviews
                                 ? [...course.reviews].reverse().map((item: any, index: number) => (
-                                    <>
-                                        <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
-                                            <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                            <div className="w-full">
-                                                <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                                <div className="ml-[10px]">
-                                                    <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
-                                                </div>
-                                                <p className="pl-3">{item?.comment}</p>
-                                                <small className="pl-3 text-primary-500">
-                                                    {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                                </small>
-                                            </div>
-                                        </div>
-                                        {user?._id === course?.authorId && (
-                                            <div className="w-full flex">
-                                                <button
-                                                    className="md:pl-[60px] cursor-pointer mr-2"
-                                                    onClick={() => {
-                                                        setIsReviewReply(!isReviewReply);
-                                                        setReviewId(item._id);
-                                                    }}
-                                                >
-                                                    {!isReviewReply ? 'Add a reply' : 'Hide replies'}
-                                                </button>
-                                            </div>
-                                        )}
-                                        {isReviewReply && (
-                                            <div className="w-full flex relative">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Enter your answer..."
-                                                    value={reviewReply}
-                                                    onChange={(e) => setReviewReply(e.target.value)}
-                                                    className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
-                                                />
-                                                <button
-                                                    onClick={handleReviewReply}
-                                                    className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
+                                      <>
+                                          <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
+                                              <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                              <div className="w-full">
+                                                  <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                  <div className="ml-[10px]">
+                                                      <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
+                                                  </div>
+                                                  <p className="pl-3">{item?.comment}</p>
+                                                  <small className="pl-3 text-primary-500">
+                                                      {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                  </small>
+                                              </div>
+                                          </div>
+                                          {user?._id === course?.authorId && (
+                                              <div className="w-full flex">
+                                                  <button
+                                                      className="md:pl-[60px] cursor-pointer mr-2"
+                                                      onClick={() => {
+                                                          setIsReviewReply(!isReviewReply);
+                                                          setReviewId(item._id);
+                                                      }}
+                                                  >
+                                                      {!isReviewReply ? 'Add a reply' : 'Hide replies'}
+                                                  </button>
+                                              </div>
+                                          )}
+                                          {isReviewReply && (
+                                              <div className="w-full flex relative">
+                                                  <input
+                                                      type="text"
+                                                      placeholder="Enter your answer..."
+                                                      value={reviewReply}
+                                                      onChange={(e) => setReviewReply(e.target.value)}
+                                                      className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
+                                                  />
+                                                  <button
+                                                      onClick={handleReviewReply}
+                                                      className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
                                                     cursor-pointer rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all 
                                                     duration-300 hover:scale-110"
-                                                    disabled={isReplyReviewLoading}
-                                                >
-                                                    {isReplyReviewLoading ? (
-                                                        <SpinnerMini />
-                                                    ) : (
-                                                        <Image src={arrowRightIcon} alt="arrow right icon" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        )}
+                                                      disabled={isReplyReviewLoading}
+                                                  >
+                                                      {isReplyReviewLoading ? (
+                                                          <SpinnerMini />
+                                                      ) : (
+                                                          <Image src={arrowRightIcon} alt="arrow right icon" />
+                                                      )}
+                                                  </button>
+                                              </div>
+                                          )}
 
-                                        {item?.commentReplies.map((i: any, index: number) => (
-                                            <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
-                                                <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                                <div className="w-full">
-                                                    <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                                    <p className="pl-3">{i?.comment}</p>
-                                                    <small className="pl-3 text-primary-500">
-                                                        {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </>
-                                ))
+                                          {item?.commentReplies.map((i: any, index: number) => (
+                                              <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
+                                                  <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                                  <div className="w-full">
+                                                      <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                      <p className="pl-3">{i?.comment}</p>
+                                                      <small className="pl-3 text-primary-500">
+                                                          {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                      </small>
+                                                  </div>
+                                              </div>
+                                          ))}
+                                      </>
+                                  ))
                                 : null}
                         </div>
                     </div>

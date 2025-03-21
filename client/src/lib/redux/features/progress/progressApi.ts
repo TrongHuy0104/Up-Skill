@@ -10,6 +10,14 @@ export const progressApi = apiSlice.injectEndpoints({
                 credentials: 'include' as const
             })
         }),
+        updateQuizCompletion: builder.mutation({
+            query: ({ courseId, quizId, isCompleted }) => ({
+                url: `/progress/update-quiz-completion/${quizId}`,
+                method: 'PUT',
+                body: { courseId, isCompleted },
+                credentials: 'include' as const
+            })
+        }),
         getProgressData: builder.query({
             query: (courseId) => ({
                 url: `/progress/${courseId}`,
@@ -20,7 +28,5 @@ export const progressApi = apiSlice.injectEndpoints({
     })
 });
 
-export const {
-    useUpdateLessonCompletionMutation,
-    useGetProgressDataQuery
-} = progressApi;
+export const { useUpdateLessonCompletionMutation, useUpdateQuizCompletionMutation, useGetProgressDataQuery } =
+    progressApi;
