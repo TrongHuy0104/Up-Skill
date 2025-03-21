@@ -52,7 +52,7 @@ const ShopCart: React.FC = () => {
     const amount = Math.round(discountedTotal * 100);
     try {
       const paymentIntentResult = await createPaymentIntent(amount).unwrap();
-      dispatch(orderCreatePaymentIntent({ cartItems: filteredCartItems.map(item => item.courseId) })); // Sử dụng filteredCartItems
+      dispatch(orderCreatePaymentIntent({ cartItems: filteredCartItems.map(item => item.courseId) }));
       redirect(`/checkout/${paymentIntentResult?.client_secret}`);
     } catch (error: any) {
       console.error("Error creating payment intent:", error);

@@ -10,6 +10,7 @@ import quizRoutes from '@/routes/quiz.route';
 import progressRoutes from '@/routes/progress.route';
 import incomeRoutes from '@/routes/income.route';
 import cartRoutes from '@/routes/cart.route';
+import couponRoutes from '@/routes/coupon.route';
 
 const router = express.Router();
 
@@ -34,5 +35,7 @@ router.use('/progress', progressRoutes);
 router.use('/income', incomeRoutes);
 
 router.use('/cart', cartRoutes);
+
+router.use('/coupon', couponRoutes);
 
 export default router;
