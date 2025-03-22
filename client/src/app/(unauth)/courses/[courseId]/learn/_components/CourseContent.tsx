@@ -15,7 +15,14 @@ interface CourseContentProps {
 export default function CourseContent({ courseId, user }: CourseContentProps) {
     const { data, isLoading, refetch } = useGetCourseContentQuery(courseId, { refetchOnMountOrArgChange: true });
     const { data: progressData, refetch: reload } = useGetProgressDataQuery(courseId);
-    const [activeVideo, setActiveVideo] = useState<number>(0);
+    // const [activeVideo, setActiveVideo] = useState<number>(0);
+    const [activeVideo, setActiveVideo] = useState<{ section: string; index: number }>({
+        section: 'Section 1',
+        index: 0
+    });
+
+    console.log('data', data);
+
     const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
     const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null); // State để lưu trữ quizId được chọn
 

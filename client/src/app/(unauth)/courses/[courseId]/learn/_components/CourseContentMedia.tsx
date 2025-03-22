@@ -27,8 +27,9 @@ import { useParams } from 'next/navigation';
 type Props = {
     readonly course: any;
     readonly user: any;
-    readonly activeVideo: number; // Cho phép nhận string hoặc number
-    setActiveVideo(value: number): void;
+    activeVideo: { section: string; index: number }; // Tracked as { section, index }
+    setActiveVideo(value: { section: string; index: number }): void;
+
     readonly refetch: any;
     readonly reload: any;
     readonly progressData: any;
@@ -121,7 +122,7 @@ function CourseContentMedia({
                 title: 'Question can not be empty.'
             });
         } else {
-            addNewQuestion({ question, contentId: content?.[activeVideo]._id, courseId: course?._id });
+            addNewQuestion({ question, contentId: content?.[activeVideo?.index]._id, courseId: course?._id });
         }
     };
 
@@ -138,7 +139,7 @@ function CourseContentMedia({
             addAnswerInQuestion({
                 answer,
                 questionId,
-                contentId: content?.[activeVideo]._id,
+                contentId: content?.[activeVideo?.index]._id,
                 courseId: course?._id
             });
         }
@@ -182,8 +183,8 @@ function CourseContentMedia({
     }, [progressData]);
 
     const isCurrentLessonCompleted =
-        content && activeVideo !== null && content[activeVideo]
-            ? completedLessons.includes(content[activeVideo]._id)
+        content && activeVideo !== null && content[activeVideo?.index]
+            ? completedLessons.includes(content[activeVideo?.index]._id)
             : false;
 
     const completedQuizIds = progressData?.completedQuizzes?.length
@@ -206,12 +207,12 @@ function CourseContentMedia({
             try {
                 await updateLessonCompletion({
                     courseId: course?._id,
-                    lessonId: content[activeVideo]._id,
+                    lessonId: content[activeVideo?.index]._id,
                     isCompleted: true
                 }).unwrap();
 
                 // Update completed lessons
-                setCompletedLessons([...completedLessons, content[activeVideo]._id]);
+                setCompletedLessons([...completedLessons, content[activeVideo?.index]._id]);
                 await reload();
             } catch (error) {
                 toast({
@@ -295,24 +296,27 @@ function CourseContentMedia({
     // };
 
     const handleNextLesson = () => {
-        if (activeVideo < content.length - 1) {
-            const nextVideoIndex = activeVideo + 1;
-            const nextLesson = content[nextVideoIndex];
+        if (activeVideo && activeVideo.index < content.length - 1) {
+            const nextLesson = content[activeVideo.index + 1];
             console.log('nextLesson', nextLesson);
+            console.log('activeVideo.index', activeVideo.index);
 
             // Kiểm tra xem bài học tiếp theo có phải là quiz hay không
             if (nextLesson?.quizzes?.length > 0) {
                 setSelectedQuizId(nextLesson.quizzes[0]._id); // Cập nhật quiz hiện tại
                 setQuizQuestions(nextLesson.quizzes[0].questions); // Cập nhật câu hỏi
             } else {
-                setActiveVideo(nextVideoIndex);
+                setActiveVideo({ section: nextLesson.videoSection, index: activeVideo.index + 1 });
                 setVideoProgress(0);
                 setSelectedQuizId(null); // Reset quiz hiện tại
                 setQuizQuestions([]); // Reset câu hỏi
             }
 
+            console.log('section', nextLesson.videoSection);
+            console.log('section', activeVideo.index + 1);
+
             // Chuyển sang bài học tiếp theo
-            setActiveVideo(activeVideo + 1);
+            setActiveVideo({ section: nextLesson.videoSection, index: activeVideo.index + 1 });
             setVideoProgress(0);
         }
     };
@@ -420,17 +424,15 @@ function CourseContentMedia({
                 /> // Hiển thị quiz nếu selectedQuizId có giá trị
             ) : (
                 <VideoPlayer
-                    videoUrl={content?.[activeVideo]?.videoUrl?.url} // Hiển thị video nếu không phải quiz
+                    videoUrl={content?.[activeVideo?.index]?.videoUrl?.url} // Hiển thị video nếu không phải quiz
                     onProgress={handleVideoProgress} // Gọi xử lý video progress nếu cần
                 />
             )}
             <div className="w-full flex items-center justify-between my-5">
                 <Button
                     size={'rounded'}
-                    className={activeVideo === 0 ? '!cursor-no-drop opacity-80 hover:bg-primary-800' : ''}
-                    onClick={() =>
-                        setActiveVideo(typeof activeVideo === 'number' ? (activeVideo === 0 ? 0 : activeVideo - 1) : 0)
-                    }
+                    className={activeVideo?.index === 0 ? '!cursor-no-drop opacity-80 hover:bg-primary-800' : ''}
+                    onClick={() => setActiveVideo({ section: activeVideo?.section, index: activeVideo?.index - 1 })}
                 >
                     <HiArrowLeft />
                     Prev Lesson
@@ -447,7 +449,7 @@ function CourseContentMedia({
                     <HiArrowRight />
                 </Button>
             </div>
-            <h1 className="pt-3 text-[25px] font-semibold mb-8">{content?.[activeVideo]?.title}</h1>
+            <h1 className="pt-3 text-[25px] font-semibold mb-8">{content?.[activeVideo?.index]?.title}</h1>
             <Tabs defaultValue="overview">
                 <TabsList>
                     <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -463,7 +465,7 @@ function CourseContentMedia({
                     />
                 </TabsContent>
                 <TabsContent value="resources">
-                    {content?.[activeVideo]?.links.map((item: any, index: number) => (
+                    {content?.[activeVideo?.index]?.links.map((item: any, index: number) => (
                         <div key={item?.title + index} className="mb-5">
                             <h2 className="md:text-lg font-normal md:inline-block">
                                 {' '}

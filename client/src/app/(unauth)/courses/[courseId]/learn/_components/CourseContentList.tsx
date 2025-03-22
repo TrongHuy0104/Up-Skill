@@ -13,8 +13,8 @@ import { toast } from '@/hooks/use-toast';
 interface Props {
     readonly data: any;
     readonly progressData: any;
-    readonly activeVideo: number | null; // Chỉnh sửa thành string | number
-    setActiveVideo(value: number): void;
+    readonly activeVideo: { section: string; index: number }; // Chỉnh sửa thành object chứa section và index
+    setActiveVideo(value: { section: string; index: number }): void; // Cập nhật setActiveVideo
     refetch: any;
     onQuizClick: (quizId: string | null, quizQuestions: any[]) => void;
     selectedQuizId: string | null;
@@ -31,6 +31,7 @@ export default function CourseContentList({
     const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set<string>());
 
     const videoSections: string[] = [...new Set<string>(data?.map((item: any) => item.videoSection))];
+    console.log('videoSections', videoSections);
 
     let totalCount = 0;
 
@@ -42,19 +43,30 @@ export default function CourseContentList({
         setVisibleSections(newVisibleSections);
     };
 
-    const handleButtonLesson = (index: number, isClickable: boolean, sectionLessons: any[], section: string) => {
+    const handleButtonLesson = (section: string, index: number, isClickable: boolean, sectionLessons: any[]) => {
+        // Ghép tất cả các bài học trong các sections
+        // const allLessons = videoSections.reduce((acc: any[], section: string) => {
+        //     const sectionItems = data.filter((item: any) => item.videoSection === section);
+        //     const sectionLessons = sectionItems.filter((item: any) => !item.isQuiz); // Lọc ra các bài học
+        //     return [...acc, ...sectionLessons];
+        // }, []);
+
         const item = sectionLessons[index];
-        console.log('section', section);
+
+        // Tính index chính xác trong mảng allLessons
+        // const globalIndex = allLessons.findIndex((lesson: any) => lesson._id === item._id);
+
+        // Kiểm tra xem index có vượt quá số lượng lesson trong section không
+        const sectionLessonCount = sectionLessons.length;
+        const adjustedIndex = index >= sectionLessonCount ? 0 : index; // Nếu index vượt quá số lượng bài học, set lại thành 0
 
         if (isClickable) {
             if (item.videoUrl) {
-                setActiveVideo(index);
+                setActiveVideo({ section, index: adjustedIndex }); // Cập nhật activeVideo với index đã điều chỉnh
                 onQuizClick(null, []);
             } else if (item.quizzes) {
                 onQuizClick(item.quizzes[0]._id, item.quizzes[0].questions);
-                setActiveVideo(index);
-
-                // Kiểm tra nếu quiz đã hoàn thành
+                setActiveVideo({ section, index: adjustedIndex }); // Cập nhật activeVideo với index đã điều chỉnh
             }
         } else {
             toast({
@@ -82,7 +94,6 @@ export default function CourseContentList({
                 const isSectionVisible = visibleSections.has(section);
 
                 const sectionItems: any[] = data.filter((item: any) => item.videoSection === section);
-
                 const sectionLessons = sectionItems.filter((item: any) => !item.isQuiz); // Filter out quizzes
 
                 const sectionQuizzes = sectionItems.filter((item: any) => item.quizzes && item.quizzes.length > 0); // Filter out lessons
@@ -110,6 +121,7 @@ export default function CourseContentList({
 
                 const sectionStartIndex = totalCount;
                 totalCount += sectionLessons.length;
+                console.log('22', section);
 
                 // Get completed lessons for this section
                 const completedLessons =
@@ -174,6 +186,8 @@ export default function CourseContentList({
                                     const isClickable = isCompleted || isPreviousCompleted || isQuizCompleted;
                                     const isQuiz = !item.videoUrl && item.quizzes?.length > 0; // Kiểm tra nếu là quiz
                                     const isLesson = item.videoUrl; // Kiểm tra nếu là bài học
+                                    console.log('activeVideo?.section', activeVideo?.section);
+                                    console.log('activeVideo', activeVideo);
 
                                     return (
                                         <div
@@ -186,11 +200,12 @@ export default function CourseContentList({
                                                         {isCompleted ? (
                                                             <IoCheckmarkCircle className="text-accent-600 text-lg" />
                                                         ) : (
-                                                            <MdOutlineQuiz className="text-lg" />
+                                                            <Image src={PlayContent} alt="play content" />
                                                         )}
                                                         <button
                                                             className={`hover:text-accent-600 ${
-                                                                index === activeVideo
+                                                                activeVideo?.section === section &&
+                                                                activeVideo?.index === index
                                                                     ? 'text-accent-600'
                                                                     : isCompleted
                                                                       ? ' '
@@ -200,10 +215,10 @@ export default function CourseContentList({
                                                             }`}
                                                             onClick={() =>
                                                                 handleButtonLesson(
+                                                                    section,
                                                                     index,
                                                                     isClickable,
-                                                                    sectionLessons,
-                                                                    section
+                                                                    sectionLessons
                                                                 )
                                                             }
                                                             disabled={!isClickable}
@@ -218,7 +233,7 @@ export default function CourseContentList({
                                                         {isQuizCompleted ? (
                                                             <IoCheckmarkCircle className="text-accent-600 text-lg" />
                                                         ) : (
-                                                            <Image src={PlayContent} alt="play content" />
+                                                            <MdOutlineQuiz className="text-lg" />
                                                         )}
                                                         <button
                                                             className={`hover:text-accent-600 ${
@@ -232,10 +247,10 @@ export default function CourseContentList({
                                                             }`}
                                                             onClick={() =>
                                                                 handleButtonLesson(
+                                                                    section,
                                                                     index,
                                                                     isClickable,
-                                                                    sectionLessons,
-                                                                    section
+                                                                    sectionLessons
                                                                 )
                                                             }
                                                             disabled={!isClickable}
