@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IQuiz, IQuestion } from '@/interfaces/Quiz';
+import { IQuiz, IQuestion } from '../interfaces/Quiz';
 
 const questionSchema = new Schema<IQuestion>({
     text: { type: String, required: true },

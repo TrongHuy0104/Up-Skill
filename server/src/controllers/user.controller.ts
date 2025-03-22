@@ -3,22 +3,22 @@ import cloudinary from 'cloudinary';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import dotenv from 'dotenv';
-import UserModel from '@/models/User.model';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
+import UserModel from '../models/User.model';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 
 import path from 'path';
-import sendMail from '@/utils/sendMail';
-import { UserT } from '@/interfaces/User';
-import { accessTokenOptions, refreshTokenOptions, sendToken } from '@/utils/jwt';
-import { redis } from '@/utils/redis';
+import sendMail from '../utils/sendMail';
+import { UserT } from '../interfaces/User';
+import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
+import { redis } from '../utils/redis';
 import {
     getUserById,
     getAllUsersService,
     updateUserRoleService,
     getAllInstructorsService
-} from '@/services/user.service';
+} from '../services/user.service';
 
 dotenv.config();
 

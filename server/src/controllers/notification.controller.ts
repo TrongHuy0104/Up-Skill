@@ -1,7 +1,7 @@
 import cron from 'node-cron';
-import NotificationModel from '@/models/Notification.model';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
+import NotificationModel from '../models/Notification.model';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 
 export const getAllNotificationsByInstructor = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

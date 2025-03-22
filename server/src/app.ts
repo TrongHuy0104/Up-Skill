@@ -6,20 +6,22 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
-import notFoundMiddleware from '@/middlewares/errors/notFound';
-import errorHandlerMiddleware from '@/middlewares/errors/errorHandler';
+import notFoundMiddleware from './middlewares/errors/notFound';
+import errorHandlerMiddleware from './middlewares/errors/errorHandler';
 
 // handle unhandled rejection error
-import '@/middlewares/errors/unhandledRejection';
+import './middlewares/errors/unhandledRejection';
 
 // Import Routes
-import api from '@/api';
+import api from './api';
 
 const app = express();
 
 dotenv.config();
 
 app.use(morgan('dev'));
+
+app.set('trust proxy', 1);
 
 // Set security HTTP headers
 app.use(helmet());
@@ -30,11 +32,23 @@ app.use(express.json({ limit: '50mb' }));
 // cookie parser
 app.use(cookieParser());
 
+const allowedOrigins = process.env.ORIGIN?.split(',') || [];
+
 // cors
 app.use(
     cors({
-        origin: process.env.ORIGIN,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        origin: function (origin, callback) {
+            // Allow requests with no origin (like mobile apps or curl)
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            } else {
+                return callback(new Error('Not allowed by CORS'));
+            }
+        },
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization'], // or you can set this to '*'
         credentials: true
     })
 );

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
-import LevelModel from '@/models/Level.model';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
+import LevelModel from '../models/Level.model';
 
 export const createLevel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.body;

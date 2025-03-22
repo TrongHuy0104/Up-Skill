@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
 import {
     createCategory,
     createSubCategory,
@@ -7,7 +7,7 @@ import {
     getCategories,
     getCategory,
     getSubCategoriesByCategoryId
-} from '@/controllers/category.controller';
+} from '../controllers/category.controller';
 
 const router = express.Router();
 

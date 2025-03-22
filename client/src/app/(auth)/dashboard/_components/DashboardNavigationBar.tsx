@@ -9,6 +9,8 @@ import { PiBagBold } from 'react-icons/pi';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
+import { DashboardNavigationSkeleton } from '@/components/ui/Skeleton';
 
 const commonNavbarItems = [
     {
@@ -59,14 +61,15 @@ const userNavbarItems = [
     }
 ];
 
-interface DashboardNavigationBarProps {
-    user: {
-        role: 'instructor' | 'user';
-    };
-}
-
-const DashboardNavigationBar = ({ user }: DashboardNavigationBarProps) => {
+const DashboardNavigationBar = () => {
+    const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
     const pathName = usePathname();
+
+    if (isLoadingUser) {
+        return <DashboardNavigationSkeleton />;
+    }
+
+    const { user } = userData;
 
     const currentNavbarList =
         user.role === 'instructor'

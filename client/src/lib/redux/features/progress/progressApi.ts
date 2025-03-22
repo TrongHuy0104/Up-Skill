@@ -16,11 +16,16 @@ export const progressApi = apiSlice.injectEndpoints({
                 method: 'GET',
                 credentials: 'include' as const
             })
+        }),
+        getAllCoursesProgress: builder.query({
+            query: () => ({
+                url: `/progress`,
+                method: 'GET',
+                credentials: 'include' as const
+            })
         })
     })
 });
 
-export const {
-    useUpdateLessonCompletionMutation,
-    useGetProgressDataQuery
-} = progressApi;
+export const { useUpdateLessonCompletionMutation, useGetProgressDataQuery, useGetAllCoursesProgressQuery } =
+    progressApi;

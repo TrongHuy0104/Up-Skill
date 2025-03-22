@@ -1,8 +1,8 @@
 import cloudinary from 'cloudinary';
-import { catchAsync } from '@/utils/catchAsync';
+import { catchAsync } from '../utils/catchAsync';
 import { NextFunction, Request, Response } from 'express';
-import LayoutModel from '@/models/Layout.model';
-import ErrorHandler from '@/utils/ErrorHandler';
+import LayoutModel from '../models/Layout.model';
+import ErrorHandler from '../utils/ErrorHandler';
 
 // create layout
 export const createLayout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
