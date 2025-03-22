@@ -57,12 +57,13 @@ export const getRequestsByCourseId = catchAsync(async (req: Request, res: Respon
 
 //get pending request
 export const getPendingRequests = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const pendingRequests = await RequestModel.find({ status: 'pending' });
+    const pendingRequests = await RequestModel.find({ status: 'pending' })
+        .populate('courseId')
+        .populate('instructorId');
 
     if (!pendingRequests || pendingRequests.length === 0) {
         return next(new ErrorHandler('No pending requests found', 404));
     }
-
     res.status(200).json({
         success: true,
         data: pendingRequests

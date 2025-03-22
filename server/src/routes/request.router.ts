@@ -13,7 +13,13 @@ const router = express.Router();
 
 router.post('/create-request', updateAccessToken, isAuthenticated, authorizeRoles('instructor'), createRequest);
 
-router.get('/get-request/:courseId', isAuthenticated, authorizeRoles('instructor'), getRequestsByCourseId);
+router.get(
+    '/get-request/:courseId',
+    updateAccessToken,
+    isAuthenticated,
+    authorizeRoles('instructor'),
+    getRequestsByCourseId
+);
 
 router.get('/get-request-pending/', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getPendingRequests);
 

@@ -10,6 +10,7 @@ import MoreSections from '@/public/assets/icons/more-sections.svg';
 import { getMinutes } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
+import { useSelector } from 'react-redux';
 
 interface Props {
     readonly data: any;
@@ -20,6 +21,8 @@ interface Props {
 export default function CourseContent({ data }: Props) {
     const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set<string>());
     const [isShowAllSections, setIsShowAllSections] = useState(false);
+    const { user } = useSelector((state: any) => state.auth);
+
     // find unique video sections
     const videoSections: string[] = [...new Set<string>(data?.map((item: any) => item.videoSection))];
 
@@ -109,7 +112,7 @@ export default function CourseContent({ data }: Props) {
                                                 <span className="text-sm text-primary-800">
                                                     {getMinutes(lessonLength?.toFixed(0))}
                                                 </span>
-                                                {item.isFree ? (
+                                                {item.isFree || user?.role === 'admin' ? (
                                                     <div className="text-accent-900 border border-accent-900 px-2 py-1 text-sm rounded">
                                                         Preview
                                                     </div>
