@@ -21,8 +21,8 @@ export const accessTokenOptions: ITokenOptions = {
     maxAge: accessTokenExpire * 60 * 60 * 1000,
     httpOnly: false,
     sameSite: 'none',
-    secure: true
-    // path: '/'
+    secure: true,
+    path: '/'
     // sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     // secure: process.env.NODE_ENV === 'production',
 };
@@ -32,8 +32,8 @@ export const refreshTokenOptions: ITokenOptions = {
     maxAge: refreshTokenExpire * 24 * 60 * 60 * 1000,
     httpOnly: false,
     sameSite: 'none',
-    secure: true
-    // path: '/'
+    secure: true,
+    path: '/'
 };
 
 export const sendToken = (user: UserT, statusCode: number, res: Response) => {

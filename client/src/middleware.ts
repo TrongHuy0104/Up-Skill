@@ -13,7 +13,9 @@ export async function middleware(req: NextRequest) {
     if (!normalToken && !socialToken) {
         console.log('No token found, redirecting to home page');
         const homeUrl = new URL('/', req.url);
-        return NextResponse.redirect(homeUrl);
+        const redirectResponse = NextResponse.redirect(homeUrl);
+        redirectResponse.headers.set('access_token', 'no-cache');
+        return redirectResponse;
     }
 
     console.log('Token found, allowing access');
