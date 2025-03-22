@@ -13,14 +13,12 @@ type Props = {
     course: any;
 };
 
-function CoursePreview({ active, setActive, course }: Props) {
+function CoursePreview({ course }: Props) {
     const discountPercentagePrice = (((course?.estimatedPrice - course?.price) / course?.estimatedPrice) * 100).toFixed(
         0
     );
 
-    const prevButton = () => {
-        setActive(active - 1);
-    };
+
 
     return (
         <>
@@ -102,11 +100,6 @@ function CoursePreview({ active, setActive, course }: Props) {
                     <h1 className="text-[25px] font-cardo">Course Details</h1>
                     <p className="mt-2 mb-6 whitespace-pre-line w-full overflow-hidden">{course?.description}</p>
                 </div>
-            </div>
-            <div className="flex justify-start">
-                <Button onClick={prevButton} size="sm" type="submit">
-                    <span>Back</span>
-                </Button>
             </div>
         </>
     );

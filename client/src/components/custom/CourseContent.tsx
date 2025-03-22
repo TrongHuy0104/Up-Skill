@@ -66,7 +66,7 @@ export default function CourseContent({ data }: Props) {
                                 <span className="text-sm font-normal">
                                     {sectionVideoCount} lessons •{' '}
                                     {sectionVideoLength < 60
-                                        ? sectionVideoLength.toFixed(0)
+                                        ? sectionVideoLength?.toFixed(0)
                                         : sectionContentHours.toFixed(2)}{' '}
                                     {sectionVideoLength > 60 ? 'hours' : 'minutes'}
                                 </span>
