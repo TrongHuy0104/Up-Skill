@@ -555,16 +555,16 @@ export const deleteLesson = catchAsync(async (req: Request, res: Response, next:
             const match = c._id === lesson._id;
             return match
                 ? {
-                    ...c,
-                    title: null,
-                    description: null,
-                    videoLength: null,
-                    isFree: false,
-                    videoUrl: null,
-                    links: [],
-                    isPublished: false,
-                    isPublishedSection: false
-                }
+                      ...c,
+                      title: null,
+                      description: null,
+                      videoLength: null,
+                      isFree: false,
+                      videoUrl: null,
+                      links: [],
+                      isPublished: false,
+                      isPublishedSection: false
+                  }
                 : c;
         });
     } else {
@@ -616,9 +616,9 @@ export const publishLesson = catchAsync(async (req: Request, res: Response, next
         const match = c._id === lesson._id;
         return match
             ? {
-                ...c,
-                isPublished: true
-            }
+                  ...c,
+                  isPublished: true
+              }
             : c;
     });
 
@@ -665,9 +665,9 @@ export const unPublishLesson = catchAsync(async (req: Request, res: Response, ne
         const match = c._id === lesson._id;
         return match
             ? {
-                ...c,
-                isPublished: false
-            }
+                  ...c,
+                  isPublished: false
+              }
             : c;
     });
 
@@ -711,9 +711,9 @@ export const publishSection = catchAsync(async (req: Request, res: Response, nex
         const match = c.videoSection === data.videoSection;
         return match
             ? {
-                ...c,
-                isPublishedSection: true
-            }
+                  ...c,
+                  isPublishedSection: true
+              }
             : c;
     });
 
@@ -757,9 +757,9 @@ export const unpublishSection = catchAsync(async (req: Request, res: Response, n
         const match = c.videoSection === data.videoSection;
         return match
             ? {
-                ...c,
-                isPublishedSection: false
-            }
+                  ...c,
+                  isPublishedSection: false
+              }
             : c;
     });
 
@@ -854,12 +854,12 @@ export const uploadLessonVideo = catchAsync(async (req: Request, res: Response, 
             const match = c._id === lesson._id;
             return match
                 ? {
-                    ...c,
-                    videoUrl: {
-                        public_id: myCloud.public_id,
-                        url: myCloud.secure_url
-                    }
-                }
+                      ...c,
+                      videoUrl: {
+                          public_id: myCloud.public_id,
+                          url: myCloud.secure_url
+                      }
+                  }
                 : c;
         });
     }

@@ -8,28 +8,47 @@ import { FaEllipsisV, FaChevronDown } from 'react-icons/fa';
 import CoursePreview from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/CoursePreview';
 import axios from 'axios';
 import CourseContent from '@/components/custom/CourseContent';
-
+import { toast } from '@/hooks/use-toast';
 
 
 export default function RequestList() {
     const [requests, setRequests] = useState<any>([]);
     const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
     const [active, setActive] = useState(4);
-
+    const fetchRequests = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_SERVER_URI}/request/get-request-pending`,  { withCredentials: true }
+            );
+            setRequests(Array.isArray(response.data.data) ? response.data.data : []);
+        } catch (error) {
+            console.error('Error fetching requests:', error);
+        }
+    };
     useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_SERVER_URI}/request/get-request-pending`,  { withCredentials: true }
-                );
-                setRequests(response.data.data)
-            } catch (error) {
-                console.error('Error fetching requests:', error);
-            }
-        };
-
         fetchRequests();
     }, []);
+    const handleRequest = async (requestId: string, action: 'approve' | 'reject') => {
+        try {
+            await axios.put(
+                `${process.env.NEXT_PUBLIC_SERVER_URI}/request/handle-request/${requestId}`,
+                { action }, 
+                { withCredentials: true }
+            );
+        setRequests((prevRequests :  any) => 
+            prevRequests.filter((req : any) => req._id !== requestId)
+        );
+
+        await fetchRequests();
+             toast({
+                            variant: 'success',
+                            title: `Request ${action === 'approve' ? 'approved' : 'rejected'} successfully!`
+                        });
+        } catch (error) {
+            console.error(`Error handling request ${action}:`, error);
+        }
+    };
+    
 
     const toggleRow = (id: number) => {
         setExpandedRows((prev) => {
@@ -81,11 +100,11 @@ export default function RequestList() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem >
+                                                <DropdownMenuItem onClick={() => handleRequest(request?._id, 'reject')}>
                                                     Reject
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem >
-                                                    Accept
+                                                <DropdownMenuItem onClick={() => handleRequest(request?._id, 'approve')}>
+                                                    Approve
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
