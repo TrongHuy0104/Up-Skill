@@ -12,7 +12,7 @@ export default async function page({ params }: any) {
     const cookie = cookieStore.toString();
 
     // Gửi request lấy thông tin user
-    const res = await fetch(`http://localhost:8000/api/user/${instructorId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/${instructorId}`, {
         credentials: 'include',
         headers: {
             Cookie: cookie // Pass the cookies in the headers

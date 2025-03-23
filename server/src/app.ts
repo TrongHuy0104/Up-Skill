@@ -33,6 +33,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 
 const allowedOrigins = process.env.ORIGIN?.split(',') || [];
+allowedOrigins.push('http://localhost:3000'); // Add this line
 
 // cors
 app.use(
@@ -48,7 +49,7 @@ app.use(
             }
         },
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-        allowedHeaders: ['Content-Type', 'Authorization'], // or you can set this to '*'
+        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
         credentials: true
     })
 );

@@ -27,7 +27,7 @@ export default function QuestionList({ quizId }: Readonly<Props>) {
     const fetchQuestions = useCallback(async () => {
         try {
             setLoading(true);
-            const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}/questions`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/quizzes/${quizId}/questions`);
             if (!res.ok) throw new Error('Failed to fetch questions');
             const data = await res.json();
             setQuestions(data.questions);
@@ -53,7 +53,7 @@ export default function QuestionList({ quizId }: Readonly<Props>) {
         if (!confirmDelete) return;
 
         try {
-            const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}/questions/${questionId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/quizzes/${quizId}/questions/${questionId}`, {
                 method: 'DELETE'
             });
             if (!res.ok) throw new Error('Failed to delete question');
