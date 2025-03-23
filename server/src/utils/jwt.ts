@@ -9,7 +9,6 @@ interface ITokenOptions {
     sameSite: 'lax' | 'strict' | 'none' | boolean;
     secure?: boolean;
     path?: string;
-    domain?: string;
 }
 
 // Parse environment variables with fallback values
@@ -23,9 +22,7 @@ export const accessTokenOptions: ITokenOptions = {
     httpOnly: true,
     sameSite: 'none',
     secure: true,
-    domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
     path: '/'
-    // domain: '.vercel.app'
     // sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     // secure: process.env.NODE_ENV === 'production',
 };
@@ -36,9 +33,7 @@ export const refreshTokenOptions: ITokenOptions = {
     httpOnly: true,
     sameSite: 'none',
     secure: true,
-    domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
     path: '/'
-    // domain: '.upskill-git-dev-huys-projects-090228c7.vercel.app'
 };
 
 export const sendToken = (user: UserT, statusCode: number, res: Response) => {
