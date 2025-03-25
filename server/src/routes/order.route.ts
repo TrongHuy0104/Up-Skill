@@ -15,11 +15,11 @@ const router = express.Router();
 
 router.post('/create-order', updateAccessToken, isAuthenticated, createOrder);
 
-router.get('/get-orders', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllOrders);
+router.get('/get-orders', isAuthenticated, authorizeRoles('admin'), getAllOrders);
 
 router.get('/user-orders', updateAccessToken, isAuthenticated, getUserOrders);
 
-router.get('/:id', isAuthenticated, getOrder);
+router.get('/:id', updateAccessToken, isAuthenticated, getOrder);
 
 router.get('/payment/stripepublishablekey', sendStripePublishKey);
 
