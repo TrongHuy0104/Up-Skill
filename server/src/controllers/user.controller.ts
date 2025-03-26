@@ -7,7 +7,7 @@ import UserModel from '../models/User.model';
 import { catchAsync } from '../utils/catchAsync';
 import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
-import IncomeModel from '@/models/Income.model';
+import IncomeModel from '../models/Income.model';
 import path from 'path';
 import sendMail from '../utils/sendMail';
 import { UserT } from '../interfaces/User';
@@ -19,7 +19,7 @@ import {
     updateUserRoleService,
     getAllInstructorsService
 } from '@/services/user.service';
-import CourseModel from '@/models/Course.model';
+import CourseModel from '../models/Course.model';
 
 dotenv.config();
 

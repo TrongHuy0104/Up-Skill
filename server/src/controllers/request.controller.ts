@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
-import RequestModel from '@/models/Request.model';
-import CourseModel from '@/models/Course.model';
-import UserModel from '@/models/User.model';
-import sendMail from '@/utils/sendMail';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
+import RequestModel from '../models/Request.model';
+import CourseModel from '../models/Course.model';
+import UserModel from '../models/User.model';
+import sendMail from '../utils/sendMail';
 
 //create request to admin
 export const createRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
