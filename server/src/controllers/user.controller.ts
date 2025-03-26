@@ -788,3 +788,40 @@ export const getRevenueStatistics = catchAsync(async (req: Request, res: Respons
         data
     });
 });
+
+export const updateInstructorInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { introduce, phoneNumber, address, age, profession } = req.body as {
+        introduce: string;
+        phoneNumber: string;
+        address: string;
+        age: number;
+        profession: string;
+    };
+
+    if (!introduce || !phoneNumber || !address || !age || !profession) {
+        return next(new ErrorHandler('All fields are required', 400));
+    }
+
+    const user = await UserModel.findById(req.user?._id);
+
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    user.introduce = introduce;
+    user.phoneNumber = phoneNumber;
+    user.address = address;
+    user.age = age;
+    user.profession = profession;
+    user.role = 'instructor';
+
+    await user.save();
+
+    redis.set(req.user?._id as RedisKey, JSON.stringify(user));
+
+    res.status(200).json({
+        success: true,
+        message: 'User information updated successfully',
+        user
+    });
+});

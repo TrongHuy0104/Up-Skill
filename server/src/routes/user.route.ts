@@ -23,7 +23,8 @@ import {
     getUser,
     getTopInstructors,
     getUserStatisticsByMonth,
-    getRevenueStatistics
+    getRevenueStatistics,
+    updateInstructorInfo
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { isAuthenticatedForUser } from '@/middlewares/auth/isAuthenticatedForUser';
@@ -52,6 +53,8 @@ router.get('/me', updateAccessToken, isAuthenticated, getUserInfo);
 router.post('/social-auth', socialAuth);
 
 router.put('/update-user', updateAccessToken, isAuthenticated, updateUserInfo);
+
+router.put('/update-instructor-infor', updateAccessToken, isAuthenticated, updateInstructorInfo);
 
 router.put('/update-password', updateAccessToken, isAuthenticated, updatePassword);
 
