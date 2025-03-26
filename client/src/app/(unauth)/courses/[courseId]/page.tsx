@@ -46,7 +46,7 @@ export default async function Page({ params }: any) {
                     {renderSection(<CoursesList course={course} />)}
                     {renderSection(<Review />)}
                 </div>
-                <div className="right-content w-full md:w-1/3">
+                <div className="right-content w-full lg:w-1/3">
                     <div className="sticky top-[20px]">
                         <CourseSidebar course={course} />
                     </div>

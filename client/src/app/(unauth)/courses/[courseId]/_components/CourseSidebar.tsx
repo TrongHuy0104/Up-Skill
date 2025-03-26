@@ -57,14 +57,14 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     }, [paymentIntentData, stripePromise, isLoading]);
     // if (isLoadingUser) return <CourseSideBarSkeleton />;
     return (
-        <div className="w-[400px] rounded-2xl shadow-lg bg-primary-50 border">
+        <div className="w-full rounded-2xl shadow-lg bg-primary-50 border min-w-[330px] max-w-4xl  lg:w-[400px]">
             <div className="relative w-full h-[260px] flex justify-center items-center">
                 <Image
                     src={course?.thumbnail?.url || '/assets/images/courses/courses-03.jpg'}
                     alt="Course Thumbnail"
                     layout="fill"
                     objectFit="cover"
-                    className="rounded-t-lg"
+                    className="rounded-t-lg w-full min-w-[330px] max-w-none lg:w-[400px]"
                 />
                 <Dialog>
                     <DialogTrigger asChild>
