@@ -15,10 +15,12 @@ import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
 import { redis } from '@/utils/redis';
 import OrderModel from '@/models/Order.model';
+import { validateCouponCode, recordCouponUsage } from '@/utils/coupon';
+import { CouponDocument } from '@/models/Coupon.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { courseIds, payment_info } = req.body as IOrder;
+    const { courseIds, payment_info, couponCode } = req.body as IOrder & { couponCode?: string };
 
     // Validate courseIds
     if (!Array.isArray(courseIds)) {
@@ -59,10 +61,24 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         return next(new ErrorHandler('You have already purchased one or more of these courses', 400));
     }
 
+    let totalPrice = courses.reduce((sum, course) => sum + course.price, 0);
+    let appliedCoupon: CouponDocument | null = null;
+    if (couponCode) {
+        try {
+            appliedCoupon = await validateCouponCode(couponCode, req.user?._id);
+            totalPrice = totalPrice * (1 - appliedCoupon.discountPercentage / 100);
+        } catch (error) {
+            return next(error);
+        }
+    }
+
     // Prepare data for order creation
     const data: any = {
         courseIds: courses.map((course) => course._id),
-        userId: user._id
+        userId: user._id,
+        totalPrice,
+        couponCode: appliedCoupon?.code,
+        discountPercentage: appliedCoupon?.discountPercentage
     };
 
     // Prepare email data
@@ -131,6 +147,10 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     await redis.del('allOrders undefined');
     // Create the order
     newOrder(data, next, res);
+
+    if (appliedCoupon) {
+        await recordCouponUsage(appliedCoupon.code, user._id.toString());
+    }
 });
 
 // get all orders -- for admin
