@@ -1,6 +1,6 @@
 import express, { RequestHandler } from 'express';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
 import {
     addAnswer,
     addQuestion,
@@ -40,8 +40,8 @@ import {
     getAllUploadedAndPurchasedCoursesOfInstructor,
     getAllPurchasedCoursesOfUser,
     getCoursesWithSort
-} from '@/controllers/course.controller';
-import { getUserInfo, updateAccessToken } from '@/controllers/user.controller';
+} from '../controllers/course.controller';
+import { getUserInfo, updateAccessToken } from '../controllers/user.controller';
 
 const router = express.Router();
 

@@ -28,14 +28,26 @@ export const userApi = apiSlice.injectEndpoints({
         }),
         updateLink: builder.mutation({
             query: (data) => ({
-                url: 'user/update-link', // Route mới cho cập nhật các liên kết xã hội
+                url: 'user/update-link',
                 method: 'PUT',
                 body: { ...data },
+                credentials: 'include' as const
+            })
+        }),
+        getInstructorDetail: builder.query({
+            query: (id) => ({
+                url: `user/${id}`,
+                method: 'GET',
                 credentials: 'include' as const
             })
         })
     })
 });
 
-export const { useUpdateUserInfoMutation, useUpdateAvatarMutation, useUpdatePasswordMutation, useUpdateLinkMutation } =
-    userApi;
+export const {
+    useUpdateUserInfoMutation,
+    useUpdateAvatarMutation,
+    useUpdatePasswordMutation,
+    useUpdateLinkMutation,
+    useGetInstructorDetailQuery
+} = userApi;

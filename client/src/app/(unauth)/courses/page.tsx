@@ -34,10 +34,11 @@ export default async function Page({ searchParams = {} }: any) {
 
     const { courses, totalPages, totalCourses, limit, page } = await coursesRes.json();
     const { data } = await countRes.json();
+
     return (
         <div className="w-full pb-40">
             <Banner />
-            <div className="flex w-[1400px] mx-auto pt-[54px] relative">
+            <div className="flex flex-col md:flex-row max-w-[1400px] px-4 md:px-0  mx-auto pt-[54px] relative">
                 <Suspense fallback={<DashboardSkeleton />}>
                     <FilterCourses filterData={data} />
                     <HorizontalCoursesList

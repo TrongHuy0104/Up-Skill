@@ -13,7 +13,7 @@ import {
     getAllQuestions,
     getQuestionById,
     updateQuestionInQuiz
-} from '@/controllers/quiz.controller';
+} from '../controllers/quiz.controller';
 
 const router = express.Router();
 
@@ -51,4 +51,4 @@ router.put('/:id/questions/:questionId', updateQuestionInQuiz);
 
 router.delete('/:id/questions/:questionId', deleteQuestion);
 
-export default router;
+export = router;

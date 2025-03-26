@@ -95,7 +95,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
             const selectedCourse = courses.find((course) => course._id === data.courseId);
             if (!selectedCourse) throw new Error('Course not found');
 
-            const response = await fetch('http://localhost:8000/api/quizzes/create-quiz', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/quizzes/create-quiz`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

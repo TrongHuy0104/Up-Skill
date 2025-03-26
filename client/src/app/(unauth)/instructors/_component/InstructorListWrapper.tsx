@@ -18,9 +18,9 @@ const InstructorListWrapper = () => {
             else if (sortType === 'oldest') sortParam = 'oldest';
             else if (sortType === 'recent') sortParam = 'recent';
 
-            let apiUrl = 'http://localhost:8000/api/user/get-instructors'; // API mặc định
+            let apiUrl = `${process.env.NEXT_PUBLIC_SERVER_URI}/user/get-instructors`; // API mặc định
             if (sortParam) {
-                apiUrl = `http://localhost:8000/api/user/instructors/sort?type=${sortParam}`;
+                apiUrl = `${process.env.NEXT_PUBLIC_SERVER_URI}/user/instructors/sort?type=${sortParam}`;
             }
 
             try {

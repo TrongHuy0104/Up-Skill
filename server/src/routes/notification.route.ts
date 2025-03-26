@@ -1,6 +1,6 @@
 import express from 'express';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { getAllNotificationsByInstructor, updateNotificationStatus } from '@/controllers/notification.controller';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { getAllNotificationsByInstructor, updateNotificationStatus } from '../controllers/notification.controller';
 
 const router = express.Router();
 

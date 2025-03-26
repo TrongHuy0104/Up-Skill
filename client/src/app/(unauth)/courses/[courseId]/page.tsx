@@ -1,5 +1,4 @@
 import React from 'react';
-import { cookies } from 'next/headers';
 
 import CoursesDetailLine from '@/components/custom/CoursesDetailLine';
 import CoursesContent from '@/components/custom/CourseContent';
@@ -12,15 +11,10 @@ import CourseSidebar from './_components/CourseSidebar';
 
 export default async function Page({ params }: any) {
     const { courseId } = params;
-    const cookieStore = cookies();
-    const cookie = cookieStore.toString();
 
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/${courseId}`, {
-            credentials: 'include',
-            headers: {
-                Cookie: cookie
-            }
+            credentials: 'include'
         });
 
         if (!res.ok) {

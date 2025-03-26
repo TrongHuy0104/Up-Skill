@@ -10,8 +10,8 @@ interface BannerProps {
     title?: string;
     breadcrumbs?: Breadcrumb[];
     contentAlignment?: 'center' | 'left' | 'right';
-    backgroundColor?: string; // Màu nền
-    background?: string; // Hình nền (URL hoặc gradient)
+    backgroundColor?: string;
+    background?: string;
     children?: React.ReactNode;
     button?: React.ReactNode;
     buttonPosition?: 'left' | 'right';
@@ -36,30 +36,40 @@ export default function Banner({
     const alignmentClass = getAlignmentClass(contentAlignment);
 
     return (
-        <div className={`py-[54px] flex items-center relative text-primary-800 ${backgroundColor}`}>
-            {/* Overlay hình nền */}
+        <div className={`py-8 sm:py-[54px] flex items-center relative text-primary-800 ${backgroundColor} w-full`}>
+            {/* Background image */}
             {background && (
                 <div
-                    className="absolute inset-0 bg-center bg-no-repeat bg-contain"
+                    className="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-10"
                     style={{ backgroundImage: `url(${background})` }}
                 />
             )}
 
-            {/* Nội dung */}
-            <div className="mx-auto w-[1428px] relative z-10 pl-4 md:pl-5 lg:pl-10 xl:pl-20">
+            {/* Content container */}
+            <div className="mx-auto w-full max-w-[1428px] relative z-10 px-4 ">
                 <div
-                    className={`flex ${buttonPosition === 'left' ? 'flex-row-reverse' : 'flex-row'} justify-between items-center gap-8`}
+                    className={`flex ${
+                        buttonPosition === 'left' ? 'flex-col-reverse' : 'flex-col'
+                    } md:flex-row justify-between items-center gap-4 sm:gap-8`}
                 >
                     {/* Content section */}
-                    <div className={`flex-1 ${alignmentClass}`}>
+                    <div className={`flex-1 ${alignmentClass} w-full text-center md:text-left`}>
                         {breadcrumbs && <Breadcrumb breadcrumbs={breadcrumbs} alignment={contentAlignment} />}
-                        {title && <h2 className="text-[36px] mb-4 font-bold leading-[56px] font-cardo">{title}</h2>}
-                        {children}
+                        {title && (
+                            <h2 className="text-2xl sm:text-[28px] md:text-[36px] mb-3 sm:mb-4 font-bold leading-8 sm:leading-[40px] md:leading-[56px] font-cardo">
+                                {title}
+                            </h2>
+                        )}
+                        <div className="text-sm sm:text-base">{children}</div>
                     </div>
 
                     {/* Button section */}
                     {button && (
-                        <div className={`flex-shrink-0 ${buttonPosition === 'left' ? 'order-first' : ''}`}>
+                        <div
+                            className={`flex-shrink-0 ${
+                                buttonPosition === 'left' ? 'md:order-first' : ''
+                            } w-full md:w-auto mt-4 sm:mt-0`}
+                        >
                             {button}
                         </div>
                     )}

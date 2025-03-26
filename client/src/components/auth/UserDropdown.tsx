@@ -3,7 +3,10 @@
 import Image from 'next/image';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { IoIosLogOut } from 'react-icons/io';
-import { LuSquareUserRound } from 'react-icons/lu';
+import { MdOutlineDashboardCustomize, MdOutlineSlowMotionVideo } from 'react-icons/md';
+import { TbMessageDots } from 'react-icons/tb';
+import { FaRegCircleQuestion, FaRegHeart } from 'react-icons/fa6';
+import { PiBagBold } from 'react-icons/pi';
 import { redirect } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
@@ -23,6 +26,7 @@ import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
+import { LucideSquareUserRound } from 'lucide-react';
 
 export function UserDropdown() {
     const [logout, setLogout] = useState(false);
@@ -43,6 +47,60 @@ export function UserDropdown() {
     }
 
     const { user } = data;
+
+    const commonNavbarItems = [
+        {
+            title: 'Order',
+            href: '/dashboard/orders',
+            icon: <PiBagBold className="text-[20px]" />
+        },
+        {
+            title: 'Settings',
+            href: '/dashboard/settings',
+            icon: <IoSettingsOutline className="text-[20px]" />
+        }
+    ];
+
+    const instructorNavbarItems = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard/instructor',
+            icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+        },
+        {
+            title: 'My Course',
+            href: '/dashboard/instructor/my-course',
+            icon: <MdOutlineSlowMotionVideo className="text-[20px]" />
+        },
+        {
+            title: 'Reviews',
+            href: '/dashboard/instructor/reviews',
+            icon: <TbMessageDots className="text-[20px]" />
+        },
+        {
+            title: 'Wishlist',
+            href: '/dashboard/instructor/wishlist',
+            icon: <FaRegHeart className="text-[20px]" />
+        },
+        {
+            title: 'Quizzes',
+            href: '/dashboard/quizzes',
+            icon: <FaRegCircleQuestion className="text-[20px]" />
+        }
+    ];
+
+    const userNavbarItems = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard/user',
+            icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+        }
+    ];
+
+    const dropdownList =
+        user.role === 'instructor'
+            ? [...instructorNavbarItems, ...commonNavbarItems]
+            : [...userNavbarItems, ...commonNavbarItems];
 
     return (
         <DropdownMenu>
@@ -67,7 +125,7 @@ export function UserDropdown() {
                         <DropdownMenuItem>
                             Profile
                             <DropdownMenuShortcut>
-                                <LuSquareUserRound className="text-xl" />
+                                <LucideSquareUserRound className="text-xl" />
                             </DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
@@ -90,6 +148,14 @@ export function UserDropdown() {
                             </DropdownMenuItem>
                         </Link>
                     )}
+                    {dropdownList.map((item) => (
+                        <Link href={`${item.href}`} key={item.href}>
+                            <DropdownMenuItem>
+                                {item.title}
+                                <DropdownMenuShortcut>{item.icon}</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </Link>
+                    ))}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

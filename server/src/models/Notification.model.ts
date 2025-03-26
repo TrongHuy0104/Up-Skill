@@ -1,4 +1,4 @@
-import { INotification } from '@/interfaces/Notification';
+import { INotification } from '../interfaces/Notification';
 import mongoose, { Schema } from 'mongoose';
 
 const NotificationSchema = new Schema<INotification>(

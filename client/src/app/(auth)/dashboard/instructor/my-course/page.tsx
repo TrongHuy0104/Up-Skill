@@ -1,14 +1,10 @@
 import React from 'react';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 
 import SortBy from './_components/SortBy';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import Search from '@/components/custom/Search';
 import CourseVerticalCard from '@/components/custom/CourseCard';
-import { ROLE } from '@/lib/constants';
 
-// Danh sách lựa chọn sắp xếp
 const sortOptions = [
     { value: 'date_created', label: 'Date Created' },
     { value: 'oldest', label: 'Oldest' },
@@ -16,34 +12,6 @@ const sortOptions = [
 ];
 
 export default async function Page() {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.toString();
-
-    const [userResponse] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
-            credentials: 'include',
-            headers: { Cookie: cookie }
-        })
-    ]);
-
-    if (!userResponse.ok) {
-        throw new Error('Failed to fetch data');
-    }
-
-    const { user } = await userResponse.json();
-
-    if (user?.role !== ROLE.instructor) redirect('/');
-
-    // State pagination
-    // const [loading] = useState(false);
-    // const [currentPage, setCurrentPage] = useState(1);
-
-    // Hàm xử lý khi đổi trang
-    // const handlePageChange = (pageNumber: number) => {
-    //     setCurrentPage(pageNumber);
-    // };
-
-    // Fake dữ liệu khóa học
     const courses = {
         enrolled: [
             { id: 1, title: 'React for Beginners', progress: 70, instructor: 'John Doe', price: 99 },
@@ -61,14 +29,9 @@ export default async function Page() {
         completed: [{ id: 6, title: 'Full-Stack Web Development', progress: 100, instructor: 'Daniel Lee', price: 129 }]
     };
 
-    // Hàm xác định class `justify-content`
     const getRowClass = (length: number) => (length >= 3 ? 'justify-between' : 'justify-start');
 
     const renderEnrolledCourses = () => {
-        // if (loading) {
-        //     return <p className="text-center text-primary-600">Loading...</p>;
-        // }
-
         if (courses?.enrolled.length > 0) {
             return (
                 <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.enrolled.length)}`}>
@@ -89,10 +52,6 @@ export default async function Page() {
     };
 
     const renderActiveCourses = () => {
-        // if (loading) {
-        //     return <p className="text-center text-primary-600">Loading...</p>;
-        // }
-
         if (courses?.active.length > 0) {
             return (
                 <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.active.length)}`}>
@@ -113,10 +72,6 @@ export default async function Page() {
     };
 
     const renderCompletedCourses = () => {
-        // if (loading) {
-        //     return <p className="text-center text-primary-600">Loading...</p>;
-        // }
-
         if (courses?.completed.length > 0) {
             return (
                 <div className={`row flex flex-wrap gap-9 ${getRowClass(courses.completed.length)}`}>
@@ -161,10 +116,6 @@ export default async function Page() {
                 {/* Tab: Completed Courses */}
                 <TabsContent value="completed">{renderCompletedCourses()}</TabsContent>
             </Tabs>
-            {/* Pagination */}
-            {/* <div className="p-5 mt-10">
-                <PaginationComponent currentPage={currentPage} totalPages={10} onPageChange={handlePageChange} />
-            </div> */}
         </div>
     );
 }
