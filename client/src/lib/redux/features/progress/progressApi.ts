@@ -3,10 +3,10 @@ import { apiSlice } from '../api/apiSlice';
 export const progressApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         updateLessonCompletion: builder.mutation({
-            query: ({ courseId, lessonId, isCompleted }) => ({
+            query: ({ courseId, lessonId, isCompleted, sectionOrder }) => ({
                 url: `/progress/update-lesson-completion/${courseId}`,
                 method: 'PUT',
-                body: { lessonId, isCompleted },
+                body: { lessonId, isCompleted, sectionOrder },
                 credentials: 'include' as const
             })
         }),

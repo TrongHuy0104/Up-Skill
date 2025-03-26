@@ -9,28 +9,23 @@ import { useGetProgressDataQuery } from '@/lib/redux/features/progress/progressA
 
 interface CourseContentProps {
     courseId: string;
-    user: any; // Replace `any` with a proper user type if available
+    user: any;
 }
 
 export default function CourseContent({ courseId, user }: CourseContentProps) {
     const { data, isLoading, refetch } = useGetCourseContentQuery(courseId, { refetchOnMountOrArgChange: true });
     const { data: progressData, refetch: reload } = useGetProgressDataQuery(courseId);
-    // const [activeVideo, setActiveVideo] = useState<number>(0);
-    const [activeVideo, setActiveVideo] = useState<{ section: string; index: number }>({
-        section: 'Section 1',
+    const [activeVideo, setActiveVideo] = useState<{ sectionOrder: number; index: number }>({
+        sectionOrder: 1,
         index: 0
     });
 
-    console.log('data', data);
-
     const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
-    const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null); // State để lưu trữ quizId được chọn
+    const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
 
     const handleQuizClick = (quizId: string | null, questions: any[]) => {
-        setSelectedQuizId(quizId); // Lưu quizId được chọn
-        // setShowQuiz(true); // Hiển thị giao diện làm quiz
+        setSelectedQuizId(quizId);
         setQuizQuestions(questions);
-        // setActiveVideo(null)
     };
 
     return (

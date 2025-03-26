@@ -13,8 +13,8 @@ import { toast } from '@/hooks/use-toast';
 interface Props {
     readonly data: any;
     readonly progressData: any;
-    readonly activeVideo: { section: string; index: number }; // Chỉnh sửa thành object chứa section và index
-    setActiveVideo(value: { section: string; index: number }): void; // Cập nhật setActiveVideo
+    readonly activeVideo: { sectionOrder: number; index: number };
+    setActiveVideo(value: { sectionOrder: number; index: number }): void;
     refetch: any;
     onQuizClick: (quizId: string | null, quizQuestions: any[]) => void;
     selectedQuizId: string | null;
@@ -28,45 +28,30 @@ export default function CourseContentList({
     onQuizClick,
     selectedQuizId
 }: Props) {
-    const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set<string>());
+    const [visibleSections, setVisibleSections] = useState<Set<number>>(new Set<number>());
 
-    const videoSections: string[] = [...new Set<string>(data?.map((item: any) => item.videoSection))];
-    console.log('videoSections', videoSections);
+    const videoSections = [...new Set<number>(data?.map((item: any) => item.sectionOrder))];
 
     let totalCount = 0;
 
-    const toggleSection = (section: string) => {
+    const toggleSection = (sectionOrder: number) => {
         const newVisibleSections = new Set(visibleSections);
-        if (newVisibleSections.has(section)) {
-            newVisibleSections.delete(section);
-        } else newVisibleSections.add(section);
+        if (newVisibleSections.has(sectionOrder)) {
+            newVisibleSections.delete(sectionOrder);
+        } else newVisibleSections.add(sectionOrder);
         setVisibleSections(newVisibleSections);
     };
 
-    const handleButtonLesson = (section: string, index: number, isClickable: boolean, sectionLessons: any[]) => {
-        // Ghép tất cả các bài học trong các sections
-        // const allLessons = videoSections.reduce((acc: any[], section: string) => {
-        //     const sectionItems = data.filter((item: any) => item.videoSection === section);
-        //     const sectionLessons = sectionItems.filter((item: any) => !item.isQuiz); // Lọc ra các bài học
-        //     return [...acc, ...sectionLessons];
-        // }, []);
-
+    const handleButtonLesson = (sectionOrder: number, index: number, isClickable: boolean, sectionLessons: any[]) => {
         const item = sectionLessons[index];
-
-        // Tính index chính xác trong mảng allLessons
-        // const globalIndex = allLessons.findIndex((lesson: any) => lesson._id === item._id);
-
-        // Kiểm tra xem index có vượt quá số lượng lesson trong section không
-        const sectionLessonCount = sectionLessons.length;
-        const adjustedIndex = index >= sectionLessonCount ? 0 : index; // Nếu index vượt quá số lượng bài học, set lại thành 0
 
         if (isClickable) {
             if (item.videoUrl) {
-                setActiveVideo({ section, index: adjustedIndex }); // Cập nhật activeVideo với index đã điều chỉnh
+                setActiveVideo({ sectionOrder, index });
                 onQuizClick(null, []);
             } else if (item.quizzes) {
                 onQuizClick(item.quizzes[0]._id, item.quizzes[0].questions);
-                setActiveVideo({ section, index: adjustedIndex }); // Cập nhật activeVideo với index đã điều chỉnh
+                setActiveVideo({ sectionOrder, index });
             }
         } else {
             toast({
@@ -83,59 +68,77 @@ export default function CourseContentList({
         : [];
 
     const completedQuizIds = progressData?.completedQuizzes?.length
-        ? progressData.completedQuizzes.flatMap((section: any) =>
-              section.section.quizzes.map((quiz: any) => quiz.toString())
-          )
+        ? [
+              ...new Set(
+                  progressData.completedQuizzes.flatMap((section: any) =>
+                      section.section.quizzes.map((quiz: any) => quiz.toString())
+                  )
+              )
+          ]
         : [];
 
     return (
         <section className={'w-full px-[14px] text-primary-800 mb-12'}>
-            {videoSections.map((section: string) => {
-                const isSectionVisible = visibleSections.has(section);
+            {videoSections.map((sectionOrder: number) => {
+                const isSectionVisible = visibleSections.has(sectionOrder);
 
-                const sectionItems: any[] = data.filter((item: any) => item.videoSection === section);
-                const sectionLessons = sectionItems.filter((item: any) => !item.isQuiz); // Filter out quizzes
-
-                const sectionQuizzes = sectionItems.filter((item: any) => item.quizzes && item.quizzes.length > 0); // Filter out lessons
-
-                const quizIds: string[] = [];
-
-                sectionQuizzes.forEach((quizItem: any) => {
-                    quizItem.quizzes.forEach((quiz: any) => {
-                        quizIds.push(quiz._id);
-                    });
-                });
+                const sectionItems: any[] = data.filter((item: any) => item.sectionOrder === sectionOrder);
+                const sectionLessons = sectionItems.filter((item: any) => !item.isQuiz);
 
                 const sectionVideoLength = sectionLessons.reduce(
                     (total: number, lesson: any) => total + (lesson.videoLength || 0),
                     0
                 );
-                const sectionQuizLength = sectionQuizzes.reduce(
-                    (total: number, quizItem: any) =>
-                        total + quizItem.quizzes.reduce((sum: number, quiz: any) => sum + quiz.videoLength, 0),
-                    0
-                );
 
-                const totalSectionLength = sectionVideoLength + sectionQuizLength;
+                const totalSectionLength = sectionVideoLength;
                 const sectionContentHours = totalSectionLength / 60;
 
                 const sectionStartIndex = totalCount;
                 totalCount += sectionLessons.length;
-                console.log('22', section);
 
-                // Get completed lessons for this section
-                const completedLessons =
-                    progressData?.completedLessons?.find((s: any) => s.section.name === section)?.section.lessons || [];
+                const completedLesson = [
+                    ...new Set(
+                        sectionItems.flatMap((item: any) => {
+                            const completedSection = progressData?.completedLessons?.find(
+                                (s: any) =>
+                                    s.section.name?.trim().toLowerCase() === item.videoSection?.trim().toLowerCase()
+                            );
+
+                            const completedLessonsFunc = completedSection ? completedSection.section.lessons : [];
+
+                            return completedLessonsFunc;
+                        })
+                    )
+                ];
+
+                const completedQuizzes = [
+                    ...new Set(
+                        sectionItems.flatMap((item: any) => {
+                            const completedSection = progressData?.completedQuizzes?.find(
+                                (s: any) => s.section.quizzes[0] === item.quizzes[0]?._id
+                            );
+
+                            const completedQuizzesFunc = completedSection ? completedSection.section.quizzes : [];
+
+                            return completedQuizzesFunc;
+                        })
+                    )
+                ];
+
+                const completedLessons = [...completedLesson, ...completedQuizzes];
+
+                const sectionName = sectionItems[0]?.videoSection || 'Unknown Section';
 
                 return (
-                    <div key={section} className="border rounded-lg p-4 w-full mt-4 ">
+                    <div key={sectionOrder} className="border rounded-lg p-4 w-full mt-4 ">
                         <button
-                            onClick={() => toggleSection(section)}
+                            onClick={() => toggleSection(sectionOrder)}
                             className="flex w-full text-left text-lg font-semibold p-4 gap-x-3 "
                         >
                             {isSectionVisible ? <ChevronDown /> : <ChevronUp />}
                             <div className="flex justify-between items-center w-full">
-                                <div className="flex items-center gap-2">{section}</div>
+                                {/* Hiển thị tên section và sectionOrder */}
+                                <div className="flex items-center gap-2">{` ${sectionName}`}</div>
                                 <span className="text-sm font-normal">
                                     {completedLessons.length}/{sectionLessons.length} lessons •{' '}
                                     {totalSectionLength < 60
@@ -155,7 +158,6 @@ export default function CourseContentList({
 
                                     const isCompleted = completedLessonIds.includes(item._id.toString());
 
-                                    // Sử dụng phương thức some() để kiểm tra từng quiz._id trong item.quizzes
                                     const isQuizCompleted = item.quizzes.some((quiz: any) =>
                                         completedQuizIds.includes(quiz._id.toString())
                                     );
@@ -164,19 +166,18 @@ export default function CourseContentList({
                                         videoIndex === 0 ||
                                         completedLessonIds.includes(data[videoIndex - 1]?._id.toString()) ||
                                         completedQuizIds.includes(
-                                            data[videoIndex]?.quizzes?.find(
-                                                (quiz: any) => completedQuizIds.includes(quiz._id.toString())?._id
+                                            data[videoIndex]?.quizzes?.find((quiz: any) =>
+                                                completedQuizIds.includes(quiz._id.toString())
                                             )
                                         ) ||
-                                        // Kiểm tra nếu quiz cuối cùng của section trước đã hoàn thành
                                         (index === 0 &&
-                                            videoSections.indexOf(section) > 0 &&
+                                            videoSections.indexOf(sectionOrder) > 0 &&
                                             completedQuizIds.includes(
                                                 data
                                                     .filter(
                                                         (item: any) =>
-                                                            item.videoSection ===
-                                                            videoSections[videoSections.indexOf(section) - 1]
+                                                            item.sectionOrder ===
+                                                            videoSections[videoSections.indexOf(sectionOrder) - 1]
                                                     )
                                                     .at(-1)
                                                     ?.quizzes?.at(-1)
@@ -184,10 +185,8 @@ export default function CourseContentList({
                                             ));
 
                                     const isClickable = isCompleted || isPreviousCompleted || isQuizCompleted;
-                                    const isQuiz = !item.videoUrl && item.quizzes?.length > 0; // Kiểm tra nếu là quiz
-                                    const isLesson = item.videoUrl; // Kiểm tra nếu là bài học
-                                    console.log('activeVideo?.section', activeVideo?.section);
-                                    console.log('activeVideo', activeVideo);
+                                    const isQuiz = !item.videoUrl && item.quizzes?.length > 0;
+                                    const isLesson = item.videoUrl;
 
                                     return (
                                         <div
@@ -204,7 +203,7 @@ export default function CourseContentList({
                                                         )}
                                                         <button
                                                             className={`hover:text-accent-600 ${
-                                                                activeVideo?.section === section &&
+                                                                activeVideo?.sectionOrder === sectionOrder &&
                                                                 activeVideo?.index === index
                                                                     ? 'text-accent-600'
                                                                     : isCompleted
@@ -215,7 +214,7 @@ export default function CourseContentList({
                                                             }`}
                                                             onClick={() =>
                                                                 handleButtonLesson(
-                                                                    section,
+                                                                    sectionOrder,
                                                                     index,
                                                                     isClickable,
                                                                     sectionLessons
@@ -247,7 +246,7 @@ export default function CourseContentList({
                                                             }`}
                                                             onClick={() =>
                                                                 handleButtonLesson(
-                                                                    section,
+                                                                    sectionOrder,
                                                                     index,
                                                                     isClickable,
                                                                     sectionLessons

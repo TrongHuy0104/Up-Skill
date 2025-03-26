@@ -27,15 +27,15 @@ import { useParams } from 'next/navigation';
 type Props = {
     readonly course: any;
     readonly user: any;
-    activeVideo: { section: string; index: number }; // Tracked as { section, index }
-    setActiveVideo(value: { section: string; index: number }): void;
+    activeVideo: { sectionOrder: number; index: number };
+    setActiveVideo(value: { sectionOrder: number; index: number }): void;
 
     readonly refetch: any;
     readonly reload: any;
     readonly progressData: any;
     readonly selectedQuizId: string | null;
     readonly quizQuestions: any[];
-    setSelectedQuizId: (quizId: string | null) => void; // Thêm vào props
+    setSelectedQuizId: (quizId: string | null) => void;
     setQuizQuestions: (questions: any[]) => void;
 };
 
@@ -64,37 +64,6 @@ function CourseContentMedia({
     const [videoProgress, setVideoProgress] = useState(0);
     const { courseId } = useParams();
 
-    // const handleQuizCompletion = async (quizId: string, userAnswers: any[], correctAnswers: any[]) => {
-    //     const correctCount = userAnswers.filter((answer, index) => answer === correctAnswers[index]).length;
-    //     const totalQuestions = correctAnswers.length;
-    //     const percentage = (correctCount / totalQuestions) * 100;
-
-    //     if (percentage >= 70) {
-    //         // Cập nhật trạng thái quiz đã hoàn thành
-    //         await updateQuizCompletion({
-    //             courseId: course?._id,
-    //             quizId: quizId,
-    //             isCompleted: true
-    //         }).unwrap();
-
-    //         // Cập nhật danh sách bài học hoàn thành
-    //         setCompletedLessons([...completedLessons, quizId]);
-    //         toast({
-    //             variant: 'success',
-    //             title: `You passed the quiz with ${correctCount} out of ${totalQuestions} correct answers!`
-    //         });
-
-    //         // Khi quiz đã hoàn thành, bạn có thể tự động chuyển qua video hoặc quiz tiếp theo
-    //         setActiveVideo(activeVideo + 1); // Chuyển qua video tiếp theo hoặc quiz tiếp theo
-    //     } else {
-    //         toast({
-    //             variant: 'destructive',
-    //             title: `You need to get at least 70% correct answers to pass the quiz.`
-    //         });
-    //     }
-    // };
-
-    // Cập nhật danh sách bài học hoàn thành từ `progressData`
     const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
     const [addNewQuestion, { isSuccess, error, isLoading: isCreateQuestionLoading }] = useAddNewQuestionMutation();
@@ -194,139 +163,73 @@ function CourseContentMedia({
         : [];
 
     const isCurrentQuizCompleted = selectedQuizId ? completedQuizIds.includes(selectedQuizId) : false;
-    // Enable "Next Lesson" button if:
-    // 1. Lesson is already completed OR
-    // 2. Video progress reaches 80%
+
     const canProceedToNext = isCurrentLessonCompleted || videoProgress >= 80 || isCurrentQuizCompleted;
 
     const handleVideoProgress = async (progress: number) => {
         setVideoProgress(progress);
 
-        // Auto-mark lesson as completed when 80% is watched
-        if (progress >= 80 && !isCurrentLessonCompleted) {
+        const currentSectionLessons = content.filter((item: any) => item.sectionOrder === activeVideo.sectionOrder);
+        const currentLesson = currentSectionLessons[activeVideo.index];
+        const lessonId = currentLesson?._id;
+
+        if (progress >= 80 && lessonId && !completedLessons.includes(lessonId)) {
             try {
                 await updateLessonCompletion({
                     courseId: course?._id,
-                    lessonId: content[activeVideo?.index]._id,
-                    isCompleted: true
+                    lessonId,
+                    isCompleted: true,
+                    sectionOrder: activeVideo.sectionOrder
                 }).unwrap();
 
-                // Update completed lessons
-                setCompletedLessons([...completedLessons, content[activeVideo?.index]._id]);
+                setCompletedLessons([...completedLessons, lessonId]);
                 await reload();
             } catch (error) {
                 toast({
                     variant: 'destructive',
-                    title: `Unable to update lesson status, ${error}`
+                    title: `Unable to update lesson status: ${error}`
                 });
             }
         }
     };
 
-    // const videoSections = [...new Set(content?.map((item: any) => item.videoSection))];
-
-    // const handleNextLesson = () => {
-    //     const currentVideoIndex = typeof activeVideo === 'number' ? activeVideo : Number(activeVideo);
-    //     console.log('currentVideoIndex', currentVideoIndex);
-
-    //     // Kiểm tra xem bài học hiện tại có phải là quiz hay không
-    //     const isCurrentLessonQuiz = content[currentVideoIndex]?.quizzes?.length > 0;
-    //     console.log('isCurrentLessonQuiz', isCurrentLessonQuiz);
-
-    //     if (isCurrentLessonQuiz) {
-    //         // Kiểm tra xem quiz đã được hoàn thành hay chưa
-    //         const quizCompleted = content[currentVideoIndex].quizzes.every((quiz: any) => quiz.isCompleted);
-    //         console.log('quizCompleted', quizCompleted);
-
-    //         if (quizCompleted) {
-    //             // Nếu quiz đã được hoàn thành, chuyển sang bài học đầu tiên của section tiếp theo
-    //             const currentSection = content[currentVideoIndex].videoSection;
-    //             const nextSection = videoSections[videoSections.indexOf(currentSection) + 1];
-
-    //             if (nextSection) {
-    //                 console.log('nextSection', nextSection);
-
-    //                 const nextSectionFirstLessonIndex = content.findIndex(
-    //                     (item: any) => item.videoSection === nextSection
-    //                 );
-    //                 console.log('nextSectionFirstLessonIndex', nextSectionFirstLessonIndex);
-
-    //                 if (nextSectionFirstLessonIndex !== -1) {
-    //                     console.log('Bài học đầu section mới:', content[nextSectionFirstLessonIndex]);
-    //                     console.log('Bài học đầu section mớiiiiiiiiiiiiii:', nextSectionFirstLessonIndex);
-
-    //                     setActiveVideo(nextSectionFirstLessonIndex);
-    //                     setVideoProgress(0);
-
-    //                     // Kiểm tra xem bài học đầu tiên của section tiếp theo có phải là quiz hay không
-    //                     const nextLesson = content[nextSectionFirstLessonIndex];
-    //                     if (nextLesson?.quizzes?.length > 0) {
-    //                         setActiveVideo(currentVideoIndex + 1);
-    //                         setVideoProgress(0);
-    //                         setSelectedQuizId(nextLesson.quizzes[0]._id); // Cập nhật quiz hiện tại
-    //                         setQuizQuestions(nextLesson.quizzes[0].questions); // Cập nhật câu hỏi
-    //                     } else {
-    //                         setActiveVideo(currentVideoIndex + 1);
-    //                         setVideoProgress(0);
-    //                         setSelectedQuizId(null); // Reset quiz hiện tại
-    //                         setQuizQuestions([]); // Reset câu hỏi
-    //                     }
-    //                     return; // Kết thúc hàm
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     // Nếu không phải quiz hoặc quiz chưa được hoàn thành, chuyển sang bài học tiếp theo
-    //     if (currentVideoIndex < content.length - 1) {
-    //         const nextLesson = content[currentVideoIndex + 1];
-    //         setActiveVideo(currentVideoIndex + 1);
-    //         setVideoProgress(0);
-    //         console.log('nextLesson', nextLesson);
-
-    //         // Kiểm tra xem bài học tiếp theo có phải là quiz hay không
-    //         if (nextLesson?.quizzes?.length > 0) {
-    //             setSelectedQuizId(nextLesson.quizzes[0]._id); // Cập nhật quiz hiện tại
-    //             setQuizQuestions(nextLesson.quizzes[0].questions); // Cập nhật câu hỏi
-    //         } else {
-    //             setSelectedQuizId(null); // Reset quiz hiện tại
-    //             setQuizQuestions([]); // Reset câu hỏi
-    //         }
-    //     }
-    // };
-
     const handleNextLesson = () => {
         if (activeVideo && activeVideo.index < content.length - 1) {
-            const nextLesson = content[activeVideo.index + 1];
-            console.log('nextLesson', nextLesson);
-            console.log('activeVideo.index', activeVideo.index);
+            const nextVideoIndex = activeVideo.index + 1;
+            const nextLesson = content[nextVideoIndex];
+            const currentLesson = content[activeVideo.index];
 
-            // Kiểm tra xem bài học tiếp theo có phải là quiz hay không
-            if (nextLesson?.quizzes?.length > 0) {
-                setSelectedQuizId(nextLesson.quizzes[0]._id); // Cập nhật quiz hiện tại
-                setQuizQuestions(nextLesson.quizzes[0].questions); // Cập nhật câu hỏi
+            const currentSection = content.filter((item: any) => item.sectionOrder === activeVideo.sectionOrder);
+
+            const nextLessonWithQuiz = currentSection.find((item: any, index: number) => {
+                return index > activeVideo.index && item.quizzes?.length > 0;
+            });
+
+            if (currentSection.length === 2 && nextLessonWithQuiz?.quizzes?.length > 0) {
+                setSelectedQuizId(currentSection[0].quizzes[0]._id);
+                setQuizQuestions(currentSection[0].quizzes[0].questions);
+            } else if (nextLesson?.quizzes?.length > 0) {
+                setSelectedQuizId(currentSection[0].quizzes[0]._id);
+                setQuizQuestions(currentSection[0].quizzes[0].questions);
             } else {
-                setActiveVideo({ section: nextLesson.videoSection, index: activeVideo.index + 1 });
+                setActiveVideo({ sectionOrder: currentSection[0].sectionOrder, index: nextVideoIndex });
                 setVideoProgress(0);
-                setSelectedQuizId(null); // Reset quiz hiện tại
-                setQuizQuestions([]); // Reset câu hỏi
+                setSelectedQuizId(null);
+                setQuizQuestions([]);
             }
 
-            console.log('section', nextLesson.videoSection);
-            console.log('section', activeVideo.index + 1);
-
-            // Chuyển sang bài học tiếp theo
-            setActiveVideo({ section: nextLesson.videoSection, index: activeVideo.index + 1 });
-            setVideoProgress(0);
+            if (nextLesson.sectionOrder !== currentLesson.sectionOrder) {
+                setActiveVideo({ sectionOrder: currentSection[0].sectionOrder + 1, index: 0 });
+                setVideoProgress(0);
+                setSelectedQuizId(null);
+                setQuizQuestions([]);
+            } else {
+                setActiveVideo({ sectionOrder: currentSection[0].sectionOrder, index: nextVideoIndex });
+                setVideoProgress(0);
+            }
         }
     };
 
-    // const handleNextLesson = () => {
-    //     if (activeVideo < content.length - 1) {
-    //         setActiveVideo(activeVideo + 1);
-    //         setVideoProgress(0);
-    //     }
-    // };
     useEffect(() => {
         if (isSuccess) {
             setQuestion('');
@@ -414,31 +317,30 @@ function CourseContentMedia({
 
     return (
         <div className="w-[95%] md:w-[90%] py-4 m-auto">
-            {/* <VideoPlayer videoUrl={content?.[activeVideo]?.videoUrl?.url} onProgress={handleVideoProgress} /> */}
-            {/* Kiểm tra xem activeVideo có phải là quizId không */}
             {selectedQuizId ? (
                 <Practice
                     questionArr={quizQuestions}
                     quizId={selectedQuizId}
                     courseId={typeof courseId === 'string' ? courseId : ''}
-                /> // Hiển thị quiz nếu selectedQuizId có giá trị
-            ) : (
-                <VideoPlayer
-                    videoUrl={content?.[activeVideo?.index]?.videoUrl?.url} // Hiển thị video nếu không phải quiz
-                    onProgress={handleVideoProgress} // Gọi xử lý video progress nếu cần
+                    activeVideo={activeVideo}
+                    course={course}
+                    reload={reload}
                 />
+            ) : (
+                <VideoPlayer videoUrl={content?.[activeVideo?.index]?.videoUrl?.url} onProgress={handleVideoProgress} />
             )}
             <div className="w-full flex items-center justify-between my-5">
                 <Button
                     size={'rounded'}
                     className={activeVideo?.index === 0 ? '!cursor-no-drop opacity-80 hover:bg-primary-800' : ''}
-                    onClick={() => setActiveVideo({ section: activeVideo?.section, index: activeVideo?.index - 1 })}
+                    onClick={() =>
+                        setActiveVideo({ sectionOrder: activeVideo?.sectionOrder, index: activeVideo?.index - 1 })
+                    }
                 >
                     <HiArrowLeft />
                     Prev Lesson
                 </Button>
 
-                {/* Next Lesson Button */}
                 <Button
                     size={'rounded'}
                     className={`bg-accent-600 hover:bg-primary-800 ${!canProceedToNext ? 'opacity-50 cursor-not-allowed' : ''}`}

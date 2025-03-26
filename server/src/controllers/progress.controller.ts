@@ -9,7 +9,7 @@ import { redis } from '@/utils/redis';
 export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id; // Lấy userId từ middleware xác thực
     const courseId = req.params.id;
-    const { lessonId, isCompleted } = req.body;
+    const { lessonId, isCompleted, sectionOrder } = req.body;
 
     if (!courseId || !lessonId) {
         return next(new ErrorHandler('Course ID and Lesson ID are required', 400));
@@ -23,6 +23,7 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
 
     // Kiểm tra xem bài học thuộc section nào trong courseData
     let sectionName: string | null = null;
+
     for (const section of course.courseData) {
         if (section._id.toString() === lessonId) {
             sectionName = section.videoSection;
@@ -43,7 +44,9 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
             course: courseId,
             totalLessons: course.courseData.length,
             totalCompleted: 0,
-            completedLessons: []
+            completedLessons: {
+                sectionOrder: sectionOrder
+            }
         });
     }
 
@@ -100,6 +103,117 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
         data: progress
     });
 });
+
+// export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const userId = req.user?._id;
+//     const courseId = req.params.id;
+//     const { lessonId, isCompleted, sectionOrder } = req.body;
+
+//     if (!courseId || !lessonId) {
+//         return next(new ErrorHandler('Course ID and Lesson ID are required', 400));
+//     }
+
+//     const course = await CourseModel.findById(courseId);
+//     if (!course) {
+//         return next(new ErrorHandler('Course not found', 404));
+//     }
+
+//     // Find which section contains the lesson
+//     let sectionName: string | null = null;
+//     let sectionFound: any = null;
+
+//     for (const section of course.courseData) {
+//         if (section._id.toString() === lessonId) {
+//             sectionName = section.videoSection;
+//             sectionFound = section;
+//             break;
+//         }
+//     }
+
+//     if (!sectionName || !sectionFound) {
+//         return next(new ErrorHandler('Lesson not found in course', 404));
+//     }
+
+//     // Check or create progress
+//     let progress = await ProgressModel.findOne({ user: userId, course: courseId });
+
+//     if (!progress) {
+//         // Group courseData by sections
+//         const sectionsMap = new Map<string, any>();
+//         course.courseData.forEach((section: any) => {
+//             if (!sectionsMap.has(section.videoSection)) {
+//                 sectionsMap.set(section.videoSection, {
+//                     name: section.videoSection,
+//                     sectionOrder: section.sectionOrder,
+//                     lessons: []
+//                 });
+//             }
+//         });
+
+//         progress = new ProgressModel({
+//             user: userId,
+//             course: courseId,
+//             totalLessons: course.courseData.length,
+//             totalCompleted: 0,
+//             completedLessons: Array.from(sectionsMap.values()).map((section) => ({
+//                 section: {
+//                     sectionOrder: sectionOrder,
+//                     name: section.name,
+//                     sectionLength: course.courseData.filter((s: any) => s.videoSection === section.name).length,
+//                     lessons: [],
+//                     totalCompletedPerSection: 0
+//                 }
+//             }))
+//         });
+//     }
+
+//     // Find or create section progress
+//     let sectionProgress = progress.completedLessons.find(
+//         (s: { section: { name: string } }) => s.section.name === sectionName
+//     );
+
+//     if (!sectionProgress) {
+//         sectionProgress = {
+//             section: {
+//                 sectionOrder: sectionOrder || 0,
+//                 name: sectionName,
+//                 sectionLength: course.courseData.filter((s: any) => s.videoSection === sectionName).length,
+//                 lessons: [],
+//                 totalCompletedPerSection: 0
+//             }
+//         };
+//         progress.completedLessons.push(sectionProgress);
+//     }
+
+//     // Update lesson completion status
+//     const lessonIndex = sectionProgress.section.lessons.findIndex((l: any) => l.toString() === lessonId);
+
+//     if (isCompleted) {
+//         if (lessonIndex === -1) {
+//             sectionProgress.section.lessons.push(new mongoose.Types.ObjectId(lessonId));
+//         }
+//     } else {
+//         if (lessonIndex !== -1) {
+//             sectionProgress.section.lessons.splice(lessonIndex, 1);
+//         }
+//     }
+
+//     // Update completion counts
+//     sectionProgress.section.totalCompletedPerSection = sectionProgress.section.lessons.length;
+//     progress.totalCompleted = progress.completedLessons.reduce(
+//         (sum: number, sec: { section: { lessons: any[] } }) => sum + sec.section.lessons.length,
+//         0
+//     );
+
+//     await progress.save();
+//     await redis.set(`progress:${userId}:${courseId}`, JSON.stringify(progress));
+
+//     res.status(200).json({
+//         success: true,
+//         message: 'Lesson completion status updated successfully',
+//         data: progress
+//     });
+// });
 
 export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const quizId = req.params.id; // Lấy quizId từ URL

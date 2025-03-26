@@ -27,8 +27,9 @@ const ProgressSchema = new Schema<IProgress>(
         completedLessons: [
             {
                 section: {
-                    name: { type: String, required: true },
-                    sectionLength: { type: Number, required: true },
+                    name: { type: String },
+                    sectionLength: { type: Number },
+                    sectionOrder: { type: Number },
                     lessons: [
                         {
                             type: mongoose.Schema.Types.ObjectId,

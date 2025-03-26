@@ -25,12 +25,19 @@ type FormData = {
 export default function Practice({
     quizId,
     courseId,
-    questionArr
+    questionArr,
+    activeVideo,
+    course,
+    reload
 }: {
     quizId: string;
     courseId: string;
     questionArr: any[];
+    activeVideo: { sectionOrder: number; index: number };
+    readonly course: any;
+    readonly reload: any;
 }) {
+    const content = course?.courseData;
     const [questions, setQuestions] = useState<any[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -39,31 +46,30 @@ export default function Practice({
     const [userId, setUserId] = useState<string | null>(null);
 
     const [updateQuizCompletion] = useUpdateQuizCompletionMutation();
+    const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
 
     const form = useForm<FormData>({
         resolver: zodResolver(
             questions[currentQuestionIndex]?.type === 'single-choice' ? singleChoiceSchema : multipleChoiceSchema
         ),
         defaultValues: {
-            answer: '', // Giá trị mặc định cho single-choice
-            answers: [] // Giá trị mặc định cho multiple-choice
+            answer: '',
+            answers: []
         }
     });
 
-    // Fetch user info (userId) from API
     const getUserInfo = async () => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
                 withCredentials: true
             });
             const userId = response.data.user._id;
-            setUserId(userId); // Lưu userId vào state
+            setUserId(userId);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     };
 
-    // Update quiz score in the userScores
     const updateQuizScore = async (quizId: string, userId: string, newScore: number) => {
         const currentQuestion = questions[currentQuestionIndex];
 
@@ -93,20 +99,31 @@ export default function Practice({
         return data;
     };
 
-    // Update questions when questionArr changes
     useEffect(() => {
         if (questionArr && questionArr.length > 0) {
             setQuestions(questionArr);
-            setLoading(false); // Stop loading once data is fetched
+            setLoading(false);
         }
     }, [questionArr]);
 
-    // Get user info once when component mounts
     useEffect(() => {
         if (!userId) {
             getUserInfo();
         }
     }, [userId]);
+
+    // useEffect(() => {
+    //     if (isQuizFinished && userId) {
+    //         const handleCompletion = async () => {
+    //             const quizIdToAdd = content[activeVideo?.index]?.quizzes[0]?._id;
+    //             if (!quizIdToAdd) return;
+
+    //             await updateQuizCompletion({ quizId, courseId, isCompleted: true, userId });
+    //             setCompletedQuizzes((prev) => [...prev, quizIdToAdd]);
+    //         };
+    //         handleCompletion();
+    //     }
+    // }, [isQuizFinished, score, userId]);
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         const currentQuestion = questions[currentQuestionIndex];
@@ -120,14 +137,12 @@ export default function Practice({
             correctAnswers.every((ans: string) => selectedAnswers?.includes(ans)) &&
             selectedAnswers?.every((ans: string | undefined) => ans !== undefined && correctAnswers.includes(ans));
 
-        // Update score if the answer is correct
         if (isCorrect) {
             if (currentQuestion && currentQuestion.points) {
-                setScore((prevScore) => prevScore + currentQuestion.points); // Sử dụng callback
+                setScore((prevScore) => prevScore + currentQuestion.points);
             }
         }
 
-        // Check if it's the last question
         if (currentQuestionIndex === questions.length - 1) {
             setIsQuizFinished(true);
 
@@ -136,7 +151,10 @@ export default function Practice({
 
             if (percentage >= 70 && userId) {
                 try {
-                    await updateQuizCompletion({ quizId, courseId, isCompleted: true, userId });
+                    await updateQuizCompletion({ quizId, courseId, isCompleted: true, userId }).unwrap();
+                    const newCompletedQuizzes = [...completedQuizzes, content[activeVideo?.index].quizzes[0]._id];
+                    setCompletedQuizzes(newCompletedQuizzes);
+                    await reload();
                 } catch (error) {
                     console.error('Error updating quiz completion:', error);
                 }
@@ -152,20 +170,24 @@ export default function Practice({
     };
 
     useEffect(() => {
-        if (isQuizFinished) {
-            // Chỉ tính toán tỷ lệ phần trăm khi quiz hoàn thành
-            const totalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);
-            const percentage = totalPoints > 0 ? (score / totalPoints) * 100 : 0;
+        const updateQuiz = async () => {
+            if (isQuizFinished) {
+                const totalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);
+                const percentage = totalPoints > 0 ? (score / totalPoints) * 100 : 0;
 
-            if (percentage >= 70 && userId) {
-                try {
-                    updateQuizCompletion({ quizId, courseId, isCompleted: true, userId });
-                } catch (error) {
-                    console.error('Error updating quiz completion:', error);
+                if (percentage >= 70 && userId) {
+                    try {
+                        await updateQuizCompletion({ quizId, courseId, isCompleted: true, userId });
+                        await reload();
+                    } catch (error) {
+                        console.error('Error updating quiz completion:', error);
+                    }
                 }
             }
-        }
-    }, [isQuizFinished, score, questions]);
+        };
+
+        updateQuiz();
+    }, [isQuizFinished, score, questions, userId, quizId, courseId, reload]);
 
     const handleRestart = () => {
         setCurrentQuestionIndex(0);

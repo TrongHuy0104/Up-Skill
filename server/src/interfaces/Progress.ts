@@ -7,6 +7,7 @@ export interface IProgress extends Document {
     totalCompleted: number;
     completedLessons: {
         section: {
+            sectionOrder: number;
             name: string;
             sectionLength: number;
             lessons: mongoose.Schema.Types.ObjectId[];
