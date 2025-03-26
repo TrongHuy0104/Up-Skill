@@ -18,18 +18,21 @@ import { Input } from '@/components/custom/Input';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 const formSchema = z.object({
-    introduce: z.string().min(1, { message: 'Introduce is required.' }),
-    phoneNumber: z.string().min(10, { message: 'Phone number must be at least 10 digits.' }),
-    address: z.string().min(1, { message: 'Address is required.' }),
-    age: z
+    name: z.string().min(1, { message: 'This field has to be filled.' }),
+    profession: z.string().min(1, { message: 'This field has to be filled.' }),
+    introduce: z.string().optional(),
+    age: z.number().min(0, { message: 'Age must be a positive number' }).optional(),
+    address: z.string().min(1, { message: 'This field has to be filled.' }),
+    phoneNumber: z
         .string()
-        .transform(value => parseInt(value, 10) || 0)
-        .refine(value => value > 17, { message: 'Age must be at least 18.' }),
-    profession: z.string().min(1, { message: 'Profession is required.' })
+        .min(1, { message: 'This field has to be filled.' })
+        .max(15, { message: 'Phone number must be at most 15 digits.' })
+        .regex(/^\+?\d{10,15}$/, { message: 'Phone number must contain only numbers.' })
 });
 
+
 interface IntroduceFormProps {
-    onClose: () => void; // Nhận prop onClose từ FirstBanner
+    onClose: () => void; 
 }
 
 function IntroduceForm({ onClose }: IntroduceFormProps) {
@@ -45,7 +48,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
         }
     });
 
-    const { isSubmitting, isValid } = form.formState;
+    const { isSubmitting } = form.formState;
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -157,7 +160,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
                             )}
                         />
                         <DialogFooter>
-                            <Button type="submit" disabled={!isValid || isSubmitting}>
+                            <Button type="submit" disabled={isSubmitting}>
                                 Submit
                             </Button>
                         </DialogFooter>
