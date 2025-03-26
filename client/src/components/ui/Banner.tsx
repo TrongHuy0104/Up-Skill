@@ -56,11 +56,11 @@ export default function Banner({
                     <div className={`flex-1 ${alignmentClass} w-full text-center md:text-left`}>
                         {breadcrumbs && <Breadcrumb breadcrumbs={breadcrumbs} alignment={contentAlignment} />}
                         {title && (
-                            <h2 className="text-2xl sm:text-[28px] md:text-[36px] mb-3 sm:mb-4 font-bold leading-8 sm:leading-[40px] md:leading-[56px] font-cardo">
+                            <h2 className="text-center text-2xl sm:text-[28px] md:text-[36px] mb-3 sm:mb-4 font-bold leading-8 sm:leading-[40px] md:leading-[56px] font-cardo">
                                 {title}
                             </h2>
                         )}
-                        <div className="text-sm sm:text-base">{children}</div>
+                        <div className="text-sm sm:text-base text-center">{children}</div>
                     </div>
 
                     {/* Button section */}

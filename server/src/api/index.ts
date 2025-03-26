@@ -1,5 +1,4 @@
 import express from 'express';
-<<<<<<< HEAD
 import userRoutes from '@/routes/user.route';
 import courseRoutes from '@/routes/course.route';
 import orderRoutes from '@/routes/order.route';
@@ -12,19 +11,6 @@ import progressRoutes from '@/routes/progress.route';
 import incomeRoutes from '@/routes/income.route';
 import cartRoutes from '@/routes/cart.route';
 import couponRoutes from '@/routes/coupon.route';
-=======
-import userRoutes from '../routes/user.route';
-import courseRoutes from '../routes/course.route';
-import orderRoutes from '../routes/order.route';
-import notificationRoutes from '../routes/notification.route';
-import layoutRoutes from '../routes/layout.route';
-import categoryRoutes from '../routes/category.route';
-import levelRoutes from '../routes/level.route';
-import quizRoutes from '../routes/quiz.route';
-import progressRoutes from '../routes/progress.route';
-import incomeRoutes from '../routes/income.route';
-import cartRoutes from '../routes/cart.route';
->>>>>>> f6fd6181429eda6b1eb19fbb81b32dc4f05aa8be
 
 const router = express.Router();
 

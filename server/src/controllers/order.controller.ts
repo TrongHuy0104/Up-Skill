@@ -11,19 +11,12 @@ import { catchAsync } from '../utils/catchAsync';
 import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
-<<<<<<< HEAD
 import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
 import { redis } from '@/utils/redis';
 import OrderModel from '@/models/Order.model';
 import { validateCouponCode, recordCouponUsage } from '@/utils/coupon';
 import { CouponDocument } from '@/models/Coupon.model';
-=======
-import sendMail from '../utils/sendMail';
-import NotificationModel from '../models/Notification.model';
-import { redis } from '../utils/redis';
-import OrderModel from '../models/Order.model';
->>>>>>> f6fd6181429eda6b1eb19fbb81b32dc4f05aa8be
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

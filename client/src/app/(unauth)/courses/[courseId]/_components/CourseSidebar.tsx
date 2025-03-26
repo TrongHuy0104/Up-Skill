@@ -33,6 +33,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     const [user, setUser] = useState<any>({});
     const [couponCode, setCouponCode] = useState('');
     const [discount, setDiscount] = useState(0);
+    const [coursePrice, setCoursePrice] = useState(course.price);
 
     useEffect(() => {
         setUser(userData?.user);
@@ -114,23 +115,38 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     }, [paymentIntentData, stripePromise, isLoading]);
 
     const handleApplyCoupon = async () => {
-        try{
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`, { code: couponCode },
+        if (!couponCode.trim()) {
+            setCoursePrice(course.price);
+            setDiscount(0);
+            toast({
+                variant: 'destructive',
+                title: 'Please enter a coupon code',
+            });
+            return;
+        }
+        try {
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`,
+                { code: couponCode },
                 { withCredentials: true }
             );
-
+    
             if (response.data.success) {
                 setDiscount(response.data.discountPercentage);
-                console.log('Coupon applied successfully!');
+                const newPrice = course.price - (course.price * (response.data.discountPercentage / 100));
+                setCoursePrice(newPrice);
+                toast({
+                    variant: 'success',
+                    title: `Coupon applied successfully! ${response.data.discountPercentage}% discount.`,
+                });
             } else {
                 toast({
                     variant: 'destructive',
-                    title: 'Invalid or expired coupon',
-                    description: response.data.message || 'Invalid or expired.'
-                });        
+                    title: response.data.message || 'Invalid or expired.'
+                });
             }
-        } catch (error){
-            console.log(error)
+        } catch (error: any) {
+            console.error(error);
         }
     };
 
@@ -174,13 +190,13 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 <>
                     <div className="p-6 flex justify-center items-center">
                         <p className="text-[26px] font-base text-accent-900 font-semibold mr-4">
-                            ${course?.price?.toFixed(2)}
+                            ${coursePrice.toFixed(2)}
                         </p>
                         <p className="text-[15px] text-primary-800 line-through mr-12">
                             ${course?.estimatedPrice?.toFixed(2)}
                         </p>
                         <p className="text-[14px] text-accent-900 bg-accent-100 font-medium py-2 px-4 border border-accent-900 rounded-lg">
-                            ${computeSalePercent(course.price, course?.estimatedPrice || 0).toFixed(2)}% OFF
+                            ${(computeSalePercent(course.price, course?.estimatedPrice || 0) + discount).toFixed(2)}% OFF
                         </p>
                     </div>
                     <div>
@@ -241,54 +257,55 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                             Certificate of completion
                         </p>
                     </div>
-                    <div className="px-6 pb-6 border-b">
-                        <div className="flex items-center justify-between">
-                            <input
-                                type="text"
-                                placeholder="Coupon Code"
-                                value={couponCode}
-                                onChange={(e) => setCouponCode(e.target.value)}
-                                className="w-[250px] p-2 border border-gray-300 rounded-lg"
-                            />
-                            <button
-                                onClick={handleApplyCoupon}
-                                className="bg-primary-800 text-primary-50 px-6 py-2 rounded-md hover:bg-accent-900 transition-colors duration-300 flex items-center justify-center"
-                            >
-                                Apply
-                            </button>
-                        </div>
-                        {discount > 0 && <p className="text-green-500 text-sm">Discount: {discount}%</p>}
-                    </div>
-                    <div className="text-center mt-6">
-                        <p className="text-[16px] font-medium text-primary-800">Share this course</p>
-                        <div className="flex justify-center gap-4 mt-4 mb-4">
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaFacebookF />
-                            </a>
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaXTwitter />
-                            </a>
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaInstagram />
-                            </a>
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaLinkedinIn />
-                            </a>
-                        </div>
-                    </div>
-                </>
+                    {!checkCourseExist() && (
+                    <div className="px-6">
+                                <div className="flex items-center justify-between">
+                                    <input
+                                        type="text"
+                                        placeholder="Coupon Code"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        className="w-[250px] p-2 border border-gray-300 rounded-lg" />
+                                    <button
+                                        onClick={handleApplyCoupon}
+                                        className="bg-primary-800 text-primary-50 px-6 py-2 rounded-md hover:bg-accent-900 transition-colors duration-300 flex items-center justify-center"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                                {discount > 0 && <p className="text-green-500 text-sm mt-2">Discount: {discount}%</p>}
+                        
+                            </div>
+                        )}
+                        <div className="text-center mt-6 pt-6 border-t">
+                                    <p className="text-[16px] font-medium text-primary-800">Share this course</p>
+                                    <div className="flex justify-center gap-4 mt-4 mb-4">
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaFacebookF />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaXTwitter />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaInstagram />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaLinkedinIn />
+                                        </a>
+                                    </div>
+                                </div></>
             )}
         </div>
     );
