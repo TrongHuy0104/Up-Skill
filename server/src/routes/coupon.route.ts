@@ -3,7 +3,8 @@ import {
     createCoupon,
     getAllCoupons,
     updateCoupon,
-    deleteCoupon
+    deleteCoupon,
+    validateCoupon
 } from '@/controllers/coupon.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
@@ -16,5 +17,8 @@ router.post('/create', updateAccessToken, isAuthenticated, authorizeRoles('admin
 router.get('/all', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllCoupons);
 router.put('/:id', updateAccessToken, isAuthenticated, authorizeRoles('admin'), updateCoupon);
 router.delete('/:id', updateAccessToken, isAuthenticated, authorizeRoles('admin'), deleteCoupon);
+
+// User route
+router.post('/validate', updateAccessToken, isAuthenticated, validateCoupon);
 
 export default router;

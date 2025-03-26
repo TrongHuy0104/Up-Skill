@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CouponModel } from '@/models/Coupon.model';
 import ErrorHandler from '@/utils/ErrorHandler';
-// import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 export const createCoupon = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -53,3 +53,48 @@ export const deleteCoupon = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+export const validateCoupon = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { code } = req.body;
+        const userId = req.user?._id;
+
+        const coupon = await CouponModel.findOne({ code, isActive: true });
+
+        if (!coupon) {
+            return next(new ErrorHandler('Invalid coupon code', 400));
+        }
+
+        if (coupon.expiryDate && coupon.expiryDate < new Date()) {
+            return next(new ErrorHandler('Coupon code expired', 400));
+        }
+
+        if (coupon.usageLimit && coupon.usersUsed && coupon.usersUsed.length >= coupon.usageLimit) {
+            return next(new ErrorHandler('Coupon usage limit reached', 400));
+        }
+
+        if (userId) {
+            const userIdObjectId = new mongoose.Types.ObjectId(userId);
+            if (coupon.usersUsed && coupon.usersUsed.includes(userIdObjectId)) {
+                return next(new ErrorHandler('Coupon already used by you', 400));
+            }
+        }
+
+        res.status(200).json({ success: true, coupon, message: 'Coupon valid' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// export const recordCouponUsage = async (couponCode: string, userId: string | undefined) => {
+//     try {
+//         const coupon = await CouponModel.findOne({ code: couponCode });
+//         if (coupon && userId) {
+//             const userIdObjectId = new mongoose.Types.ObjectId(userId);
+//             coupon.usersUsed = [...(coupon.usersUsed || []), userIdObjectId];
+//             await coupon.save();
+//         }
+//     } catch (error) {
+//         console.error('Error recording coupon usage:', error);
+//     }
+// };

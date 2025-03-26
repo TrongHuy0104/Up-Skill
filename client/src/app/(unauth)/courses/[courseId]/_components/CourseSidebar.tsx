@@ -19,6 +19,7 @@ import { CourseSidebarSkeleton } from '@/components/ui/Skeleton';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 import axios from 'axios';
 import { addCartItem } from '@/lib/redux/features/cart/cartSlice';
+import { toast } from '@/hooks/use-toast';
 
 interface CourseSidebarProps {
     course: Course;
@@ -30,6 +31,8 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     const [createPaymentIntent, { data: paymentIntentData, isLoading }] = useCreatePaymentIntentMutation();
     const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
     const [user, setUser] = useState<any>({});
+    const [couponCode, setCouponCode] = useState('');
+    const [discount, setDiscount] = useState(0);
 
     useEffect(() => {
         setUser(userData?.user);
@@ -52,9 +55,13 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`,
                 { withCredentials: true }
             );
-            const cartItems = response.data.cart.items;
-            const courseExists = cartItems.some((items: any) => items.courseId === course._id);
-            return courseExists;
+            if (response.data.cart && response.data.cart.items) {
+                const cartItems = response.data.cart.items;
+                const courseExists = cartItems.some((items: any) => items.courseId === course._id);
+                return courseExists;
+            } else {
+                return false;
+            }
         } catch (error) {
             console.error('Error checking if course is in cart:', error);
             return false;
@@ -112,6 +119,27 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             redirect(`/checkout/${paymentIntentData?.client_secret}`);
         }
     }, [paymentIntentData, stripePromise, isLoading]);
+
+    const handleApplyCoupon = async () => {
+        try{
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`, { code: couponCode },
+                { withCredentials: true }
+            );
+
+            if (response.data.success) {
+                setDiscount(response.data.discountPercentage);
+                console.log('Coupon applied successfully!');
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Invalid or expired coupon',
+                    description: response.data.message || 'Invalid or expired.'
+                });        
+            }
+        } catch (error){
+            console.log(error)
+        }
+    };
 
     return (
         <div className="w-[400px] rounded-2xl shadow-lg bg-primary-50 border">
@@ -188,7 +216,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                         )}
                     </div>
                     <p className="text-center text-sm text-primary-800">30-Day Money-Back Guarantee</p>
-                    <div className="p-6 space-y-4 text-sm border-b">
+                    <div className="p-6 space-y-4 text-sm">
                         <p className="text-[18px] font-medium text-primary-800 py-2">This course includes:</p>
                         <p className="text-[15px] text-primary-800 flex items-center gap-2">
                             <Image
@@ -219,6 +247,24 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                             <Image src="/assets/icons/certificate.svg" alt="Star-Outline Icon" width={16} height={16} />
                             Certificate of completion
                         </p>
+                    </div>
+                    <div className="px-6 pb-6 border-b">
+                        <div className="flex items-center justify-between">
+                            <input
+                                type="text"
+                                placeholder="Coupon Code"
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value)}
+                                className="w-[250px] p-2 border border-gray-300 rounded-lg"
+                            />
+                            <button
+                                onClick={handleApplyCoupon}
+                                className="bg-primary-800 text-primary-50 px-6 py-2 rounded-md hover:bg-accent-900 transition-colors duration-300 flex items-center justify-center"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                        {discount > 0 && <p className="text-green-500 text-sm">Discount: {discount}%</p>}
                     </div>
                     <div className="text-center mt-6">
                         <p className="text-[16px] font-medium text-primary-800">Share this course</p>
