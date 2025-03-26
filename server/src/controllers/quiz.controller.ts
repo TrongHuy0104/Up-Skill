@@ -1,9 +1,9 @@
-import { catchAsync } from '@/utils/catchAsync';
+import { catchAsync } from '../utils/catchAsync';
 import { NextFunction, Request, Response } from 'express';
-import { redis } from '@/utils/redis';
-import Quiz from '@/models/Quiz.model'; // Adjust the import path as needed
-import Course from '@/models/Course.model'; // Import Course model
-import ErrorHandler from '@/utils/ErrorHandler';
+import { redis } from '../utils/redis';
+import Quiz from '../models/Quiz.model'; // Adjust the import path as needed
+import Course from '../models/Course.model'; // Import Course model
+import ErrorHandler from '../utils/ErrorHandler';
 import mongoose from 'mongoose';
 
 // GET /api/quizzes/:quizId - Fetch a quiz by ID
@@ -505,7 +505,6 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         return next(new ErrorHandler('Please provide a quiz ID', 400));
     }
 
-    // Kiểm tra dữ liệu đầu vào
     if (!text || !type || !points || !correctAnswer) {
         return next(new ErrorHandler('Please provide all required fields', 400));
     }
@@ -521,13 +520,11 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         return next(new ErrorHandler('Each correct answer must be in the options', 400));
     }
 
-    // Tìm quiz trong database
     const quiz = await Quiz.findById(id);
     if (!quiz) {
         return next(new ErrorHandler('Quiz not found', 404));
     }
 
-    // Tạo câu hỏi mới
     const newQuestion = {
         text,
         type,
@@ -536,11 +533,8 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         correctAnswer
     };
 
-    // Thêm câu hỏi vào quiz
     quiz.questions.push(newQuestion);
-    await quiz.save(); // Lưu thay đổi vào database
-    console.log('Received data:', { text, type, points, options, correctAnswer });
-    // Trả về kết quả
+    await quiz.save();
     res.status(201).json({
         success: true,
         message: 'Question created successfully',

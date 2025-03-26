@@ -62,11 +62,11 @@ export default function Sort() {
     };
 
     return (
-        <div className="items-center relative">
+        <div className="items-center relative w-auto max-w-[200px] md:max-w-[250px]">
             <div className="flex items-center h-[45px] gap-2">
                 <p className="text-primary-600">Sort by</p>
                 <button
-                    className="flex gap-2 cursor-pointer focus:outline-none"
+                    className="flex gap-2 cursor-pointer focus:outline-none w-auto"
                     onClick={() => setIsSortOpen(!isSortOpen)}
                     aria-label="Toggle Sort Options"
                 >
@@ -76,7 +76,7 @@ export default function Sort() {
             </div>
 
             {isSortOpen && (
-                <div ref={dropdownRef}>
+                <div ref={dropdownRef} className="">
                     <ModalComponent closeModal={() => setIsSortOpen(false)} onSelectSort={handleSortSelect} />
                 </div>
             )}

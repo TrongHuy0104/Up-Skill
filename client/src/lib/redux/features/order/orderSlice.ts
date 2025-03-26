@@ -12,8 +12,14 @@ const orderSlice = createSlice({
     name: 'order',
     initialState,
     reducers: {
-        orderCreatePaymentIntent: (state, action: PayloadAction<{ course: any }>) => {
-            state.courses = [...state.courses, action.payload.course];
+        orderCreatePaymentIntent: (state, action: PayloadAction<{ course?: any, cartItems?: any[] }>) => {
+            if (action.payload.course) {
+                state.courses = [action.payload.course];
+            } else if (action.payload.cartItems) {
+                state.courses = action.payload.cartItems;
+            } else {
+                state.courses = [];
+            }
         }
     }
 });

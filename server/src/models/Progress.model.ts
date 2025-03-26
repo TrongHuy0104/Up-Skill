@@ -1,4 +1,4 @@
-import { IProgress } from '@/interfaces/Progress';
+import { IProgress } from '../interfaces/Progress';
 import mongoose, { Schema } from 'mongoose';
 
 // Schema của Progress

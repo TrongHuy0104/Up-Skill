@@ -187,7 +187,7 @@ export default function Practice({
         };
 
         updateQuiz();
-    }, [isQuizFinished, score, questions, userId, quizId, courseId, reload]);
+    }, [isQuizFinished, score, questions, userId, quizId, courseId, reload, updateQuizCompletion]);
 
     const handleRestart = () => {
         setCurrentQuestionIndex(0);
