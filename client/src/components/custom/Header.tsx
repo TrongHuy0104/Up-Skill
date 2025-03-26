@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
@@ -13,10 +13,14 @@ import { UserDropdown } from '@/components/auth/UserDropdown';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { useLogoutQuery, useSocialAuthMutation } from '@/lib/redux/features/auth/authApi';
 import { AuthBtnsSkeleton } from '../ui/Skeleton';
+import axios from 'axios';
+import { setCartItems } from '@/lib/redux/features/cart/cartSlice';
 
 export default function Header() {
+    const dispatch = useDispatch();
     const { user, isLoggingOut } = useSelector((state: any) => state.auth);
-
+    const cartItems = useSelector((state: any) => state.cart.items);
+    const cartItemCount = cartItems.length;   
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [logout, setLogout] = useState(false);
     useLogoutQuery(undefined, { skip: !logout ? true : false });
@@ -33,9 +37,28 @@ export default function Header() {
                 });
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, user]);
 
+    useEffect(() => {
+        const fetchCartItems = async () => {
+            try {
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`,
+                    { withCredentials: true }
+                );
+                const cartItems = response.data?.cart?.items || [];
+                dispatch(setCartItems(cartItems));
+            } catch (error) {
+                console.error('Error fetching cart items:', error);
+            }
+        };
+    
+        if (user) {
+            fetchCartItems();
+        }
+    }, [user, dispatch]);
+    
     return (
         <header className="sticky left-0 right-0 z-50 border-b border-primary-100">
             <div className="px-[60px] bg-primary-50">
@@ -51,7 +74,7 @@ export default function Header() {
                         ) : user ? (
                             <>
                                 {/* Cart */}
-                                <Link href="#!" className="mr-[10px]">
+                                <Link href="/shop-cart" className="mr-[10px] relative">
                                     <svg
                                         className="hover:text-accent-900 transition-colors"
                                         width="17"
@@ -84,6 +107,11 @@ export default function Header() {
                                        1.29028 6.19824 1.32544 6.09863C1.3606 5.99902 1.40161 5.92578 1.44849 5.87891Z"
                                         />
                                     </svg>
+                                    {cartItemCount > 0 && (
+                                        <span className="absolute bottom-3 left-4 text-xs text-white bg-accent-900 rounded-full w-3 h-3 flex items-center justify-center">
+                                            {cartItemCount}
+                                        </span>
+                                    )}
                                 </Link>
                                 <UserDropdown />
                             </>

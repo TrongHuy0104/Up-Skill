@@ -1625,8 +1625,6 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
 
 // get purchased courses of user
 export const getAllPurchasedCoursesOfUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req?.user?.purchasedCourses);
-
     const course = await CourseModel.find({
         _id: { $in: req?.user?.purchasedCourses }
     })
