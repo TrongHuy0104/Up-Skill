@@ -15,23 +15,29 @@ interface CourseContentProps {
 }
 
 export default function CourseContent({ courseId }: CourseContentProps) {
-    const [activeVideo, setActiveVideo] = useState(0);
-
+    const {
+        data,
+        isLoading: isLoadingCourseContent,
+        refetch
+    } = useGetCourseContentQuery(courseId, { refetchOnMountOrArgChange: true });
+    const { data: progressData, isLoading: isLoadingProgress, refetch: reload } = useGetProgressDataQuery(courseId);
     // Fetch user data
     const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
+    const [activeVideo, setActiveVideo] = useState<{ sectionOrder: number; index: number }>({
+        sectionOrder: 1,
+        index: 0
+    });
 
-    // Fetch course content
-    const {
-        data: courseContent,
-        isLoading: isCourseLoading,
-        refetch: refetchCourseContent
-    } = useGetCourseContentQuery(courseId, { refetchOnMountOrArgChange: true });
+    const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
+    const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
 
-    // Fetch progress data
-    const { data: progressData, refetch: refetchProgress } = useGetProgressDataQuery(courseId);
+    const handleQuizClick = (quizId: string | null, questions: any[]) => {
+        setSelectedQuizId(quizId);
+        setQuizQuestions(questions);
+    };
 
     // Handle loading states
-    if (isLoadingUser || isCourseLoading) {
+    if (isLoadingUser || isLoadingCourseContent || isLoadingProgress) {
         return <Spinner />;
     }
 
@@ -42,35 +48,38 @@ export default function CourseContent({ courseId }: CourseContentProps) {
     }
 
     // Handle case where no course data is found
-    if (!courseContent?.course) {
+    if (!data?.course) {
         return <div>No course data found.</div>;
     }
 
     return (
         <>
-            <h2 className="w-[70%] text-xl font-semibold md:w-[93%] m-auto mt-5">{courseContent.course.name}</h2>
+            <h2 className="w-[70%] text-xl font-semibold md:w-[93%] m-auto mt-5">{data?.course?.name}</h2>
             <div className="w-full grid md:grid-cols-10 text-primary-800">
-                {/* Course Media Section */}
                 <div className="col-span-7">
                     <CourseContentMedia
                         progressData={progressData?.data}
-                        course={courseContent.course}
+                        course={data?.course}
                         activeVideo={activeVideo}
                         setActiveVideo={setActiveVideo}
                         user={userData.user}
-                        refetch={refetchCourseContent}
-                        reload={refetchProgress}
+                        refetch={refetch}
+                        reload={reload}
+                        selectedQuizId={selectedQuizId}
+                        quizQuestions={quizQuestions}
+                        setSelectedQuizId={setSelectedQuizId}
+                        setQuizQuestions={setQuizQuestions}
                     />
                 </div>
-
-                {/* Course Content List Section */}
                 <div className="hidden md:block md:col-span-3 ml-[-30px]">
                     <CourseContentList
                         progressData={progressData?.data}
-                        data={courseContent.course.courseData}
+                        data={data?.course?.courseData}
                         activeVideo={activeVideo}
                         setActiveVideo={setActiveVideo}
-                        refetch={refetchProgress}
+                        refetch={reload}
+                        onQuizClick={handleQuizClick}
+                        selectedQuizId={selectedQuizId}
                     />
                 </div>
             </div>

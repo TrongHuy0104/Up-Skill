@@ -67,7 +67,7 @@ router.post('/search', searchCoursesAndInstructors);
 
 router.get('/top-courses', getTopCourses);
 
-router.get('/get-courses', isAuthenticated, authorizeRoles('admin'), getAllCourses);
+router.get('/get-courses', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllCourses);
 
 router.get('/:id', getSingleCourse);
 

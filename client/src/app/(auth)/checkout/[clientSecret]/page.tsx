@@ -4,12 +4,12 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useSelector } from 'react-redux';
 import { redirect, useParams } from 'next/navigation';
-import { useState, useEffect } from 'react'; // Import useEffect and useState
+import { useState, useEffect } from 'react';
 
 import CheckoutForm from './_components/CheckoutForm';
 import Banner from '@/components/ui/Banner';
 import { layoutStyles } from '@/styles/styles';
-import Spinner from '@/components/custom/Spinner'; // Import a loading spinner
+import Spinner from '@/components/custom/Spinner';
 
 interface Course {
     _id: string;
@@ -23,27 +23,23 @@ export default function PaymentPage() {
 
     if (courses.length === 0) redirect('/');
 
-    const [stripePromise, setStripePromise] = useState<any>(null); // State for Stripe promise
-    const [loading, setLoading] = useState(true); // State for loading effect
+    const [stripePromise, setStripePromise] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Extract clientSecret from params
     const clientSecret = typeof params.clientSecret === 'string' ? params.clientSecret : undefined;
 
-    // Calculate total price
     const totalPrice = courses.reduce((total: number, course: Course) => total + course.price, 0);
 
-    // Load Stripe asynchronously
     useEffect(() => {
         const initializeStripe = async () => {
             const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
             setStripePromise(stripe);
-            setLoading(false); // Stop loading once Stripe is initialized
+            setLoading(false);
         };
 
         initializeStripe();
     }, []);
 
-    // Show loading spinner while Stripe is initializing
     if (loading) {
         return <Spinner />;
     }

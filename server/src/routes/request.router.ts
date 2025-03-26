@@ -4,10 +4,10 @@ import {
     getPendingRequests,
     getRequestsByCourseId,
     handleRequestApproval
-} from '@/controllers/request.controller';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
-import { updateAccessToken } from '@/controllers/user.controller';
+} from '../controllers/request.controller';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
+import { updateAccessToken } from '../controllers/user.controller';
 
 const router = express.Router();
 

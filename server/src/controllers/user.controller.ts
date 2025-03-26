@@ -3,6 +3,7 @@ import cloudinary from 'cloudinary';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import dotenv from 'dotenv';
+
 import UserModel from '../models/User.model';
 import { catchAsync } from '../utils/catchAsync';
 import ErrorHandler from '../utils/ErrorHandler';
@@ -18,7 +19,7 @@ import {
     getAllUsersService,
     updateUserRoleService,
     getAllInstructorsService
-} from '@/services/user.service';
+} from '../services/user.service';
 import CourseModel from '../models/Course.model';
 
 dotenv.config();
@@ -254,7 +255,6 @@ export const logoutUser = catchAsync(async (req: Request, res: Response, next: N
 
 export const updateAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const refresh_token = req.cookies.refresh_token as string;
-    console.log(refresh_token);
     const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
 
     const message = 'Could not refresh token';
@@ -286,93 +286,6 @@ export const updateAccessToken = catchAsync(async (req: Request, res: Response, 
 
     next();
 });
-// export const updateAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     console.log('--- updateAccessToken Middleware Start ---');
-//     console.log('Cookies received by Express:', req.cookies); // Log ALL cookies
-
-//     try {
-//         const accessToken = req.cookies.access_token;
-//         const refreshToken = req.cookies.refresh_token;
-
-//         console.log('accessToken:', accessToken);
-//         console.log('refreshToken:', refreshToken);
-
-//         // 1. Check Access Token (Optional, but good for debugging)
-//         if (accessToken) {
-//             try {
-//                 const decodedAccessToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN!) as { id: string };
-//                 console.log('Decoded Access Token:', decodedAccessToken);
-//                 // If access token is valid, you *could* just proceed.
-//                 // However, for consistent refresh logic, it's common to *always* refresh.
-//                 // req.user = decodedAccessToken; // You might set req.user here
-//                 // return next(); // You could return early here
-//             } catch (accessError) {
-//                 console.error('Access Token Verification Error:', accessError);
-//                 // Access token is invalid or expired.  Proceed to refresh logic.
-//             }
-//         }
-
-//         // 2. Refresh Token Verification (Required)
-//         if (!refreshToken) {
-//             console.log('No refresh token provided.');
-//             console.log('--- updateAccessToken Middleware End (No Refresh Token) ---');
-//             return res.status(400).json({ message: 'No refresh token provided' }); // 400 Bad Request
-//         }
-
-//         let decodedRefreshToken;
-//         try {
-//             decodedRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN!) as { id: string };
-//             console.log('Decoded Refresh Token:', decodedRefreshToken);
-//         } catch (refreshError) {
-//             console.error('Refresh Token Verification Error:', refreshError);
-//             console.log('--- updateAccessToken Middleware End (Invalid Refresh Token) ---');
-//             return res.status(401).json({ message: 'Invalid refresh token' }); // 401 Unauthorized
-//         }
-
-//         // 3. Redis Check (If you are using Redis)
-//         if (redis) {
-//             // Check if redisClient is defined
-//             try {
-//                 const session = await redis.get(`user:${decodedRefreshToken.id}`);
-//                 console.log('Redis Session Data:', session);
-
-//                 if (!session) {
-//                     console.log('No session found in Redis.');
-//                     console.log('--- updateAccessToken Middleware End (No Session) ---');
-//                     return res.status(401).json({ message: 'Session expired' }); // Or a 400, depending on your preference
-//                 }
-
-//                 // Optionally, parse the session data if it's stored as JSON
-//                 // const userData = JSON.parse(session) as IUser;
-//                 // req.user = userData;
-//             } catch (redisError) {
-//                 console.error('Redis Error:', redisError);
-//                 console.log('--- updateAccessToken Middleware End (Redis Error) ---');
-//                 return res.status(500).json({ message: 'Internal server error (Redis)' });
-//             }
-//         } else {
-//             console.log('Redis client is not initialized.'); // Add this log
-//             // Handle the case where Redis is not being used.  You might have a fallback mechanism.
-//         }
-//         // 4. Generate New Access Token (If refresh token is valid and session exists)
-//         const newAccessToken = jwt.sign({ id: decodedRefreshToken.id }, process.env.ACCESS_TOKEN!, { expiresIn: '1m' }); // Keep it short!
-//         console.log('New Access Token Generated:', newAccessToken);
-
-//         // 5. Set New Access Token Cookie
-//         res.cookie('access_token', newAccessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-
-//         // 6. Attach User to Request (Optional, but common)
-//         // If you have user data, you can attach it to the request object.
-//         // req.user = { id: decodedRefreshToken.id }; // Or the full user object from Redis/DB
-
-//         console.log('--- updateAccessToken Middleware End (Success) ---');
-//         next();
-//     } catch (error) {
-//         console.error('Unexpected Error in updateAccessToken:', error);
-//         console.log('--- updateAccessToken Middleware End (Unexpected Error) ---');
-//         return res.status(500).json({ message: 'Internal server error' });
-//     }
-// });
 
 export const refreshToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const refresh_token = req.cookies.refresh_token as string;

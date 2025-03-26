@@ -967,16 +967,18 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
 
         // Add quizzes to the final course data (at the end of the section)
         if (quizzes.length > 0) {
-            finalCourseData.push({
-                _id: `quiz-section-${sectionName}`,
-                title: `Quiz for ${sectionName}`,
-                description: `Quiz for ${sectionName}`,
-                videoSection: sectionName,
-                isQuiz: true, // Flag to identify quizzes
-                quizzes: quizzes,
-                sectionOrder: sectionItems[0].sectionOrder,
-                lessonOrder: sectionItems.length + 1, // Place quizzes at the end of the section
-                videoLength: sectionQuizDuration // Assign quiz duration to videoLength for consistency
+            quizzes.forEach((quiz: any) => {
+                finalCourseData.push({
+                    _id: quiz._id,
+                    title: quiz.title,
+                    description: `Quiz for ${sectionName}`,
+                    videoSection: sectionName,
+                    isQuiz: true, // Flag to identify quizzes
+                    quizzes: quizzes,
+                    sectionOrder: sectionItems[0].sectionOrder,
+                    lessonOrder: sectionItems.length + 1, // Place quizzes at the end of the section
+                    videoLength: sectionQuizDuration // Assign quiz duration to videoLength for consistency
+                });
             });
         }
 
@@ -1625,8 +1627,6 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
 
 // get purchased courses of user
 export const getAllPurchasedCoursesOfUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req?.user?.purchasedCourses);
-
     const course = await CourseModel.find({
         _id: { $in: req?.user?.purchasedCourses }
     })

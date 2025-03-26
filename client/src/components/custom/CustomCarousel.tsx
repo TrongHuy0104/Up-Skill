@@ -26,10 +26,10 @@ export function CarouselSpacing({ component, colNumber = 5 }: Props) {
     };
     return (
         <Carousel className="w-full">
-            <CarouselContent className="-ml-1">
+            <CarouselContent className="-ml-1 ">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <CarouselItem key={index} className={`pl-1 ${getColumnNumber(colNumber)}`}>
-                        <div className="p-1">{component}</div>
+                        <div className=" w-[280px] sm:min-w-[640px] max-w-[900px]">{component}</div>
                     </CarouselItem>
                 ))}
             </CarouselContent>

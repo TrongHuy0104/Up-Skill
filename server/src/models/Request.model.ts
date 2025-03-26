@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { RequestT } from '@/interfaces/Request';
+import { RequestT } from '../interfaces/Request';
 
 export const RequestSchema: Schema<RequestT> = new Schema(
     {

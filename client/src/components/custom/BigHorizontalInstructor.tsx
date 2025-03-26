@@ -18,7 +18,7 @@ interface Instructor {
 
 const InstructorCard = ({ name, profession, avatar, rating, reviews, students, courses, description }: Instructor) => {
     return (
-        <div className="flex items-center gap-6   w-[900px]">
+        <div className="flex flex-col sm:flex-row  items-center gap-6   w-full sm:min-w-[375px] sm:max-w[767px] md:min-w-[700px] md:max-w-[900px] mx-auto">
             {/* Avatar */}
             <div className="w-52 h-52 rounded-sm overflow-hidden">
                 <Image src={avatar} alt={name || ''} width={210} height={210} objectFit="cover" quality={100} />
@@ -33,7 +33,7 @@ const InstructorCard = ({ name, profession, avatar, rating, reviews, students, c
                 <div className="flex items-center text-gray-600 mb-3">
                     <span className="pr-1">{rating.toFixed(1)}</span>
                     <Image src={star} alt="Star Icon" />
-                    <span className="mx-4">{reviews.toLocaleString()} Reviews</span>
+                    <span className="mx-4 ">{reviews.toLocaleString()} Reviews</span>
                     <div className="flex mr-4">
                         <Image src={student} alt="Student Icon" />
 

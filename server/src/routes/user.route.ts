@@ -25,10 +25,10 @@ import {
     getUserStatisticsByMonth,
     getRevenueStatistics,
     updateInstructorInfo
-} from '@/controllers/user.controller';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { isAuthenticatedForUser } from '@/middlewares/auth/isAuthenticatedForUser';
-import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
+} from '../controllers/user.controller';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { isAuthenticatedForUser } from '../middlewares/auth/isAuthenticatedForUser';
+import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
 
 const router = express.Router();
 
@@ -62,14 +62,20 @@ router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePi
 
 router.get('/get-user-information', isAuthenticated, getUserInfo);
 
-router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
+router.get('/get-users', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllUsers);
 
 router.put('/update-role', updateAccessToken, isAuthenticatedForUser, updateUserRole);
+
 router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialLinks);
 
-router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
-
-router.get('/user-analysis', isAuthenticated, authorizeRoles('admin'), getUserStatisticsByMonth, getRevenueStatistics);
+router.get(
+    '/user-analysis',
+    updateAccessToken,
+    isAuthenticated,
+    authorizeRoles('admin'),
+    getUserStatisticsByMonth,
+    getRevenueStatistics
+);
 
 router.get('/top-instructors', getTopInstructors);
 
