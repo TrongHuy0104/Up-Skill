@@ -1,14 +1,18 @@
-'use client';
-
-import Link from 'next/link';
-import React from 'react';
-import { TfiArrowTopRight } from 'react-icons/tfi';
-
 import { layoutStyles } from '@/styles/styles';
-import InstructorCard from '../custom/Instructor';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
+import Link from 'next/link';
+import { TfiArrowTopRight } from 'react-icons/tfi';
+import CourseVerticalCard from '../custom/CourseCard';
 
-function TopInstructors({ instructors }: any) {
+interface MyCoursesProps {
+    courses: any[];
+    progressData: Record<string, number>;
+}
+
+const MyCourses = ({ courses, progressData }: MyCoursesProps) => {
+    // Do not render anything if there are no courses
+    if (courses.length === 0) return null;
+
     return (
         <section className="border-top border-primary-100 pb-[64px] pt-[80px]">
             <div className={layoutStyles.container}>
@@ -16,28 +20,28 @@ function TopInstructors({ instructors }: any) {
                     <div className="w-full">
                         <div className="mb-8 text-primary-800">
                             <h2 className="mb-2 font-bold font-cardo text-[36px] leading-[50px]">
-                                Browse Our Top Instructors
+                                Your Courses
                             </h2>
                             <div className="flex items-center justify-between gap-[10px] flex-wrap">
-                                <span>Lorem ipsum dolor sit amet</span>
+                                <span>Good learn good skill!</span>
                                 <Link
-                                    href="/instructors"
+                                    href="/courses"
                                     className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7 transition-all duration-300 ease-in-out hover:text-accent-900"
                                 >
-                                    Show More Instructors <TfiArrowTopRight className="relative top-[1px]" />
+                                    Show More Courses <TfiArrowTopRight className="relative top-[1px]" />
                                 </Link>
                             </div>
-
                             <div className="mt-6">
                                 <Carousel className="w-full">
                                     <CarouselContent className="-ml-1">
-                                        {instructors.map((instructor: any) => (
-                                            <CarouselItem
-                                                key={instructor?._id}
-                                                className={`pl-1 md:basis-1/2 lg:basis-1/5`}
-                                            >
+                                        {courses.map((course) => (
+                                            <CarouselItem key={course._id} className="pl-1 md:basis-1/2 lg:basis-1/5">
                                                 <div className="p-1">
-                                                    <InstructorCard key={instructor?._id} instructor={instructor} />
+                                                    <CourseVerticalCard
+                                                        course={course}
+                                                        isProgress={true}
+                                                        progress={progressData[course._id] || 0}
+                                                    />
                                                 </div>
                                             </CarouselItem>
                                         ))}
@@ -52,6 +56,7 @@ function TopInstructors({ instructors }: any) {
             </div>
         </section>
     );
-}
+};
 
-export default TopInstructors;
+export default MyCourses;
+

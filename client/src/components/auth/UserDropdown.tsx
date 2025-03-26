@@ -6,7 +6,7 @@ import { IoIosLogOut } from 'react-icons/io';
 import { LuSquareUserRound } from 'react-icons/lu';
 import { redirect } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 import {
@@ -19,14 +19,14 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from '@/components/ui/DropdownMenu';
-import { User } from '@/types/User';
 import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 
 export function UserDropdown() {
     const [logout, setLogout] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
+    const { data, isLoading } = useLoadUserQuery(undefined);
     useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data: session } = useSession();
 
@@ -38,30 +38,11 @@ export function UserDropdown() {
         redirect('/');
     };
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
-                    credentials: 'include'
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setUser(data.user);
-                } else {
-                    console.error('Failed to fetch user data');
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, []);
-
-    if (!user) {
+    if (isLoading) {
         return null;
     }
+
+    const { user } = data;
 
     return (
         <DropdownMenu>
@@ -90,7 +71,7 @@ export function UserDropdown() {
                             </DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <Link href="/ui">
+                    <Link href="/dashboard/instructor/reviews">
                         <DropdownMenuItem>
                             Settings
                             <DropdownMenuShortcut>

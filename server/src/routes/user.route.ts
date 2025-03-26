@@ -26,6 +26,7 @@ import {
     getRevenueStatistics
 } from '@/controllers/user.controller';
 import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
+import { isAuthenticatedForUser } from '@/middlewares/auth/isAuthenticatedForUser';
 import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
 
 const router = express.Router();
@@ -56,6 +57,11 @@ router.put('/update-password', updateAccessToken, isAuthenticated, updatePasswor
 
 router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePicture);
 
+router.get('/get-user-information', isAuthenticated, getUserInfo);
+
+router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
+
+router.put('/update-role', updateAccessToken, isAuthenticatedForUser, updateUserRole);
 router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialLinks);
 
 router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);

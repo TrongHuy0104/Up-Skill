@@ -35,7 +35,7 @@ export default function CourseVerticalCard({
     const {
         thumbnail = defaultImage.src,
         name = 'Become a Certified Web Developer: HTML, CSS and JavaScript',
-        lessonsCount = 11,
+        lessonsCount = 0,
         duration = '16',
         rating = 0,
         reviews = 0,

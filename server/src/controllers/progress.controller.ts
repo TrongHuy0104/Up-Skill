@@ -119,6 +119,11 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
     // Tìm progress của user trong khóa học này
     const progress = await ProgressModel.findOne({ user: userId, course: courseId });
 
+    // Tính toán phần trăm hoàn thành
+    const totalLessons = course.courseData.length;
+    const totalCompleted = progress ? progress.totalCompleted : 0;
+    const completionPercentage = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+
     if (!progress) {
         return res.status(200).json({
             success: true,
@@ -126,8 +131,9 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
             data: {
                 user: userId,
                 course: courseId,
-                totalLessons: course.courseData.length,
-                totalCompleted: 0,
+                totalLessons,
+                totalCompleted,
+                completionPercentage,
                 completedLessons: []
             }
         });
@@ -136,6 +142,9 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
     res.status(200).json({
         success: true,
         message: 'Progress data retrieved successfully',
-        data: progress
+        data: {
+            ...progress.toObject(),
+            completionPercentage
+        }
     });
 });

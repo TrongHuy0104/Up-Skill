@@ -38,6 +38,7 @@ import {
     publishCourse,
     unpublishCourse,
     getAllUploadedAndPurchasedCoursesOfInstructor,
+    getAllPurchasedCoursesOfUser,
     getCoursesWithSort
 } from '@/controllers/course.controller';
 import { getUserInfo, updateAccessToken } from '@/controllers/user.controller';
@@ -72,6 +73,8 @@ router.get('/:id', getSingleCourse);
 
 router.get('/', getAllCoursesWithoutPurchase);
 
+router.get('/purchased/my-course', updateAccessToken, isAuthenticated, getAllPurchasedCoursesOfUser);
+
 router.get('/purchased/:id', updateAccessToken, isAuthenticated, getPurchasedCourseByUser);
 
 router.get('/uploaded/:id', updateAccessToken, isAuthenticated, getUploadedCourseByInstructor);
@@ -80,7 +83,7 @@ router.get(
     '/instructor/all',
     updateAccessToken,
     isAuthenticated,
-    authorizeRoles('instructor'),
+    authorizeRoles('instructor', 'user'),
     getAllUploadedAndPurchasedCoursesOfInstructor
 );
 
