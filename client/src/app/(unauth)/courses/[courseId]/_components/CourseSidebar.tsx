@@ -48,10 +48,9 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
 
     const checkCourseExistInCart = async () => {
         try {
-            const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`,
-                { withCredentials: true }
-            );
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`, {
+                withCredentials: true
+            });
             const cartItems = response.data.cart.items;
             const courseExists = cartItems.some((items: any) => items.courseId === course._id);
             return courseExists;
@@ -65,28 +64,26 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         if (!user) {
             redirect('/');
         }
-    
+
         if (!course?._id) {
             console.error('Course ID is undefined');
             return;
         }
-    
+
         try {
-            const isCourseInCart = cartItems.some((items: any) => {   
-                return items.courseId._id === course._id});
+            const isCourseInCart = cartItems.some((items: any) => {
+                return items.courseId._id === course._id;
+            });
             if (!isCourseInCart) {
                 const addResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`, 
+                    `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`,
                     { courseId: course._id },
                     { withCredentials: true }
                 );
-    
+
                 if (addResponse.data.success) {
                     dispatch(addCartItem({ courseId: course._id }));
-                    console.log('Course added to cart');
                 }
-            } else {
-                console.log('Course already in cart');
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
@@ -97,7 +94,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         if (user) {
             checkCourseExistInCart();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, course._id]);
 
     const checkCourseExist = () => {

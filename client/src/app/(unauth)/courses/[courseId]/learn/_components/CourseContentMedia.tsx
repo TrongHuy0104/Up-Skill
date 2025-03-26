@@ -15,24 +15,43 @@ import {
     useAddAnswerInQuestionMutation,
     useAddNewQuestionMutation,
     useAddReplyInReviewMutation,
-    useAddReviewInCourseMutation,
+    useAddReviewInCourseMutation
 } from '@/lib/redux/features/course/courseApi';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 import Ratings from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/Ratings';
 import { useUpdateLessonCompletionMutation } from '@/lib/redux/features/progress/progressApi';
+import Practice from './Practice';
+import { useParams } from 'next/navigation';
 
 type Props = {
     readonly course: any;
     readonly user: any;
-    readonly activeVideo: number;
-    setActiveVideo(value: number): void;
+    activeVideo: { sectionOrder: number; index: number };
+    setActiveVideo(value: { sectionOrder: number; index: number }): void;
+
     readonly refetch: any;
     readonly reload: any;
     readonly progressData: any;
+    readonly selectedQuizId: string | null;
+    readonly quizQuestions: any[];
+    setSelectedQuizId: (quizId: string | null) => void;
+    setQuizQuestions: (questions: any[]) => void;
 };
 
-function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progressData, refetch, reload }: Props) {
+function CourseContentMedia({
+    course,
+    user,
+    activeVideo,
+    setActiveVideo,
+    progressData,
+    refetch,
+    reload,
+    selectedQuizId,
+    quizQuestions,
+    setSelectedQuizId,
+    setQuizQuestions
+}: Props) {
     const content = course?.courseData;
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
@@ -43,8 +62,8 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
     const [isReviewReply, setIsReviewReply] = useState(false);
     const [reviewReply, setReviewReply] = useState('');
     const [videoProgress, setVideoProgress] = useState(0);
+    const { courseId } = useParams();
 
-    // Cập nhật danh sách bài học hoàn thành từ `progressData`
     const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
     const [addNewQuestion, { isSuccess, error, isLoading: isCreateQuestionLoading }] = useAddNewQuestionMutation();
@@ -72,7 +91,7 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                 title: 'Question can not be empty.'
             });
         } else {
-            addNewQuestion({ question, contentId: content?.[activeVideo]._id, courseId: course?._id });
+            addNewQuestion({ question, contentId: content?.[activeVideo?.index]._id, courseId: course?._id });
         }
     };
 
@@ -86,7 +105,12 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                 title: 'Question reply can not be empty.'
             });
         } else {
-            addAnswerInQuestion({ answer, questionId, contentId: content?.[activeVideo]._id, courseId: course?._id });
+            addAnswerInQuestion({
+                answer,
+                questionId,
+                contentId: content?.[activeVideo?.index]._id,
+                courseId: course?._id
+            });
         }
     };
 
@@ -120,50 +144,91 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
     };
 
     useEffect(() => {
-        const completedLessonIds = progressData?.completedLessons?.flatMap(
-            (section: any) => section.section.lessons.map((lesson: any) => lesson.toString())
-        ) || [];
+        const completedLessonIds =
+            progressData?.completedLessons?.flatMap((section: any) =>
+                section.section.lessons.map((lesson: any) => lesson.toString())
+            ) || [];
         setCompletedLessons(completedLessonIds);
     }, [progressData]);
 
-    const isCurrentLessonCompleted = completedLessons.includes(content[activeVideo]._id);
+    const isCurrentLessonCompleted =
+        content && activeVideo !== null && content[activeVideo?.index]
+            ? completedLessons.includes(content[activeVideo?.index]._id)
+            : false;
 
-    // Enable "Next Lesson" button if:
-    // 1. Lesson is already completed OR
-    // 2. Video progress reaches 80%
-    const canProceedToNext = isCurrentLessonCompleted || videoProgress >= 80;
+    const completedQuizIds = progressData?.completedQuizzes?.length
+        ? progressData.completedQuizzes.flatMap((section: any) =>
+              section.section.quizzes.map((quiz: any) => quiz.toString())
+          )
+        : [];
+
+    const isCurrentQuizCompleted = selectedQuizId ? completedQuizIds.includes(selectedQuizId) : false;
+
+    const canProceedToNext = isCurrentLessonCompleted || videoProgress >= 80 || isCurrentQuizCompleted;
 
     const handleVideoProgress = async (progress: number) => {
         setVideoProgress(progress);
 
-        // Auto-mark lesson as completed when 80% is watched
-        if (progress >= 80 && !isCurrentLessonCompleted) {
+        const currentSectionLessons = content.filter((item: any) => item.sectionOrder === activeVideo.sectionOrder);
+        const currentLesson = currentSectionLessons[activeVideo.index];
+        const lessonId = currentLesson?._id;
+
+        if (progress >= 80 && lessonId && !completedLessons.includes(lessonId)) {
             try {
                 await updateLessonCompletion({
                     courseId: course?._id,
-                    lessonId: content[activeVideo]._id,
-                    isCompleted: true
+                    lessonId,
+                    isCompleted: true,
+                    sectionOrder: activeVideo.sectionOrder
                 }).unwrap();
 
-                // Update completed lessons
-                setCompletedLessons([...completedLessons, content[activeVideo]._id]);
+                setCompletedLessons([...completedLessons, lessonId]);
                 await reload();
             } catch (error) {
                 toast({
                     variant: 'destructive',
-                    title: `Unable to update lesson status, ${error}`
+                    title: `Unable to update lesson status: ${error}`
                 });
             }
         }
     };
 
     const handleNextLesson = () => {
-        if (activeVideo < content.length - 1) {
-            setActiveVideo(activeVideo + 1);
-            setVideoProgress(0);
+        if (activeVideo && activeVideo.index < content.length - 1) {
+            const nextVideoIndex = activeVideo.index + 1;
+            const nextLesson = content[nextVideoIndex];
+            const currentLesson = content[activeVideo.index];
+
+            const currentSection = content.filter((item: any) => item.sectionOrder === activeVideo.sectionOrder);
+
+            const nextLessonWithQuiz = currentSection.find((item: any, index: number) => {
+                return index > activeVideo.index && item.quizzes?.length > 0;
+            });
+
+            if (currentSection.length === 2 && nextLessonWithQuiz?.quizzes?.length > 0) {
+                setSelectedQuizId(currentSection[0].quizzes[0]._id);
+                setQuizQuestions(currentSection[0].quizzes[0].questions);
+            } else if (nextLesson?.quizzes?.length > 0) {
+                setSelectedQuizId(currentSection[0].quizzes[0]._id);
+                setQuizQuestions(currentSection[0].quizzes[0].questions);
+            } else {
+                setActiveVideo({ sectionOrder: currentSection[0].sectionOrder, index: nextVideoIndex });
+                setVideoProgress(0);
+                setSelectedQuizId(null);
+                setQuizQuestions([]);
+            }
+
+            if (nextLesson.sectionOrder !== currentLesson.sectionOrder) {
+                setActiveVideo({ sectionOrder: currentSection[0].sectionOrder + 1, index: 0 });
+                setVideoProgress(0);
+                setSelectedQuizId(null);
+                setQuizQuestions([]);
+            } else {
+                setActiveVideo({ sectionOrder: currentSection[0].sectionOrder, index: nextVideoIndex });
+                setVideoProgress(0);
+            }
         }
     };
-
 
     useEffect(() => {
         if (isSuccess) {
@@ -252,20 +317,30 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
 
     return (
         <div className="w-[95%] md:w-[90%] py-4 m-auto">
-            <VideoPlayer videoUrl={content?.[activeVideo]?.videoUrl?.url}
-                onProgress={handleVideoProgress}
-            />
+            {selectedQuizId ? (
+                <Practice
+                    questionArr={quizQuestions}
+                    quizId={selectedQuizId}
+                    courseId={typeof courseId === 'string' ? courseId : ''}
+                    activeVideo={activeVideo}
+                    course={course}
+                    reload={reload}
+                />
+            ) : (
+                <VideoPlayer videoUrl={content?.[activeVideo?.index]?.videoUrl?.url} onProgress={handleVideoProgress} />
+            )}
             <div className="w-full flex items-center justify-between my-5">
                 <Button
                     size={'rounded'}
-                    className={activeVideo === 0 ? '!cursor-no-drop opacity-80 hover:bg-primary-800' : ''}
-                    onClick={() => setActiveVideo(activeVideo === 0 ? 0 : activeVideo - 1)}
+                    className={activeVideo?.index === 0 ? '!cursor-no-drop opacity-80 hover:bg-primary-800' : ''}
+                    onClick={() =>
+                        setActiveVideo({ sectionOrder: activeVideo?.sectionOrder, index: activeVideo?.index - 1 })
+                    }
                 >
                     <HiArrowLeft />
                     Prev Lesson
                 </Button>
 
-                {/* Next Lesson Button */}
                 <Button
                     size={'rounded'}
                     className={`bg-accent-600 hover:bg-primary-800 ${!canProceedToNext ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -275,9 +350,8 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                     Next Lesson
                     <HiArrowRight />
                 </Button>
-
             </div>
-            <h1 className="pt-3 text-[25px] font-semibold mb-8">{content?.[activeVideo]?.title}</h1>
+            <h1 className="pt-3 text-[25px] font-semibold mb-8">{content?.[activeVideo?.index]?.title}</h1>
             <Tabs defaultValue="overview">
                 <TabsList>
                     <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -293,7 +367,7 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                     />
                 </TabsContent>
                 <TabsContent value="resources">
-                    {content?.[activeVideo]?.links.map((item: any, index: number) => (
+                    {content?.[activeVideo?.index]?.links.map((item: any, index: number) => (
                         <div key={item?.title + index} className="mb-5">
                             <h2 className="md:text-lg font-normal md:inline-block">
                                 {' '}
@@ -406,72 +480,72 @@ function CourseContentMedia({ course, user, activeVideo, setActiveVideo, progres
                         <div className="w-full">
                             {course?.reviews
                                 ? [...course.reviews].reverse().map((item: any, index: number) => (
-                                    <>
-                                        <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
-                                            <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                            <div className="w-full">
-                                                <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                                <div className="ml-[10px]">
-                                                    <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
-                                                </div>
-                                                <p className="pl-3">{item?.comment}</p>
-                                                <small className="pl-3 text-primary-500">
-                                                    {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                                </small>
-                                            </div>
-                                        </div>
-                                        {user?._id === course?.authorId && (
-                                            <div className="w-full flex">
-                                                <button
-                                                    className="md:pl-[60px] cursor-pointer mr-2"
-                                                    onClick={() => {
-                                                        setIsReviewReply(!isReviewReply);
-                                                        setReviewId(item._id);
-                                                    }}
-                                                >
-                                                    {!isReviewReply ? 'Add a reply' : 'Hide replies'}
-                                                </button>
-                                            </div>
-                                        )}
-                                        {isReviewReply && (
-                                            <div className="w-full flex relative">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Enter your answer..."
-                                                    value={reviewReply}
-                                                    onChange={(e) => setReviewReply(e.target.value)}
-                                                    className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
-                                                />
-                                                <button
-                                                    onClick={handleReviewReply}
-                                                    className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
+                                      <>
+                                          <div className="w-full flex mt-5 mb-2" key={item?._id + index}>
+                                              <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                              <div className="w-full">
+                                                  <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                  <div className="ml-[10px]">
+                                                      <Ratings rating={item.rating} style={{ marginRight: '2px' }} />
+                                                  </div>
+                                                  <p className="pl-3">{item?.comment}</p>
+                                                  <small className="pl-3 text-primary-500">
+                                                      {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                  </small>
+                                              </div>
+                                          </div>
+                                          {user?._id === course?.authorId && (
+                                              <div className="w-full flex">
+                                                  <button
+                                                      className="md:pl-[60px] cursor-pointer mr-2"
+                                                      onClick={() => {
+                                                          setIsReviewReply(!isReviewReply);
+                                                          setReviewId(item._id);
+                                                      }}
+                                                  >
+                                                      {!isReviewReply ? 'Add a reply' : 'Hide replies'}
+                                                  </button>
+                                              </div>
+                                          )}
+                                          {isReviewReply && (
+                                              <div className="w-full flex relative">
+                                                  <input
+                                                      type="text"
+                                                      placeholder="Enter your answer..."
+                                                      value={reviewReply}
+                                                      onChange={(e) => setReviewReply(e.target.value)}
+                                                      className="block md:ml-[54px] w-[85%] mt-2 outline-none bg-transparent border-b border-primary-200 p-[5px] w[[95%]"
+                                                  />
+                                                  <button
+                                                      onClick={handleReviewReply}
+                                                      className="absolute right-[16px] bottom-1 flex items-center justify-center h-[50px] w-[50px] 
                                                     cursor-pointer rounded-full bg-gradient-to-r from-pink-500 to-orange-500 text-white transition-all 
                                                     duration-300 hover:scale-110"
-                                                    disabled={isReplyReviewLoading}
-                                                >
-                                                    {isReplyReviewLoading ? (
-                                                        <SpinnerMini />
-                                                    ) : (
-                                                        <Image src={arrowRightIcon} alt="arrow right icon" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        )}
+                                                      disabled={isReplyReviewLoading}
+                                                  >
+                                                      {isReplyReviewLoading ? (
+                                                          <SpinnerMini />
+                                                      ) : (
+                                                          <Image src={arrowRightIcon} alt="arrow right icon" />
+                                                      )}
+                                                  </button>
+                                              </div>
+                                          )}
 
-                                        {item?.commentReplies.map((i: any, index: number) => (
-                                            <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
-                                                <Avatar size={50} avatar={item?.user?.avatar?.url} />
-                                                <div className="w-full">
-                                                    <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
-                                                    <p className="pl-3">{i?.comment}</p>
-                                                    <small className="pl-3 text-primary-500">
-                                                        {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </>
-                                ))
+                                          {item?.commentReplies.map((i: any, index: number) => (
+                                              <div className="w-full flex md:ml-[56px] mb-2 mt-4" key={i?._id + index}>
+                                                  <Avatar size={50} avatar={item?.user?.avatar?.url} />
+                                                  <div className="w-full">
+                                                      <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
+                                                      <p className="pl-3">{i?.comment}</p>
+                                                      <small className="pl-3 text-primary-500">
+                                                          {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                                                      </small>
+                                                  </div>
+                                              </div>
+                                          ))}
+                                      </>
+                                  ))
                                 : null}
                         </div>
                     </div>

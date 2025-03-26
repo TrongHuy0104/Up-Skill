@@ -9,7 +9,7 @@ import { redis } from '../utils/redis';
 export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id; // Lấy userId từ middleware xác thực
     const courseId = req.params.id;
-    const { lessonId, isCompleted } = req.body;
+    const { lessonId, isCompleted, sectionOrder } = req.body;
 
     if (!courseId || !lessonId) {
         return next(new ErrorHandler('Course ID and Lesson ID are required', 400));
@@ -23,6 +23,7 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
 
     // Kiểm tra xem bài học thuộc section nào trong courseData
     let sectionName: string | null = null;
+
     for (const section of course.courseData) {
         if (section._id.toString() === lessonId) {
             sectionName = section.videoSection;
@@ -43,7 +44,9 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
             course: courseId,
             totalLessons: course.courseData.length,
             totalCompleted: 0,
-            completedLessons: []
+            completedLessons: {
+                sectionOrder: sectionOrder
+            }
         });
     }
 
@@ -101,6 +104,78 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
     });
 });
 
+export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const quizId = req.params.id;
+    const { isCompleted, courseId } = req.body;
+    const userId = req.user?._id;
+
+    if (!quizId || !courseId) {
+        return next(new ErrorHandler('Quiz ID and Course ID are required', 400));
+    }
+
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+
+    const progress = await ProgressModel.findOne({ user: userId, course: courseId });
+    if (!progress) {
+        return next(new ErrorHandler('Progress not found for the user in this course', 404));
+    }
+
+    let quizSection = null;
+    for (const section of course.courseData) {
+        if (section.quizzes && section.quizzes.includes(quizId)) {
+            quizSection = section;
+            break;
+        }
+    }
+
+    if (!quizSection) {
+        return next(new ErrorHandler('Quiz not found in any section of the course', 404));
+    }
+
+    let quizProgress = progress.completedQuizzes.find(
+        (quizProgress: any) => quizProgress.section.quizzes.some((q: any) => q.toString() === quizId.toString()) // So sánh đúng kiểu dữ liệu
+    );
+
+    if (!quizProgress) {
+        quizProgress = {
+            section: {
+                name: quizSection.name,
+                isCompleted: false, // Default to false
+                quizzes: [quizId]
+            }
+        };
+        progress.completedQuizzes.push(quizProgress);
+    }
+
+    quizProgress.section.isCompleted = isCompleted;
+
+    progress.totalCompleted = progress.completedQuizzes.reduce(
+        (sum: number, quizProgress: any) => sum + (quizProgress.section.isCompleted ? 1 : 0),
+        0
+    );
+
+    quizSection.totalCompletedPerSection = quizSection.quizzes.reduce((count: number, quizId: any) => {
+        const quizItem = progress.completedQuizzes.find(
+            (q: any) => q.section.quizzes.includes(quizId) && q.section.isCompleted
+        );
+        return quizItem ? count + 1 : count;
+    }, 0);
+
+    await progress.save();
+
+    await redis.set(`progress:${userId}:${courseId}`, JSON.stringify(progress));
+    console.log('progress', progress);
+
+    res.status(200).json({
+        success: true,
+        message: 'Quiz completion status updated successfully',
+        data: progress
+    });
+});
+
 // Get progress data by userId & courseId
 export const getProgressData = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id; // Lấy userId từ middleware xác thực
@@ -134,7 +209,8 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
                 totalLessons,
                 totalCompleted,
                 completionPercentage,
-                completedLessons: []
+                completedLessons: [],
+                completedQuizzes: []
             }
         });
     }
