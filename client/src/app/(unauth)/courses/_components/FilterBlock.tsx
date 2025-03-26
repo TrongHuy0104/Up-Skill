@@ -18,10 +18,11 @@ type FilterBlockProps = {
     type?: 'checkbox' | 'radio';
     name?: string;
 };
+
 function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockProps) {
     const [isOpen, setIsOpen] = useState(true);
     const [visibleCount, setVisibleCount] = useState(3);
-
+    const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -52,15 +53,11 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                 }
             });
         });
-
         return selectedSet;
-    }, [options, paramMap, searchParams, title]);
-
+    }, [searchParams, options, title]);
     useEffect(() => {
         setSelectedCategories(getInitialSelectedCategories());
     }, [searchParams, getInitialSelectedCategories]);
-
-    const [selectedCategories, setSelectedCategories] = useState<Set<string>>(getInitialSelectedCategories);
 
     const toggleCategory = (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -78,7 +75,6 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
             if (newSet.has(optionKey)) {
                 newSet.delete(optionKey);
 
-                // Nếu bỏ chọn Category, cũng xóa hết subCategory của nó
                 if (!isSubCategory) {
                     const category = options.find((opt) => opt.label === optionKey);
                     category?.subCategories?.forEach((sub) => newSet.delete(sub.label));
@@ -126,7 +122,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
     );
 
     return (
-        <div className="tf-sidebar-course bg-primary-50 border-b last:border-0 last:pb-0 last:mb-0 rounded-lg mb-6">
+        <div className="tf-sidebar-course bg-primary-50 border-b last:border-0 last:pb-0 last:mb-0 rounded-lg mb-6 m-5">
             <div
                 className="flex justify-between items-center cursor-pointer h-10 mb-5"
                 onClick={() => setIsOpen(!isOpen)}
@@ -145,7 +141,7 @@ function FilterBlock({ title, options, type = 'checkbox', name }: FilterBlockPro
                     isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
                 }`}
             >
-                <div className="px-4 pb-5">
+                <div className="px-4 pb-8">
                     <ul className="flex flex-col gap-2">
                         {options?.slice(0, visibleCount)?.map((option) => (
                             <li key={option.key} className="flex flex-col">
