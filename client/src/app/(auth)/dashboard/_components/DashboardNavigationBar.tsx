@@ -48,7 +48,7 @@ const instructorNavbarItems = [
     },
     {
         title: 'Quizzes',
-        href: '/dashboard/instructor/quizzes',
+        href: '/dashboard/quizzes',
         icon: <FaRegCircleQuestion className="text-[20px]" />
     }
 ];

@@ -3,18 +3,27 @@ import { redirect } from 'next/navigation';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 
 const useUserRedirect = () => {
-    const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
+    // Add refetch function from the query
+    const {
+        data: userData,
+        isLoading: isLoadingUser,
+        refetch
+    } = useLoadUserQuery(undefined, {
+        // Optionally force a fresh request (skip cache)
+        refetchOnMountOrArgChange: true
+    });
 
     useEffect(() => {
+        // Trigger refetch when the hook mounts
+        refetch();
+
         // Redirect logic
         if (!isLoadingUser && !userData) {
-            console.log(userData);
-            // If userData is not available and loading is complete, redirect to home page
             redirect('/');
         }
-    }, [userData, isLoadingUser]);
+    }, [userData, isLoadingUser, refetch]);
 
-    return { userData, isLoadingUser };
+    return { userData, isLoadingUser, refetch };
 };
 
 export default useUserRedirect;

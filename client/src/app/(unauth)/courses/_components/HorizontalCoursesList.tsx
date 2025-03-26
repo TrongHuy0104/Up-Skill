@@ -78,7 +78,6 @@ export default function HorizontalCoursesList({
     const [totalCourses, setTotalCourses] = useState(initialTotalCourses);
     const searchParams = useSearchParams();
     const sortType = searchParams.get('sort');
-    console.log('sortType', sortType);
 
     useEffect(() => {
         setIsClient(true); // Chỉ chạy sau khi component render trên client
@@ -102,7 +101,6 @@ export default function HorizontalCoursesList({
                 }
 
                 const data = await res.json();
-                console.log('Data:', data); // Log dữ liệu để kiểm tra
 
                 // Đảm bảo dữ liệu trả về có cấu trúc đúng
                 if (!data.courses) {

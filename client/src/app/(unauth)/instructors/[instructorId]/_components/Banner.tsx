@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Image from 'next/image';
 import star from '@/public/assets/icons/star-outline.svg';
@@ -9,7 +10,7 @@ interface Props {
     readonly user: User;
 }
 
-export default async function Banner({ user }: Props) {
+export default function Banner({ user }: Props) {
     const uploadedCoursesCount = user.uploadedCourses.length;
 
     return (

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { IoCheckmarkCircle } from 'react-icons/io5';
-import { MdOutlineQuiz } from "react-icons/md";
+import { MdOutlineQuiz } from 'react-icons/md';
 
 import PlayContent from '@/public/assets/icons/play-content.svg';
 import { getMinutes } from '@/lib/utils';
@@ -39,15 +39,16 @@ export default function CourseContentList({ data, progressData, activeVideo, set
         } else {
             toast({
                 variant: 'destructive',
-                title: 'You must complete the current lesson before moving on!',
+                title: 'You must complete the current lesson before moving on!'
             });
         }
     };
 
     const completedLessonIds = progressData?.completedLessons?.length
-        ? progressData.completedLessons.flatMap(
-            (section: any) => section.section.lessons.map((lesson: any) => lesson.toString())
-        ) : [];
+        ? progressData.completedLessons.flatMap((section: any) =>
+              section.section.lessons.map((lesson: any) => lesson.toString())
+          )
+        : [];
 
     return (
         <section className={'w-full px-[14px] text-primary-800 mb-12'}>
@@ -63,7 +64,8 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                     0
                 );
                 const sectionQuizLength = sectionQuizzes.reduce(
-                    (total: number, quizItem: any) => total + quizItem.quizzes.reduce((sum: number, quiz: any) => sum + quiz.videoLength, 0),
+                    (total: number, quizItem: any) =>
+                        total + quizItem.quizzes.reduce((sum: number, quiz: any) => sum + quiz.videoLength, 0),
                     0
                 );
 
@@ -74,9 +76,8 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                 totalCount += sectionLessons.length;
 
                 // Get completed lessons for this section
-                const completedLessons = progressData?.completedLessons?.find(
-                    (s: any) => s.section.name === section
-                )?.section.lessons || [];
+                const completedLessons =
+                    progressData?.completedLessons?.find((s: any) => s.section.name === section)?.section.lessons || [];
 
                 return (
                     <div key={section} className="border rounded-lg p-4 w-full mt-4 ">
@@ -86,9 +87,7 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                         >
                             {isSectionVisible ? <ChevronDown /> : <ChevronUp />}
                             <div className="flex justify-between items-center w-full">
-                                <div className="flex items-center gap-2">
-                                    {section}
-                                </div>
+                                <div className="flex items-center gap-2">{section}</div>
                                 <span className="text-sm font-normal">
                                     {completedLessons.length}/{sectionLessons.length} lessons •{' '}
                                     {totalSectionLength < 60
@@ -103,19 +102,17 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                                 {/* Render Lessons */}
                                 {sectionLessons.map((item: any, index: number) => {
                                     const videoIndex = sectionStartIndex + index;
-                                    console.log(item);
 
                                     const lessonLength = item?.videoLength || 0;
 
                                     const isCompleted = completedLessonIds.includes(item._id.toString());
 
                                     const isPreviousCompleted =
-                                        videoIndex === 0 || completedLessonIds.includes(data[videoIndex - 1]?._id.toString());
+                                        videoIndex === 0 ||
+                                        completedLessonIds.includes(data[videoIndex - 1]?._id.toString());
                                     const isClickable = isCompleted || isPreviousCompleted;
                                     const isQuiz = !item.videoUrl && item.quizzes?.length > 0;
 
-
-                                    console.log(`Item: ${item.title}, isQuiz: ${isQuiz}`);
                                     return (
                                         <div
                                             key={item.title + index}
@@ -132,23 +129,18 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                                                     )}
                                                 </span>
                                                 <button
-                                                    className={`hover:text-accent-600 ${videoIndex === activeVideo
-                                                        ? 'text-accent-600'
-                                                        : isCompleted
-                                                            ? ''
-                                                            : !isClickable
+                                                    className={`hover:text-accent-600 ${
+                                                        videoIndex === activeVideo
+                                                            ? 'text-accent-600'
+                                                            : isCompleted
+                                                              ? ''
+                                                              : !isClickable
                                                                 ? 'cursor-no-drop opacity-50 text-gray-400'
                                                                 : 'text-gray-700'
-                                                        }`}
-                                                    onClick={() =>
-                                                        handleButtonLesson(videoIndex, isClickable)
-                                                    }
+                                                    }`}
+                                                    onClick={() => handleButtonLesson(videoIndex, isClickable)}
                                                     disabled={!isClickable}
-                                                    title={
-                                                        !isClickable
-                                                            ? 'Complete the previous lesson to unlock'
-                                                            : ''
-                                                    }
+                                                    title={!isClickable ? 'Complete the previous lesson to unlock' : ''}
                                                 >
                                                     {item.title}
                                                 </button>

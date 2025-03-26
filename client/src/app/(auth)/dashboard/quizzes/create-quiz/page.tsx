@@ -13,7 +13,6 @@ export default async function Page() {
         headers: { Cookie: cookie },
         cache: 'no-store'
     }).then((res) => res.json());
-    console.log(courses.data);
 
     return (
         <div className="pt-8 px-10 pb-10 ml-auto max-w-[1000px] border border-primary-100 rounded-xl">

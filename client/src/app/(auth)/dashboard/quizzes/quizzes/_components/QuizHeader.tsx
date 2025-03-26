@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 interface Quiz {
     _id: string;
@@ -30,8 +30,6 @@ interface QuizHeaderProps {
 }
 
 export const QuizHeader: React.FC<QuizHeaderProps> = ({ quiz }) => {
-    console.log(quiz);
-
     return (
         <section className="block gap-5 justify-between py-7 pr-20 pl-8 w-full text-base leading-none bg-accent-100 rounded-2xl text-slate-900 max-md:px-5 max-md:mt-10 max-md:max-w-full">
             <h1 className="text-2xl leading-none">Result - {quiz.title}</h1>

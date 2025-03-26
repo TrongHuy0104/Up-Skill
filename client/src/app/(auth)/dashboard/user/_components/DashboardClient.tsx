@@ -1,9 +1,10 @@
-// app/dashboard/DashboardClient.tsx (Client Component)
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import MyCourses from './MyCourses';
+import { useGetCourseStatsQuery } from '@/lib/redux/features/course/courseApi';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 
 interface Stats {
     totalCourses: number;
@@ -13,19 +14,56 @@ interface Stats {
     studentCompleted: number;
     studentInprogress: number;
     courseEnrolled: number;
-    courseActive: number;
-    courseCompleted: number;
+    activeCourses: number;
+    completedCourses: number;
 }
 
-interface DashboardClientProps {
-    stats: Stats;
+interface Course {
+    isPublished: boolean;
+    purchased?: number;
 }
 
-const DashboardClient = ({ stats }: DashboardClientProps) => {
+const DashboardClient = () => {
+    const { data: statsData, isLoading: isLoadingStats } = useGetCourseStatsQuery(undefined);
+    const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
+
+    const isLoading = isLoadingStats || isLoadingUser;
+
+    const { courseStats } = useMemo(() => {
+        if (isLoading || !statsData || !userData) {
+            return {
+                courseStats: null
+            };
+        }
+
+        const { user } = userData;
+        const { purchasedCourses = [], uploadedCourses = [] } = statsData;
+
+        const publishedCourses = uploadedCourses.filter((course: Course) => course.isPublished);
+        const totalStudent = publishedCourses.reduce((sum: number, course: Course) => sum + (course.purchased || 0), 0);
+
+        const stats: Stats = {
+            totalCourses: uploadedCourses.length,
+            publishedCourses: publishedCourses.length,
+            pendingCourses: uploadedCourses.length - publishedCourses.length,
+            totalStudent,
+            studentCompleted: 0,
+            studentInprogress: totalStudent,
+            courseEnrolled: user?.courseEnrolled ?? purchasedCourses.length,
+            activeCourses: 0,
+            completedCourses: 0
+        };
+
+        return {
+            courseStats: stats,
+            bestSellingCourses: uploadedCourses
+        };
+    }, [statsData, userData, isLoading]);
+
     const statsConfig = [
-        { title: 'Enrolled Courses', value: stats.courseEnrolled, icon: '/assets/icons/play-content.svg' },
-        { title: 'Active Courses', value: 0, icon: '/assets/icons/check-icon.svg' },
-        { title: 'Completed Courses', value: 0, icon: '/assets/icons/certificate.svg' }
+        { title: 'Enrolled Courses', value: courseStats?.courseEnrolled ?? 0, icon: '/assets/icons/play-content.svg' },
+        { title: 'Active Courses', value: courseStats?.activeCourses ?? 0, icon: '/assets/icons/check-icon.svg' },
+        { title: 'Completed Courses', value: courseStats?.completedCourses ?? 0, icon: '/assets/icons/certificate.svg' }
     ];
 
     return (
