@@ -21,9 +21,13 @@ import {
     refreshToken,
     updateUserSocialLinks,
     getUser,
-    getTopInstructors
+    getTopInstructors,
+    getUserStatisticsByMonth,
+    getRevenueStatistics,
+    updateInstructorInfo
 } from '../controllers/user.controller';
 import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { isAuthenticatedForUser } from '../middlewares/auth/isAuthenticatedForUser';
 import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
 
 const router = express.Router();
@@ -40,7 +44,7 @@ router.post('/resetcode-verify', resetCodeVerify);
 
 router.put('/reset-password', resetPassword);
 
-router.get('/logout', isAuthenticated, authorizeRoles('user', 'instructor'), logoutUser);
+router.get('/logout', isAuthenticated, authorizeRoles('user', 'admin', 'instructor'), logoutUser);
 
 router.get('/refresh', refreshToken);
 
@@ -50,13 +54,28 @@ router.post('/social-auth', socialAuth);
 
 router.put('/update-user', updateAccessToken, isAuthenticated, updateUserInfo);
 
+router.put('/update-instructor-infor', updateAccessToken, isAuthenticated, updateInstructorInfo);
+
 router.put('/update-password', updateAccessToken, isAuthenticated, updatePassword);
 
 router.put('/update-avatar', updateAccessToken, isAuthenticated, updateProfilePicture);
 
+router.get('/get-user-information', isAuthenticated, getUserInfo);
+
+router.get('/get-users', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllUsers);
+
+router.put('/update-role', updateAccessToken, isAuthenticatedForUser, updateUserRole);
+
 router.put('/update-link', updateAccessToken, isAuthenticated, updateUserSocialLinks);
 
-router.get('/get-users', isAuthenticated, authorizeRoles('admin'), getAllUsers);
+router.get(
+    '/user-analysis',
+    updateAccessToken,
+    isAuthenticated,
+    authorizeRoles('admin'),
+    getUserStatisticsByMonth,
+    getRevenueStatistics
+);
 
 router.get('/top-instructors', getTopInstructors);
 

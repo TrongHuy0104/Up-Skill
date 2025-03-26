@@ -3,11 +3,12 @@ import cloudinary from 'cloudinary';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import dotenv from 'dotenv';
+
 import UserModel from '../models/User.model';
 import { catchAsync } from '../utils/catchAsync';
 import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
-
+import IncomeModel from '../models/Income.model';
 import path from 'path';
 import sendMail from '../utils/sendMail';
 import { UserT } from '../interfaces/User';
@@ -19,6 +20,7 @@ import {
     updateUserRoleService,
     getAllInstructorsService
 } from '../services/user.service';
+import CourseModel from '../models/Course.model';
 
 dotenv.config();
 
@@ -464,9 +466,9 @@ export const getAllUsers = catchAsync(async (req: Request, res: Response, next: 
 
 // update user role -- for admin
 export const updateUserRole = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { id, role } = req.body;
+    const { user, role } = req.body;
 
-    updateUserRoleService(res, id, role);
+    updateUserRoleService(res, user._id, role);
 });
 
 // delete user -- for admin
@@ -648,13 +650,192 @@ export const getInstructorsWithSort = catchAsync(async (req: Request, res: Respo
             .sort({ createdAt: -1 })
             .limit(3);
     } else {
-        users = await UserModel.find({ role: 'instructor' })
-            .sort({ createdAt: 1 }) // Sắp xếp tăng dần
-            .limit(10);
+        users = await UserModel.find({ role: 'instructor' }).sort({ createdAt: 1 }).limit(10);
     }
 
     res.status(200).json({
         success: true,
         instructors: users
+    });
+});
+
+//get data for analysis
+export const getUserStatisticsByMonth = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1; // Lấy tháng hiện tại (1-12)
+
+    // Đếm tổng số Student, Instructor, User, Course
+    const totalStudent = await UserModel.countDocuments({ role: 'user' });
+    const totalInstructor = await UserModel.countDocuments({ role: 'instructor' });
+    const totalUser = totalStudent + totalInstructor;
+    const totalCourse = await CourseModel.countDocuments({ isPublished: true });
+
+    // Hàm lấy số lượng theo tháng
+    const getCountByMonth = async (filter: object) => {
+        const result = await UserModel.aggregate([
+            {
+                $match: {
+                    ...filter,
+                    createdAt: { $gte: new Date(`${currentYear}-01-01`), $lt: new Date(`${currentYear + 1}-01-01`) }
+                }
+            },
+            { $group: { _id: { $month: '$createdAt' }, count: { $sum: 1 } } }
+        ]);
+        return result.reduce(
+            (acc, item) => {
+                acc[item._id] = item.count;
+                return acc;
+            },
+            {} as Record<number, number>
+        );
+    };
+
+    // Lấy dữ liệu từng nhóm người dùng
+    const studentsByMonth = await getCountByMonth({ role: 'user' });
+    const instructorsByMonth = await getCountByMonth({ role: 'instructor' });
+
+    // Tổng user theo tháng = Student + Instructor
+    const usersByMonth: Record<number, number> = {};
+    for (let i = 1; i <= 12; i++) {
+        usersByMonth[i] = (studentsByMonth[i] || 0) + (instructorsByMonth[i] || 0);
+    }
+
+    // Lấy số lượng courses theo tháng
+    const coursesByMonth = await CourseModel.aggregate([
+        {
+            $match: {
+                isPublished: true,
+                createdAt: { $gte: new Date(`${currentYear}-01-01`), $lt: new Date(`${currentYear + 1}-01-01`) }
+            }
+        },
+        { $group: { _id: { $month: '$createdAt' }, count: { $sum: 1 } } }
+    ]).then((data) =>
+        data.reduce(
+            (acc, item) => {
+                acc[item._id] = item.count;
+                return acc;
+            },
+            {} as Record<number, number>
+        )
+    );
+
+    // Danh sách tháng chuẩn
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Lấy số lượng mới nhất trong tháng hiện tại
+    const usersThisMonth = usersByMonth[currentMonth] || 0;
+    const studentsThisMonth = studentsByMonth[currentMonth] || 0;
+    const instructorsThisMonth = instructorsByMonth[currentMonth] || 0;
+    const coursesThisMonth = coursesByMonth[currentMonth] || 0;
+
+    // Tính phần trăm tăng trưởng
+    const calcGrowthRate = (newValue: number, total: number) =>
+        total > 0 && newValue > 0 ? `${((newValue / total) * 100).toFixed(2)}%` : '0%';
+
+    const growthRates = {
+        userGrowthRate: calcGrowthRate(usersThisMonth, totalUser),
+        studentGrowthRate: calcGrowthRate(studentsThisMonth, totalStudent),
+        instructorGrowthRate: calcGrowthRate(instructorsThisMonth, totalInstructor),
+        courseGrowthRate: calcGrowthRate(coursesThisMonth, totalCourse)
+    };
+
+    // Chuẩn bị dữ liệu phản hồi
+    const data = months.map((month, index) => ({
+        date: month,
+        students: studentsByMonth[index + 1] || 0,
+        instructors: instructorsByMonth[index + 1] || 0
+    }));
+
+    res.status(200).json({
+        success: true,
+        totalStudent,
+        totalUser,
+        totalInstructor,
+        totalCourse,
+        growthRates,
+        data
+    });
+});
+
+//get data for revenueChart analysis
+export const getRevenueStatistics = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    // Lấy tất cả các bản ghi thu nhập từ IncomeModel
+    const incomes = await IncomeModel.find().select('amount createdAt');
+
+    // Hàm nhóm dữ liệu theo tháng
+    const groupByMonth = (data: any[]) => {
+        return data.reduce(
+            (acc, income) => {
+                const month = new Date(income.createdAt).toLocaleString('en-US', { month: 'short' });
+
+                // Tính toán thu nhập
+                const adminShare = (income.amount * 10) / 100; // Admin nhận 10%
+                const platformIncome = (income.amount * 90) / 100; // Nền tảng nhận 90%
+
+                // Cộng dồn vào tháng tương ứng
+                if (!acc[month]) {
+                    acc[month] = { adminShare: 0, platformIncome: 0 };
+                }
+                acc[month].adminShare += adminShare;
+                acc[month].platformIncome += platformIncome;
+
+                return acc;
+            },
+            {} as Record<string, { adminShare: number; platformIncome: number }>
+        );
+    };
+
+    const revenueByMonth = groupByMonth(incomes);
+
+    // Danh sách các tháng theo thứ tự
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    // Chuẩn bị dữ liệu đầu ra
+    const data = months.map((month) => ({
+        month,
+        adminShare: revenueByMonth[month]?.adminShare || 0,
+        platformIncome: revenueByMonth[month]?.platformIncome || 0
+    }));
+
+    res.status(200).json({
+        success: true,
+        data
+    });
+});
+
+export const updateInstructorInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { introduce, phoneNumber, address, age, profession } = req.body as {
+        introduce: string;
+        phoneNumber: string;
+        address: string;
+        age: number;
+        profession: string;
+    };
+
+    if (!introduce || !phoneNumber || !address || !age || !profession) {
+        return next(new ErrorHandler('All fields are required', 400));
+    }
+
+    const user = await UserModel.findById(req.user?._id);
+
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    user.introduce = introduce;
+    user.phoneNumber = phoneNumber;
+    user.address = address;
+    user.age = age;
+    user.profession = profession;
+    user.role = 'instructor';
+
+    await user.save();
+
+    redis.set(req.user?._id as RedisKey, JSON.stringify(user));
+
+    res.status(200).json({
+        success: true,
+        message: 'User information updated successfully',
+        user
     });
 });

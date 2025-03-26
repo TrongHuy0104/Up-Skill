@@ -1,4 +1,5 @@
 import express from 'express';
+import requestRoutes from '../routes/request.router';
 import userRoutes from '../routes/user.route';
 import courseRoutes from '../routes/course.route';
 import orderRoutes from '../routes/order.route';
@@ -32,6 +33,8 @@ router.use('/quizzes', quizRoutes);
 router.use('/progress', progressRoutes);
 
 router.use('/income', incomeRoutes);
+
+router.use('/request', requestRoutes);
 
 router.use('/cart', cartRoutes);
 

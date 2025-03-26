@@ -4,8 +4,9 @@ import ErrorHandler from '../../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 import { redis } from '../../utils/redis';
 
-export const isAuthenticated = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const isAuthenticatedForUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const access_token = req.access_token || (req.cookies.access_token as string);
+
     if (!access_token) {
         return next(new ErrorHandler('Please login to access this resource.', 400));
     }
@@ -22,7 +23,7 @@ export const isAuthenticated = catchAsync(async (req: Request, res: Response, ne
         return next(new ErrorHandler('User not found', 400));
     }
 
-    req.user = JSON.parse(user);
+    req.body.user = JSON.parse(user);
 
     next();
 });
