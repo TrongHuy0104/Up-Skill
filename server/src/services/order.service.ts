@@ -1,4 +1,4 @@
-import OrderModel from '@/models/Order.model';
+import OrderModel from '../models/Order.model';
 import { NextFunction, Response } from 'express';
 
 export const newOrder = async (data: any, next: NextFunction, res: Response) => {

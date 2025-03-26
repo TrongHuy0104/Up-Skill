@@ -36,7 +36,7 @@ export default function CourseContent({ data }: Props) {
     const filterVideoSection = isShowAllSections ? videoSections : videoSections.slice(0, 3);
 
     return (
-        <section className={'w-[900px] px-[14px] text-primary-800'}>
+        <section className={'w-full  text-primary-800'}>
             <h2 className="text-2xl font-bold mb-4 font-cardo">Course Content</h2>
             {filterVideoSection.map((section: string) => {
                 const isSectionVisible = visibleSections.has(section);
@@ -55,20 +55,35 @@ export default function CourseContent({ data }: Props) {
                 const sectionContentHours = sectionVideoLength / 60;
 
                 return (
-                    <div key={section} className="border rounded-lg p-4 w-[900px] mt-4 ">
+                    <div
+                        key={section}
+                        className="border rounded-lg p-2 w-full sm:min-w-[375px] sm:max-w[767px] md:min-w-[700px] md:max-w-[900px] mx-auto mt-4 "
+                    >
                         <button
                             onClick={() => toggleSection(section)}
-                            className="flex w-full text-left text-lg font-semibold p-4 gap-x-3 "
+                            className="flex w-full text-left text-lg font-semibold p-4 md:gap-x-3 gap-x-1"
                         >
-                            {isSectionVisible ? <ChevronDown /> : <ChevronUp />}
-                            <div className="flex justify-between items-center w-full">
-                                {section}
-                                <span className="text-sm font-normal">
-                                    {sectionVideoCount} lessons •{' '}
-                                    {sectionVideoLength < 60
-                                        ? sectionVideoLength.toFixed(0)
-                                        : sectionContentHours.toFixed(2)}{' '}
-                                    {sectionVideoLength > 60 ? 'hours' : 'minutes'}
+                            {isSectionVisible ? (
+                                <div className="flex items-center">
+                                    <ChevronDown />
+                                </div>
+                            ) : (
+                                <div className="flex items-center">
+                                    <ChevronUp />
+                                </div>
+                            )}
+                            <div className="flex justify-between items-center w-full gap-3">
+                                <span className="hidden sm:inline">{section}</span>
+                                <span className="sm:hidden">{section.slice(0, 7)}...</span>
+                                <span className="text-sm font-normal flex-row sm:flex gap-2">
+                                    <div className="block sm:inline">{sectionVideoCount} lessons </div>
+                                    <div className="hidden sm:inline">• </div>
+                                    <div className="block sm:inline">
+                                        {sectionVideoLength < 60
+                                            ? sectionVideoLength.toFixed(0)
+                                            : sectionContentHours.toFixed(2)}{' '}
+                                        {sectionVideoLength > 60 ? 'hours' : 'minutes'}
+                                    </div>
                                 </span>
                             </div>
                         </button>

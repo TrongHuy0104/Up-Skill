@@ -1,9 +1,9 @@
-import { catchAsync } from '@/utils/catchAsync';
+import { catchAsync } from '../utils/catchAsync';
 import { NextFunction, Request, Response } from 'express';
-import { redis } from '@/utils/redis';
-import Quiz from '@/models/Quiz.model'; // Adjust the import path as needed
-import Course from '@/models/Course.model'; // Import Course model
-import ErrorHandler from '@/utils/ErrorHandler';
+import { redis } from '../utils/redis';
+import Quiz from '../models/Quiz.model'; // Adjust the import path as needed
+import Course from '../models/Course.model'; // Import Course model
+import ErrorHandler from '../utils/ErrorHandler';
 import mongoose from 'mongoose';
 
 // GET /api/quizzes/:quizId - Fetch a quiz by ID
@@ -64,6 +64,7 @@ export const getQuizbyId = catchAsync(async (req, res, next) => {
                 passingScore: 1,
                 maxAttempts: 1,
                 isPublished: 1,
+                isCompleted: 1,
                 order: 1,
                 videoSection: 1,
                 courseId: 1,
@@ -102,87 +103,6 @@ export const getQuizbyId = catchAsync(async (req, res, next) => {
     });
 });
 
-// POST /api/quizzes - Create a new quiz
-// export const createQuiz = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     const {
-//         title,
-//         description,
-//         difficulty,
-//         duration,
-//         passingScore,
-//         maxAttempts,
-//         isPublished,
-//         questions,
-//         lessonOrder,
-//         videoSection,
-//         courseId,
-//         instructorId // Get instructorId from the request body
-//     } = req.body;
-//     console.log(req.body);
-
-//     // Validate required fields
-//     if (
-//         !title ||
-//         !difficulty ||
-//         !duration ||
-//         !passingScore ||
-//         !maxAttempts ||
-//         questions ||
-//         !lessonOrder ||
-//         !videoSection ||
-//         !courseId ||
-//         !instructorId // Ensure instructorId is provided
-//     ) {
-//         return next(new ErrorHandler('Missing required fields', 400));
-//     }
-
-//     // Check if the course exists
-//     const course = await Course.findById(courseId);
-//     if (!course) {
-//         return next(new ErrorHandler('Course not found', 404));
-//     }
-
-//     // Create a new quiz
-//     const newQuiz = new Quiz({
-//         title,
-//         description,
-//         difficulty,
-//         duration,
-//         passingScore,
-//         maxAttempts,
-//         isPublished,
-//         instructorId, // Include instructorId in the quiz document
-//         questions,
-//         lessonOrder,
-//         videoSection,
-//         courseId
-//     });
-
-//     // Save the quiz to the database
-//     const savedQuiz = await newQuiz.save();
-
-//     // Add the quiz to the selected course's section
-//     const courseData = course.courseData.find((data: any) => data.videoSection === videoSection);
-//     if (courseData) {
-//         courseData.quizzes.push(savedQuiz._id); // Add quiz to the section
-//     } else {
-//         // If the section doesn't exist, create a new section and add the quiz
-//         course.courseData.push({
-//             videoSection,
-//             quizzes: [savedQuiz._id]
-//         });
-//     }
-
-//     // Save the updated course
-//     await course.save();
-
-//     // Send response
-//     res.status(201).json({
-//         success: true,
-//         data: savedQuiz
-//     });
-// });
-
 export const createQuiz = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
         title,
@@ -192,6 +112,7 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
+        isCompleted,
         questions,
         videoSection,
         courseId,
@@ -250,6 +171,7 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
         passingScore,
         maxAttempts,
         isPublished,
+        isCompleted,
         instructorId,
         questions,
         videoSection,
@@ -583,7 +505,6 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         return next(new ErrorHandler('Please provide a quiz ID', 400));
     }
 
-    // Kiểm tra dữ liệu đầu vào
     if (!text || !type || !points || !correctAnswer) {
         return next(new ErrorHandler('Please provide all required fields', 400));
     }
@@ -599,13 +520,11 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         return next(new ErrorHandler('Each correct answer must be in the options', 400));
     }
 
-    // Tìm quiz trong database
     const quiz = await Quiz.findById(id);
     if (!quiz) {
         return next(new ErrorHandler('Quiz not found', 404));
     }
 
-    // Tạo câu hỏi mới
     const newQuestion = {
         text,
         type,
@@ -614,11 +533,8 @@ export const createQuestion = catchAsync(async (req: Request, res: Response, nex
         correctAnswer
     };
 
-    // Thêm câu hỏi vào quiz
     quiz.questions.push(newQuestion);
-    await quiz.save(); // Lưu thay đổi vào database
-    console.log('Received data:', { text, type, points, options, correctAnswer });
-    // Trả về kết quả
+    await quiz.save();
     res.status(201).json({
         success: true,
         message: 'Question created successfully',

@@ -1,6 +1,7 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
-import { cookies } from 'next/headers';
 
 import Banner from '@/components/ui/Banner';
 import { layoutStyles } from '@/styles/styles';
@@ -13,19 +14,15 @@ import defaultImage from '@/public/assets/images/avatar/user-3.png';
 import CreateCourseForm from './CreateCourseForm';
 import { Button } from '@/components/ui/Button';
 import arrowIcon from '@/public/assets/icons/arrow-top-right.svg';
+import useUserRedirect from '@/hooks/useUserRedirect';
+import { DashboardSkeleton } from '@/components/ui/Skeleton';
 
-const InstructorDashboardBanner = async () => {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.toString(); // Convert cookies to a string
+const InstructorDashboardBanner = () => {
+    const { userData, isLoadingUser } = useUserRedirect();
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/me`, {
-        credentials: 'include',
-        headers: {
-            Cookie: cookie // Pass the cookies in the headers
-        }
-    });
+    if (isLoadingUser) return <DashboardSkeleton />;
 
-    const { user } = await res.json();
+    const { user } = userData;
 
     return (
         <Banner

@@ -2,19 +2,19 @@ import mongoose from 'mongoose';
 import cloudinary from 'cloudinary';
 import ejs from 'ejs';
 
-import { catchAsync } from '@/utils/catchAsync';
+import { catchAsync } from '../utils/catchAsync';
 import { NextFunction, Request, Response } from 'express';
-import { createCourse, getAllCoursesService } from '@/services/course.service';
-import CourseModel from '@/models/Course.model';
-import ErrorHandler from '@/utils/ErrorHandler';
-import { redis } from '@/utils/redis';
+import { createCourse, getAllCoursesService } from '../services/course.service';
+import CourseModel from '../models/Course.model';
+import ErrorHandler from '../utils/ErrorHandler';
+import { redis } from '../utils/redis';
 import path from 'path';
-import sendMail from '@/utils/sendMail';
-import NotificationModel from '@/models/Notification.model';
-import LevelModel from '@/models/Level.model';
-import CategoryModel from '@/models/Category.model';
-import SubCategoryModel from '@/models/SubCategory.model';
-import UserModel from '@/models/User.model';
+import sendMail from '../utils/sendMail';
+import NotificationModel from '../models/Notification.model';
+import LevelModel from '../models/Level.model';
+import CategoryModel from '../models/Category.model';
+import SubCategoryModel from '../models/SubCategory.model';
+import UserModel from '../models/User.model';
 
 export const getCoursesByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
@@ -967,16 +967,18 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
 
         // Add quizzes to the final course data (at the end of the section)
         if (quizzes.length > 0) {
-            finalCourseData.push({
-                _id: `quiz-section-${sectionName}`,
-                title: `Quiz for ${sectionName}`,
-                description: `Quiz for ${sectionName}`,
-                videoSection: sectionName,
-                isQuiz: true, // Flag to identify quizzes
-                quizzes: quizzes,
-                sectionOrder: sectionItems[0].sectionOrder,
-                lessonOrder: sectionItems.length + 1, // Place quizzes at the end of the section
-                videoLength: sectionQuizDuration // Assign quiz duration to videoLength for consistency
+            quizzes.forEach((quiz: any) => {
+                finalCourseData.push({
+                    _id: quiz._id,
+                    title: quiz.title,
+                    description: `Quiz for ${sectionName}`,
+                    videoSection: sectionName,
+                    isQuiz: true, // Flag to identify quizzes
+                    quizzes: quizzes,
+                    sectionOrder: sectionItems[0].sectionOrder,
+                    lessonOrder: sectionItems.length + 1, // Place quizzes at the end of the section
+                    videoLength: sectionQuizDuration // Assign quiz duration to videoLength for consistency
+                });
             });
         }
 
@@ -1625,8 +1627,6 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
 
 // get purchased courses of user
 export const getAllPurchasedCoursesOfUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req?.user?.purchasedCourses);
-
     const course = await CourseModel.find({
         _id: { $in: req?.user?.purchasedCourses }
     })

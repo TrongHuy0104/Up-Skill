@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { CartModel } from '@/models/Cart.model';
-import ErrorHandler from '@/utils/ErrorHandler';
+import { CartModel } from '../models/Cart.model';
+import ErrorHandler from '../utils/ErrorHandler';
 
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     const { courseId, quantity } = req.body;
@@ -14,7 +14,9 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
         const cart = await CartModel.findOne({ userId });
 
         if (cart) {
-            const courseIndex = cart.items.findIndex((item: { courseId: { toString: () => any; }; }) => item.courseId.toString() === courseId);
+            const courseIndex = cart.items.findIndex(
+                (item: { courseId: { toString: () => any } }) => item.courseId.toString() === courseId
+            );
             if (courseIndex >= 0) {
                 cart.items[courseIndex].quantity += quantity;
             } else {
@@ -43,7 +45,10 @@ export const getCartItems = async (req: Request, res: Response, next: NextFuncti
     }
 
     try {
-        const cart = await CartModel.findOne({ userId }).populate({path: 'items.courseId', select: 'name price thumbnail'});
+        const cart = await CartModel.findOne({ userId }).populate({
+            path: 'items.courseId',
+            select: 'name price thumbnail'
+        });
         res.status(200).json({ success: true, cart });
     } catch (error) {
         next(error);

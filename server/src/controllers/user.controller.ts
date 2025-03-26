@@ -3,22 +3,22 @@ import cloudinary from 'cloudinary';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import dotenv from 'dotenv';
-import UserModel from '@/models/User.model';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
+import UserModel from '../models/User.model';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 
 import path from 'path';
-import sendMail from '@/utils/sendMail';
-import { UserT } from '@/interfaces/User';
-import { accessTokenOptions, refreshTokenOptions, sendToken } from '@/utils/jwt';
-import { redis } from '@/utils/redis';
+import sendMail from '../utils/sendMail';
+import { UserT } from '../interfaces/User';
+import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
+import { redis } from '../utils/redis';
 import {
     getUserById,
     getAllUsersService,
     updateUserRoleService,
     getAllInstructorsService
-} from '@/services/user.service';
+} from '../services/user.service';
 
 dotenv.config();
 
@@ -225,8 +225,20 @@ export const loginUser = catchAsync(async (req: Request, res: Response, next: Ne
 });
 
 export const logoutUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    res.cookie('access_token', '', { maxAge: 1 });
-    res.cookie('refresh_token', '', { maxAge: 1 });
+    res.cookie('access_token', '', {
+        domain: '.vercel.app',
+        secure: true,
+        sameSite: 'none',
+        httpOnly: true,
+        maxAge: 1
+    });
+    res.cookie('refresh_token', '', {
+        domain: '.vercel.app',
+        secure: true,
+        sameSite: 'none',
+        httpOnly: true,
+        maxAge: 1
+    });
 
     const userId = req.user?._id || '';
     if (userId) {
@@ -272,6 +284,7 @@ export const updateAccessToken = catchAsync(async (req: Request, res: Response, 
 
     next();
 });
+
 export const refreshToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const refresh_token = req.cookies.refresh_token as string;
     const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;

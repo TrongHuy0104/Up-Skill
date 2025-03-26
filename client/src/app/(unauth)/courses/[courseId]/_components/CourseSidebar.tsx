@@ -51,17 +51,12 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
 
     const checkCourseExistInCart = async () => {
         try {
-            const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`,
-                { withCredentials: true }
-            );
-            if (response.data.cart && response.data.cart.items) {
-                const cartItems = response.data.cart.items;
-                const courseExists = cartItems.some((items: any) => items.courseId === course._id);
-                return courseExists;
-            } else {
-                return false;
-            }
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`, {
+                withCredentials: true
+            });
+            const cartItems = response.data.cart.items;
+            const courseExists = cartItems.some((items: any) => items.courseId === course._id);
+            return courseExists;
         } catch (error) {
             console.error('Error checking if course is in cart:', error);
             return false;
@@ -72,28 +67,26 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         if (!user) {
             redirect('/');
         }
-    
+
         if (!course?._id) {
             console.error('Course ID is undefined');
             return;
         }
-    
+
         try {
-            const isCourseInCart = cartItems.some((items: any) => {   
-                return items.courseId._id === course._id});
+            const isCourseInCart = cartItems.some((items: any) => {
+                return items.courseId._id === course._id;
+            });
             if (!isCourseInCart) {
                 const addResponse = await axios.post(
-                    `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`, 
+                    `${process.env.NEXT_PUBLIC_SERVER_URI}/cart/add-to-cart`,
                     { courseId: course._id },
                     { withCredentials: true }
                 );
-    
+
                 if (addResponse.data.success) {
                     dispatch(addCartItem({ courseId: course._id }));
-                    console.log('Course added to cart');
                 }
-            } else {
-                console.log('Course already in cart');
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
@@ -104,7 +97,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         if (user) {
             checkCourseExistInCart();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, course._id]);
 
     const checkCourseExist = () => {
@@ -142,14 +135,14 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     };
 
     return (
-        <div className="w-[400px] rounded-2xl shadow-lg bg-primary-50 border">
+        <div className="w-full rounded-2xl shadow-lg bg-primary-50 border min-w-[330px] max-w-4xl  lg:w-[400px]">
             <div className="relative w-full h-[260px] flex justify-center items-center">
                 <Image
                     src={course?.thumbnail?.url || '/assets/images/courses/courses-03.jpg'}
                     alt="Course Thumbnail"
                     layout="fill"
                     objectFit="cover"
-                    className="rounded-t-lg"
+                    className="rounded-t-lg w-full min-w-[330px] max-w-none lg:w-[400px]"
                 />
                 <Dialog>
                     <DialogTrigger asChild>

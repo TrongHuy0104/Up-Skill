@@ -1,4 +1,4 @@
-import { IProgress } from '@/interfaces/Progress';
+import { IProgress } from '../interfaces/Progress';
 import mongoose, { Schema } from 'mongoose';
 
 // Schema của Progress
@@ -14,6 +14,7 @@ const ProgressSchema = new Schema<IProgress>(
             ref: 'Course',
             required: true
         },
+
         totalLessons: {
             type: Number,
             required: true
@@ -26,8 +27,9 @@ const ProgressSchema = new Schema<IProgress>(
         completedLessons: [
             {
                 section: {
-                    name: { type: String, required: true },
-                    sectionLength: { type: Number, required: true },
+                    name: { type: String },
+                    sectionLength: { type: Number },
+                    sectionOrder: { type: Number },
                     lessons: [
                         {
                             type: mongoose.Schema.Types.ObjectId,
@@ -42,6 +44,19 @@ const ProgressSchema = new Schema<IProgress>(
                     }
                 }
             }
+        ],
+        completedQuizzes: [
+            {
+                section: {
+                    isCompleted: { type: Boolean, default: false },
+                    quizzes: [
+                        {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'Quiz'
+                        }
+                    ]
+                }
+            }
         ]
     },
     { timestamps: true }
@@ -49,9 +64,19 @@ const ProgressSchema = new Schema<IProgress>(
 
 // Middleware để cập nhật totalCompleted tự động
 ProgressSchema.pre('save', function (next) {
-    this.totalCompleted = this.completedLessons.reduce((total, section) => {
+    const completedLessonsCount = this.completedLessons.reduce((total, section) => {
         return total + (section.section.lessons?.length || 0);
     }, 0);
+    const completedQuizzesCount = this.completedQuizzes.reduce((total, section) => {
+        // Kiểm tra xem quiz trong section có được hoàn thành hay không
+        if (section.section.isCompleted) {
+            return total + 1;
+        }
+        return total;
+    }, 0);
+
+    // Cập nhật giá trị totalCompleted
+    this.totalCompleted = completedLessonsCount + completedQuizzesCount;
     next();
 });
 
