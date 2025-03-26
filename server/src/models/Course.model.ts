@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IComment, ICourse, ICourseData, ILink, IReview, IReviewReply } from '@/interfaces/Course';
+import { IComment, ICourse, ICourseData, ILink, IReview, IReviewReply } from '../interfaces/Course';
 
 const ReviewReplySchema = new Schema<IReviewReply>(
     {

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { IoCheckmarkCircle } from 'react-icons/io5';
+import { MdOutlineQuiz } from 'react-icons/md';
 
 import PlayContent from '@/public/assets/icons/play-content.svg';
 import { getMinutes } from '@/lib/utils';
@@ -38,15 +39,15 @@ export default function CourseContentList({ data, progressData, activeVideo, set
         } else {
             toast({
                 variant: 'destructive',
-                title: 'You must complete the current lesson before moving on!',
+                title: 'You must complete the current lesson before moving on!'
             });
         }
     };
 
     const completedLessonIds = progressData?.completedLessons?.length
-        ? progressData.completedLessons.flatMap(
-            (section: any) => section.section.lessons.map((lesson: any) => lesson.toString())
-        )
+        ? progressData.completedLessons.flatMap((section: any) =>
+              section.section.lessons.map((lesson: any) => lesson.toString())
+          )
         : [];
 
     return (
@@ -54,21 +55,29 @@ export default function CourseContentList({ data, progressData, activeVideo, set
             {videoSections.map((section: string) => {
                 const isSectionVisible = visibleSections.has(section);
 
-                const sectionVideos: any[] = data.filter((item: any) => item.videoSection === section);
-                const sectionVideoCount = sectionVideos.length;
-                const sectionVideoLength = sectionVideos.reduce(
-                    (totalLength: number, item: any) => totalLength + item?.videoLength,
+                const sectionItems: any[] = data.filter((item: any) => item.videoSection === section);
+                const sectionLessons = sectionItems.filter((item: any) => !item.isQuiz); // Filter out quizzes
+                const sectionQuizzes = sectionItems.filter((item: any) => item.isQuiz); // Filter out lessons
+
+                const sectionVideoLength = sectionLessons.reduce(
+                    (total: number, lesson: any) => total + (lesson.videoLength || 0),
+                    0
+                );
+                const sectionQuizLength = sectionQuizzes.reduce(
+                    (total: number, quizItem: any) =>
+                        total + quizItem.quizzes.reduce((sum: number, quiz: any) => sum + quiz.videoLength, 0),
                     0
                 );
 
+                const totalSectionLength = sectionVideoLength + sectionQuizLength;
+                const sectionContentHours = totalSectionLength / 60;
+
                 const sectionStartIndex = totalCount;
-                totalCount += sectionVideoCount;
+                totalCount += sectionLessons.length;
 
-                const sectionContentHours = sectionVideoLength / 60;
-
-                const completedLessons = progressData?.completedLessons?.find(
-                    (s: any) => s.section.name === section
-                )?.section.lessons || [];
+                // Get completed lessons for this section
+                const completedLessons =
+                    progressData?.completedLessons?.find((s: any) => s.section.name === section)?.section.lessons || [];
 
                 return (
                     <div key={section} className="border rounded-lg p-4 w-full mt-4 ">
@@ -78,29 +87,31 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                         >
                             {isSectionVisible ? <ChevronDown /> : <ChevronUp />}
                             <div className="flex justify-between items-center w-full">
-                                <div className="flex items-center gap-2">
-                                    {section}
-                                </div>
+                                <div className="flex items-center gap-2">{section}</div>
                                 <span className="text-sm font-normal">
-                                    {completedLessons.length}/{sectionVideoCount} lessons •{' '}
-                                    {sectionVideoLength < 60
-                                        ? sectionVideoLength?.toFixed(0)
+                                    {completedLessons.length}/{sectionLessons.length} lessons •{' '}
+                                    {totalSectionLength < 60
+                                        ? totalSectionLength?.toFixed(0)
                                         : sectionContentHours.toFixed(2)}{' '}
-                                    {sectionVideoLength > 60 ? 'hours' : 'minutes'}
+                                    {totalSectionLength > 60 ? 'hours' : 'minutes'}
                                 </span>
                             </div>
                         </button>
                         {isSectionVisible && (
                             <div className="mt-2 border-t pt-2 space-y-2">
-                                {sectionVideos.map((item: any, index: number) => {
+                                {/* Render Lessons */}
+                                {sectionLessons.map((item: any, index: number) => {
                                     const videoIndex = sectionStartIndex + index;
-                                    const lessonLength = item?.videoLength;
+
+                                    const lessonLength = item?.videoLength || 0;
 
                                     const isCompleted = completedLessonIds.includes(item._id.toString());
 
                                     const isPreviousCompleted =
-                                        videoIndex === 0 || completedLessonIds.includes(data[videoIndex - 1]?._id.toString());
+                                        videoIndex === 0 ||
+                                        completedLessonIds.includes(data[videoIndex - 1]?._id.toString());
                                     const isClickable = isCompleted || isPreviousCompleted;
+                                    const isQuiz = !item.videoUrl && item.quizzes?.length > 0;
 
                                     return (
                                         <div
@@ -111,26 +122,25 @@ export default function CourseContentList({ data, progressData, activeVideo, set
                                                 <span className="p-5 relative">
                                                     {isCompleted ? (
                                                         <IoCheckmarkCircle className="text-accent-600 text-lg" />
-                                                    ) : <Image src={PlayContent} alt="play content" />}
+                                                    ) : isQuiz ? (
+                                                        <MdOutlineQuiz className="text-lg" />
+                                                    ) : (
+                                                        <Image src={PlayContent} alt="play content" />
+                                                    )}
                                                 </span>
                                                 <button
-                                                    className={`hover:text-accent-600 ${videoIndex === activeVideo
-                                                        ? 'text-accent-600'
-                                                        : isCompleted
-                                                            ? ''
-                                                            : !isClickable
+                                                    className={`hover:text-accent-600 ${
+                                                        videoIndex === activeVideo
+                                                            ? 'text-accent-600'
+                                                            : isCompleted
+                                                              ? ''
+                                                              : !isClickable
                                                                 ? 'cursor-no-drop opacity-50 text-gray-400'
                                                                 : 'text-gray-700'
-                                                        }`}
-                                                    onClick={() =>
-                                                        handleButtonLesson(videoIndex, isClickable)
-                                                    }
+                                                    }`}
+                                                    onClick={() => handleButtonLesson(videoIndex, isClickable)}
                                                     disabled={!isClickable}
-                                                    title={
-                                                        !isClickable
-                                                            ? 'Complete the previous lesson to unlock'
-                                                            : ''
-                                                    }
+                                                    title={!isClickable ? 'Complete the previous lesson to unlock' : ''}
                                                 >
                                                     {item.title}
                                                 </button>

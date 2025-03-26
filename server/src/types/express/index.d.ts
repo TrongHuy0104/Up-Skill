@@ -1,4 +1,4 @@
-import { UserT } from '@/interfaces/User';
+import { UserT } from '../interfaces/User';
 
 declare global {
     namespace Express {

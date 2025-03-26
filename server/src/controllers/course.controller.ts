@@ -2,19 +2,19 @@ import mongoose from 'mongoose';
 import cloudinary from 'cloudinary';
 import ejs from 'ejs';
 
-import { catchAsync } from '@/utils/catchAsync';
+import { catchAsync } from '../utils/catchAsync';
 import { NextFunction, Request, Response } from 'express';
-import { createCourse, getAllCoursesService } from '@/services/course.service';
-import CourseModel from '@/models/Course.model';
-import ErrorHandler from '@/utils/ErrorHandler';
-import { redis } from '@/utils/redis';
+import { createCourse, getAllCoursesService } from '../services/course.service';
+import CourseModel from '../models/Course.model';
+import ErrorHandler from '../utils/ErrorHandler';
+import { redis } from '../utils/redis';
 import path from 'path';
-import sendMail from '@/utils/sendMail';
-import NotificationModel from '@/models/Notification.model';
-import LevelModel from '@/models/Level.model';
-import CategoryModel from '@/models/Category.model';
-import SubCategoryModel from '@/models/SubCategory.model';
-import UserModel from '@/models/User.model';
+import sendMail from '../utils/sendMail';
+import NotificationModel from '../models/Notification.model';
+import LevelModel from '../models/Level.model';
+import CategoryModel from '../models/Category.model';
+import SubCategoryModel from '../models/SubCategory.model';
+import UserModel from '../models/User.model';
 
 export const getCoursesByUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?._id;
@@ -903,31 +903,91 @@ export const getPurchasedCourseByUser = catchAsync(async (req: Request, res: Res
     const userCourseList = req.user?.purchasedCourses;
     const courseId = req.params.id;
 
+    // Check if the user has purchased the course
     const courseExists = userCourseList?.find((c: any) => c === courseId.toString());
-
     if (!courseExists) {
         return next(new ErrorHandler('You are not eligible to access this course', 404));
     }
 
-    const course = await CourseModel.findById(courseId);
+    // Fetch the course
+    const course = await CourseModel.findById(courseId).populate({
+        path: 'courseData.quizzes',
+        model: 'Quiz'
+    });
 
     if (!course) {
         return next(new ErrorHandler('Course not found', 404));
     }
 
+    // Filter out unpublished or invalid course data
     course.courseData = course.courseData.filter(
-        (c: any) =>
-            c?.videoUrl?.url && c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
+        (c: any) => c?.title && c?.description && c?.isPublished && c?.isPublishedSection && c?.videoSection
     );
 
-    const sortedCourseData = (course.courseData = course.courseData.sort((a: any, b: any) => {
+    // Sort courseData by sectionOrder and lessonOrder
+    const sortedCourseData = course.courseData.sort((a: any, b: any) => {
         if (a.sectionOrder !== b.sectionOrder) {
             return a.sectionOrder - b.sectionOrder; // Sort by sectionOrder first
         }
         return a.lessonOrder - b.lessonOrder; // If sectionOrder is the same, sort by lessonOrder
-    }));
+    });
 
-    course.courseData = sortedCourseData;
+    // Group courseData by section
+    const sections: { [key: string]: any[] } = {};
+    sortedCourseData.forEach((item: any) => {
+        if (!sections[item.videoSection]) {
+            sections[item.videoSection] = [];
+        }
+        sections[item.videoSection].push(item);
+    });
+
+    // Insert quizzes into the correct position in each section and calculate section durations
+    const finalCourseData: any[] = [];
+    for (const sectionName in sections) {
+        const sectionItems = sections[sectionName];
+
+        // Calculate total duration of videos in the section
+        const sectionVideoLength = sectionItems.reduce(
+            (totalLength: number, item: any) => totalLength + (item?.videoLength || 0),
+            0
+        );
+
+        // Find the quizzes for this section and calculate their total duration
+        const quizzes = sectionItems.flatMap((item: any) => item.quizzes);
+        const sectionQuizDuration = quizzes.reduce(
+            (totalDuration: number, quiz: any) => totalDuration + (quiz.duration || 0),
+            0
+        );
+
+        // Total section duration
+        const totalSectionLength = sectionVideoLength + sectionQuizDuration;
+
+        // Add lessons to the final course data
+        finalCourseData.push(...sectionItems);
+
+        // Add quizzes to the final course data (at the end of the section)
+        if (quizzes.length > 0) {
+            finalCourseData.push({
+                _id: `quiz-section-${sectionName}`,
+                title: `Quiz for ${sectionName}`,
+                description: `Quiz for ${sectionName}`,
+                videoSection: sectionName,
+                isQuiz: true, // Flag to identify quizzes
+                quizzes: quizzes,
+                sectionOrder: sectionItems[0].sectionOrder,
+                lessonOrder: sectionItems.length + 1, // Place quizzes at the end of the section
+                videoLength: sectionQuizDuration // Assign quiz duration to videoLength for consistency
+            });
+        }
+
+        // Add section duration to each section item
+        sectionItems.forEach((item: any) => {
+            item.sectionDuration = totalSectionLength;
+        });
+    }
+
+    // Update the course data with the final structure
+    course.courseData = finalCourseData;
 
     res.status(200).json({
         success: true,
@@ -1560,5 +1620,42 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
     res.status(200).json({
         success: true,
         message: 'Lesson completion status updated successfully'
+    });
+});
+
+// get purchased courses of user
+export const getAllPurchasedCoursesOfUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req?.user?.purchasedCourses);
+
+    const course = await CourseModel.find({
+        _id: { $in: req?.user?.purchasedCourses }
+    })
+        .populate('authorId', 'name email')
+        .populate('category', 'name')
+        .lean();
+    if (!course) {
+        return next(new ErrorHandler('Course not found', 404));
+    }
+    const coursesWithDetails = course.map((course) => {
+        const lessonsCount = course.courseData?.length || 0;
+
+        const duration =
+            course.courseData?.reduce((acc: number, curr: { videoLength?: number }) => {
+                return acc + (curr.videoLength || 0);
+            }, 0) || 0;
+
+        const durationInHours = (duration / 60).toFixed(1);
+
+        return {
+            ...course,
+            lessonsCount,
+            duration: `${durationInHours} hours`
+        };
+    });
+    res.status(200).json({
+        success: true,
+        data: {
+            course: coursesWithDetails
+        }
     });
 });

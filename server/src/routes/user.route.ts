@@ -22,9 +22,9 @@ import {
     updateUserSocialLinks,
     getUser,
     getTopInstructors
-} from '@/controllers/user.controller';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
+} from '../controllers/user.controller';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
 
 const router = express.Router();
 

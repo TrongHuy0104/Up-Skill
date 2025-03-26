@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
-import ProgressModel from '@/models/Progress.model';
-import CourseModel from '@/models/Course.model';
-import { redis } from '@/utils/redis';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
+import ProgressModel from '../models/Progress.model';
+import CourseModel from '../models/Course.model';
+import { redis } from '../utils/redis';
 
 // Update lesson completion status via Progress model
 export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -119,6 +119,11 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
     // Tìm progress của user trong khóa học này
     const progress = await ProgressModel.findOne({ user: userId, course: courseId });
 
+    // Tính toán phần trăm hoàn thành
+    const totalLessons = course.courseData.length;
+    const totalCompleted = progress ? progress.totalCompleted : 0;
+    const completionPercentage = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+
     if (!progress) {
         return res.status(200).json({
             success: true,
@@ -126,8 +131,9 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
             data: {
                 user: userId,
                 course: courseId,
-                totalLessons: course.courseData.length,
-                totalCompleted: 0,
+                totalLessons,
+                totalCompleted,
+                completionPercentage,
                 completedLessons: []
             }
         });
@@ -136,6 +142,59 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
     res.status(200).json({
         success: true,
         message: 'Progress data retrieved successfully',
-        data: progress
+        data: {
+            ...progress.toObject(),
+            completionPercentage
+        }
+    });
+});
+
+// Get my purchased course progress data
+export const getAllCoursesProgress = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?._id; // Get userId from authentication middleware
+
+    if (!userId) {
+        return next(new ErrorHandler('User ID is required', 400));
+    }
+
+    // Fetch all courses associated with the user
+    const userCourses = await CourseModel.find({ users: userId }); // Assuming `users` is the field in CourseModel that stores enrolled users
+
+    if (!userCourses || userCourses.length === 0) {
+        return res.status(200).json({
+            success: true,
+            message: 'No courses found for this user.',
+            data: []
+        });
+    }
+
+    // Fetch progress for each course
+    const progressData = await Promise.all(
+        userCourses.map(async (course) => {
+            const courseId = course._id;
+
+            // Find progress of the user in this course
+            const progress = await ProgressModel.findOne({ user: userId, course: courseId });
+
+            // Calculate completion percentage
+            const totalLessons = course.courseData.length;
+            const totalCompleted = progress ? progress.totalCompleted : 0;
+            const completionPercentage = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+
+            return {
+                courseId: course._id,
+                courseName: course.name, // Assuming `name` is a field in CourseModel
+                totalLessons,
+                totalCompleted,
+                completionPercentage,
+                completedLessons: progress ? progress.completedLessons : []
+            };
+        })
+    );
+
+    res.status(200).json({
+        success: true,
+        message: 'Progress data for all courses retrieved successfully',
+        data: progressData
     });
 });

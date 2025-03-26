@@ -1,6 +1,6 @@
 import express, { RequestHandler } from 'express';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
 import {
     addAnswer,
     addQuestion,
@@ -38,9 +38,10 @@ import {
     publishCourse,
     unpublishCourse,
     getAllUploadedAndPurchasedCoursesOfInstructor,
+    getAllPurchasedCoursesOfUser,
     getCoursesWithSort
-} from '@/controllers/course.controller';
-import { getUserInfo, updateAccessToken } from '@/controllers/user.controller';
+} from '../controllers/course.controller';
+import { getUserInfo, updateAccessToken } from '../controllers/user.controller';
 
 const router = express.Router();
 
@@ -70,6 +71,8 @@ router.get('/:id', getSingleCourse);
 
 router.get('/', getAllCoursesWithoutPurchase);
 
+router.get('/purchased/my-course', updateAccessToken, isAuthenticated, getAllPurchasedCoursesOfUser);
+
 router.get('/purchased/:id', updateAccessToken, isAuthenticated, getPurchasedCourseByUser);
 
 router.get('/uploaded/:id', updateAccessToken, isAuthenticated, getUploadedCourseByInstructor);
@@ -78,7 +81,7 @@ router.get(
     '/instructor/all',
     updateAccessToken,
     isAuthenticated,
-    authorizeRoles('instructor'),
+    authorizeRoles('instructor', 'user'),
     getAllUploadedAndPurchasedCoursesOfInstructor
 );
 

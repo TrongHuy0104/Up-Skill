@@ -78,14 +78,13 @@ export default function HorizontalCoursesList({
     const [totalCourses, setTotalCourses] = useState(initialTotalCourses);
     const searchParams = useSearchParams();
     const sortType = searchParams.get('sort');
-
-    // Xác định khi nào là Tablet (768px - 1023px)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isTablet, setIsTablet] = useState(false);
-    console.log(isTablet);
 
     useEffect(() => {
         const checkTablet = () => {
             const width = window.innerWidth;
+
             setIsTablet(width >= 768 && width < 1024);
         };
 
@@ -104,7 +103,7 @@ export default function HorizontalCoursesList({
             try {
                 if (sortType) {
                     // Nếu có sortType, fetch dữ liệu từ API
-                    const apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
+                    const apiUrl = `${process.env.NEXT_PUBLIC_SERVER_URI}/courses/sort?type=${sortType}`;
                     const res = await fetch(apiUrl);
 
                     if (!res.ok) {

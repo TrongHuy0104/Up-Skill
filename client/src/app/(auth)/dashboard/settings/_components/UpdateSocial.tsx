@@ -41,8 +41,6 @@ const UpdateSocial = () => {
         }
     });
 
-    console.log(loadUser);
-
     // Mutation hook để cập nhật liên kết xã hội
     const [updateLink, { isLoading, isSuccess, error }] = useUpdateLinkMutation();
 

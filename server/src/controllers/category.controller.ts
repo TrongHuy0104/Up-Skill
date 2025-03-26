@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
-import CategoryModel from '@/models/Category.model';
-import SubCategoryModel from '@/models/SubCategory.model';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
+import CategoryModel from '../models/Category.model';
+import SubCategoryModel from '../models/SubCategory.model';
 
 export const createCategory = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { title } = req.body;

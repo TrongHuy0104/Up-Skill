@@ -32,7 +32,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
                 correctAnswer: prev.options[0]
             }));
         }
-    }, [formData.options]);
+    }, [formData.options, formData.correctAnswer]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
