@@ -182,6 +182,13 @@ export const courseApi = apiSlice.injectEndpoints({
                 body: { comment, courseId, reviewId },
                 credentials: 'include' as const
             })
+        }),
+        getCourseStats: builder.query({
+            query: () => ({
+                url: `courses/instructor/all`,
+                method: 'GET',
+                credentials: 'include' as const
+            })
         })
     })
 });
@@ -209,5 +216,6 @@ export const {
     useDeleteSectionMutation,
     usePublishCourseMutation,
     useUnpublishCourseMutation,
-    useDeleteCourseMutation
+    useDeleteCourseMutation,
+    useGetCourseStatsQuery
 } = courseApi;

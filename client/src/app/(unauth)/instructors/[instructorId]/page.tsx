@@ -1,47 +1,42 @@
+'use client';
+
+import { useParams } from 'next/navigation';
 import CoursesDetailLine from '@/components/custom/CoursesDetailLine';
 import Banner from './_components/Banner';
 import CoursesList from './_components/CoursesList';
 import InstructorInfo from './_components/InstructorInfo';
 import Review from './_components/Review';
 import Sidebar from './_components/SideBar';
-import { cookies } from 'next/headers';
+import { useGetInstructorDetailQuery } from '@/lib/redux/features/user/userApi';
+import Spinner from '@/components/custom/Spinner';
 
-export default async function page({ params }: any) {
-    const { instructorId } = await params;
-    const cookieStore = await cookies();
-    const cookie = cookieStore.toString();
+export default function Page() {
+    const { instructorId } = useParams();
+    const { data: userData, isLoading } = useGetInstructorDetailQuery(instructorId);
 
-    // Gửi request lấy thông tin user
-    const res = await fetch(`http://localhost:8000/api/user/${instructorId}`, {
-        credentials: 'include',
-        headers: {
-            Cookie: cookie // Pass the cookies in the headers
-        }
-    });
+    if (isLoading) return <Spinner />;
 
-    const responseData = await res.json();
-
-    const { user } = responseData.data;
+    const { data: user } = userData;
 
     return (
         <div className="relative">
-            <Banner user={user} />
+            <Banner user={user.user} />
             <div className="pt-[61px] flex w-[1428px] mx-auto">
                 {/* Content container */}
                 <div className="flex max-w-screen-xl w-full px-4">
                     {/* Content section */}
                     <div className="mb-4 w-full md:w-3/4 mr-12">
-                        <InstructorInfo user={user} />
+                        <InstructorInfo user={user.user} />
                         <CoursesDetailLine />
                         {/* Truyền mảng courses vào CoursesList */}
-                        <CoursesList user={user} />
+                        <CoursesList user={user.user} />
                         <CoursesDetailLine />
                         <Review />
                     </div>
 
                     {/* Sidebar with sticky positioning */}
                     <div className="md:w-[300px] md:-mt-[200px] w-full sticky top-5 self-start pb-12">
-                        <Sidebar user={user} />
+                        <Sidebar user={user.user} />
                     </div>
                 </div>
             </div>

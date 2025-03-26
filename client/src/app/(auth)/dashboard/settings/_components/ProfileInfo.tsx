@@ -18,6 +18,7 @@ import { useUpdateUserInfoMutation } from '@/lib/redux/features/user/userApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import { useToast } from '@/hooks/use-toast';
+import { DashboardSkeleton } from '@/components/ui/Skeleton';
 
 const formSchema = z.object({
     name: z.string().min(1, { message: 'This field has to be filled.' }),
@@ -126,7 +127,7 @@ const ProfileInfo = () => {
         await updateUserInfo(data);
     }
 
-    if (!user) return <SpinnerMini />;
+    if (!user) return <DashboardSkeleton />;
     return (
         <div>
             <div className="relative flex items-center gap-[30px] pb-[38px] mb-[30px] border-b border-primary-100">

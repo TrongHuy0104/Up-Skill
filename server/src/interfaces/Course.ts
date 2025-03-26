@@ -30,6 +30,7 @@ export interface ILink extends Document {
 }
 
 export interface ICourseData extends Document {
+    order: number;
     title: string;
     description: string;
     videoUrl: object;
@@ -39,6 +40,7 @@ export interface ICourseData extends Document {
     links: ILink[];
     suggestion: string;
     questions: IComment[];
+    quizzes: object[];
     isCompleted: boolean;
     isPublished: boolean;
     isPublishedSection: boolean;

@@ -22,9 +22,9 @@ import {
     updateUserSocialLinks,
     getUser,
     getTopInstructors
-} from '@/controllers/user.controller';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
+} from '../controllers/user.controller';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
 
 const router = express.Router();
 
@@ -40,7 +40,7 @@ router.post('/resetcode-verify', resetCodeVerify);
 
 router.put('/reset-password', resetPassword);
 
-router.get('/logout', isAuthenticated, authorizeRoles('user'), logoutUser);
+router.get('/logout', isAuthenticated, authorizeRoles('user', 'instructor'), logoutUser);
 
 router.get('/refresh', refreshToken);
 

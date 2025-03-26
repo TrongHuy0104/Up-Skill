@@ -61,7 +61,7 @@ export default function CoursesList({ user }: Props) {
     useEffect(() => {
         const fetchTopCourses = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/courses/all-courses/${user._id}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/all-courses/${user._id}`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -80,7 +80,7 @@ export default function CoursesList({ user }: Props) {
         };
 
         fetchTopCourses();
-    }, []);
+    }, [user._id]);
 
     return (
         <div className="mb-[61px] w-[900px]">

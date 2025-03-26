@@ -4,7 +4,7 @@ interface Props {
     readonly user: User;
 }
 
-export default async function Sidebar({ user }: Props) {
+export default function Sidebar({ user }: Props) {
     return (
         <InstructorSidebar
             avatar={user?.avatar?.url || '/assets/images/courses/courses-03.jpg'}

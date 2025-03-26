@@ -1,4 +1,4 @@
-import { BannerImage, Category, FaqItem, Layout } from '@/interfaces/Layout';
+import { BannerImage, Category, FaqItem, Layout } from '../interfaces/Layout';
 import mongoose, { Schema } from 'mongoose';
 
 const FaqSchema = new Schema<FaqItem>({

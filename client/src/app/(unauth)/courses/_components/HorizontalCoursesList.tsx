@@ -78,14 +78,13 @@ export default function HorizontalCoursesList({
     const [totalCourses, setTotalCourses] = useState(initialTotalCourses);
     const searchParams = useSearchParams();
     const sortType = searchParams.get('sort');
-
-    // Xác định khi nào là Tablet (768px - 1023px)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isTablet, setIsTablet] = useState(false);
-    console.log(isTablet);
 
     useEffect(() => {
         const checkTablet = () => {
             const width = window.innerWidth;
+
             setIsTablet(width >= 768 && width < 1024);
         };
 
@@ -100,27 +99,30 @@ export default function HorizontalCoursesList({
 
     useEffect(() => {
         const fetchCourses = async () => {
-            if (!sortType) return;
             setIsLoading(true);
             try {
-                let apiUrl = `http://localhost:8000/api/courses}`;
                 if (sortType) {
-                    apiUrl = `http://localhost:8000/api/courses/sort?type=${sortType}`;
+                    // Nếu có sortType, fetch dữ liệu từ API
+                    const apiUrl = `${process.env.NEXT_PUBLIC_SERVER_URI}/courses/sort?type=${sortType}`;
+                    const res = await fetch(apiUrl);
+
+                    if (!res.ok) {
+                        throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
+                    }
+
+                    const data = await res.json();
+
+                    if (!data.courses) {
+                        throw new Error('Invalid data format: courses not found');
+                    }
+
+                    setCourses(data.courses || []);
+                    setTotalCourses(data.courses.length || 0);
+                } else {
+                    // Nếu không có sortType, sử dụng initialCourses
+                    setCourses(initialCourses);
+                    setTotalCourses(initialTotalCourses);
                 }
-                const res = await fetch(apiUrl);
-
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch courses: ${res.status} ${res.statusText}`);
-                }
-
-                const data = await res.json();
-
-                if (!data.courses) {
-                    throw new Error('Invalid data format: courses not found');
-                }
-
-                setCourses(data.courses || []);
-                setTotalCourses(data.courses.length || 0);
             } catch (error) {
                 console.error('❌ Fetch Error:', error);
                 setCourses([]);
@@ -131,7 +133,7 @@ export default function HorizontalCoursesList({
         };
 
         fetchCourses();
-    }, [sortType]);
+    }, [sortType, initialCourses, initialTotalCourses]); // Theo dõi thay đổi của sortType, initialCourses và initialTotalCourses
 
     if (!isClient) {
         return (

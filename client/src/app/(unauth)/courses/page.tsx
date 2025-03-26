@@ -1,8 +1,9 @@
 import React, { Suspense } from 'react';
+import { cookies } from 'next/headers';
+
 import Banner from './_components/Banner';
 import FilterCourses from './_components/FilterCourses';
 import HorizontalCoursesList from './_components/HorizontalCoursesList';
-import { cookies } from 'next/headers';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 
 export default async function Page({ searchParams = {} }: any) {
@@ -33,6 +34,7 @@ export default async function Page({ searchParams = {} }: any) {
 
     const { courses, totalPages, totalCourses, limit, page } = await coursesRes.json();
     const { data } = await countRes.json();
+
     return (
         <div className="w-full pb-40">
             <Banner />

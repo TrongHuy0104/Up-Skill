@@ -3,10 +3,13 @@
 import Image from 'next/image';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { IoIosLogOut } from 'react-icons/io';
-import { LuSquareUserRound } from 'react-icons/lu';
+import { MdOutlineDashboardCustomize, MdOutlineSlowMotionVideo } from 'react-icons/md';
+import { TbMessageDots } from 'react-icons/tb';
+import { FaRegCircleQuestion, FaRegHeart } from 'react-icons/fa6';
+import { PiBagBold } from 'react-icons/pi';
 import { redirect } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 import {
@@ -19,14 +22,14 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from '@/components/ui/DropdownMenu';
-import { User } from '@/types/User';
 import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 
 export function UserDropdown() {
     const [logout, setLogout] = useState(false);
-    const [user, setUser] = useState<User | null>(null); // Khai báo state để lưu thông tin người dùng
+    const { data, isLoading } = useLoadUserQuery(undefined);
     useLogoutQuery(undefined, { skip: !logout ? true : false });
     const { data: session } = useSession();
 
@@ -38,32 +41,65 @@ export function UserDropdown() {
         redirect('/');
     };
 
-    useEffect(() => {
-        // Gọi API để lấy thông tin người dùng
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch('http://localhost:8000/api/user/me', {
-                    credentials: 'include' // Bao gồm cookie nếu cần
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setUser(data.user); // Lưu thông tin người dùng vào state
-                } else {
-                    console.error('Failed to fetch user data');
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, []);
-
-    // Kiểm tra nếu user chưa được lấy, hiển thị loading hoặc không render gì
-    if (!user) {
-        return null; // Hoặc hiển thị một spinner loading
+    if (isLoading) {
+        return null;
     }
+
+    const { user } = data;
+
+    const commonNavbarItems = [
+        {
+            title: 'Order',
+            href: '/dashboard/orders',
+            icon: <PiBagBold className="text-[20px]" />
+        },
+        {
+            title: 'Settings',
+            href: '/dashboard/settings',
+            icon: <IoSettingsOutline className="text-[20px]" />
+        }
+    ];
+
+    const instructorNavbarItems = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard/instructor',
+            icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+        },
+        {
+            title: 'My Course',
+            href: '/dashboard/instructor/my-course',
+            icon: <MdOutlineSlowMotionVideo className="text-[20px]" />
+        },
+        {
+            title: 'Reviews',
+            href: '/dashboard/instructor/reviews',
+            icon: <TbMessageDots className="text-[20px]" />
+        },
+        {
+            title: 'Wishlist',
+            href: '/dashboard/instructor/wishlist',
+            icon: <FaRegHeart className="text-[20px]" />
+        },
+        {
+            title: 'Quizzes',
+            href: '/dashboard/quizzes',
+            icon: <FaRegCircleQuestion className="text-[20px]" />
+        }
+    ];
+
+    const userNavbarItems = [
+        {
+            title: 'Dashboard',
+            href: '/dashboard/user',
+            icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+        }
+    ];
+
+    const dropdownList =
+        user.role === 'instructor'
+            ? [...instructorNavbarItems, ...commonNavbarItems]
+            : [...userNavbarItems, ...commonNavbarItems];
 
     return (
         <DropdownMenu>
@@ -84,22 +120,14 @@ export function UserDropdown() {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href={`/dashboard/${user.role}`}>
-                        <DropdownMenuItem>
-                            Profile
-                            <DropdownMenuShortcut>
-                                <LuSquareUserRound className="text-xl" />
-                            </DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                    </Link>
-                    <Link href="/ui">
-                        <DropdownMenuItem>
-                            Settings
-                            <DropdownMenuShortcut>
-                                <IoSettingsOutline className="text-lg" />
-                            </DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                    </Link>
+                    {dropdownList.map((item) => (
+                        <Link href={`${item.href}`} key={item.href}>
+                            <DropdownMenuItem>
+                                {item.title}
+                                <DropdownMenuShortcut>{item.icon}</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </Link>
+                    ))}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

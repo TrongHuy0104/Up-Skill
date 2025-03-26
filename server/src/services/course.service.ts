@@ -1,7 +1,7 @@
-import CourseModel from '@/models/Course.model';
-import UserModel from '@/models/User.model';
-import ErrorHandler from '@/utils/ErrorHandler';
-import { redis } from '@/utils/redis';
+import CourseModel from '../models/Course.model';
+import UserModel from '../models/User.model';
+import ErrorHandler from '../utils/ErrorHandler';
+import { redis } from '../utils/redis';
 import { NextFunction, Request, Response } from 'express';
 
 export const createCourse = async (data: any, req: Request, res: Response, next: NextFunction) => {

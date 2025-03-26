@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { v2 as cloudinary } from 'cloudinary';
-import app from '@/app';
-import { connectDB } from '@/utils/db';
+import app from './app';
+import { connectDB } from './utils/db';
 
 dotenv.config();
 

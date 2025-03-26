@@ -1,15 +1,31 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { MdOutlineDashboardCustomize, MdOutlineSlowMotionVideo } from 'react-icons/md';
 import { TbMessageDots } from 'react-icons/tb';
 import { FaRegCircleQuestion, FaRegHeart } from 'react-icons/fa6';
 import { PiBagBold } from 'react-icons/pi';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
+import { DashboardNavigationSkeleton } from '@/components/ui/Skeleton';
 
-const navbarList = [
+const commonNavbarItems = [
+    {
+        title: 'Order',
+        href: '/dashboard/orders',
+        icon: <PiBagBold className="text-[20px]" />
+    },
+    {
+        title: 'Settings',
+        href: '/dashboard/settings',
+        icon: <IoSettingsOutline className="text-[20px]" />
+    }
+];
+
+const instructorNavbarItems = [
     {
         title: 'Dashboard',
         href: '/dashboard/instructor',
@@ -32,84 +48,54 @@ const navbarList = [
     },
     {
         title: 'Quizzes',
-        href: '/dashboard/instructor/quizzes',
+        href: '/dashboard/quizzes',
         icon: <FaRegCircleQuestion className="text-[20px]" />
-    },
-    {
-        title: 'Order',
-        href: '/dashboard/instructor/order',
-        icon: <PiBagBold className="text-[20px]" />
-    },
-    {
-        title: 'Settings',
-        href: '/dashboard/instructor/settings',
-        icon: <IoSettingsOutline className="text-[20px]" />
     }
 ];
 
-const navbarListForUser = [
+const userNavbarItems = [
     {
         title: 'Dashboard',
         href: '/dashboard/user',
         icon: <MdOutlineDashboardCustomize className="text-[20px]" />
-    },
-    {
-        title: 'Order',
-        href: '/dashboard/user/order',
-        icon: <PiBagBold className="text-[20px]" />
-    },
-    {
-        title: 'Settings',
-        href: '/dashboard/user/settings',
-        icon: <IoSettingsOutline className="text-[20px]" />
     }
 ];
 
 const DashboardNavigationBar = () => {
+    const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
     const pathName = usePathname();
-    const [userRole, setUserRole] = useState(null); // State để lưu role của người dùng
 
-    useEffect(() => {
-        // Gọi API để lấy thông tin người dùng
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch('http://localhost:8000/api/user/me', {
-                    credentials: 'include' // Bao gồm cookie nếu cần
-                });
+    if (isLoadingUser) {
+        return <DashboardNavigationSkeleton />;
+    }
 
-                if (response.ok) {
-                    const data = await response.json();
+    const { user } = userData;
 
-                    setUserRole(data.user.role); // Lưu role vào state
-                } else {
-                    console.error('Failed to fetch user data');
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, []);
-
-    // Chọn danh sách điều hướng dựa trên role
-    const currentNavbarList = userRole === 'instructor' ? navbarList : navbarListForUser;
+    const currentNavbarList =
+        user.role === 'instructor'
+            ? [...instructorNavbarItems, ...commonNavbarItems]
+            : [...userNavbarItems, ...commonNavbarItems];
 
     return (
         <div>
             <div className="bg-primary-800 rounded-xl pb-5">
                 <div className="text-primary-50 opacity-50 pt-[21px] px-[30px] pb-[11px]">
-                    {userRole === 'instructor' ? 'INSTRUCTOR DASHBOARD' : 'USER DASHBOARD'}
+                    {user.role === 'instructor' ? 'INSTRUCTOR DASHBOARD' : 'USER DASHBOARD'}
                 </div>
                 {currentNavbarList.map((item) => (
                     <Link
                         href={item.href}
                         key={item.href}
-                        className={`px-[30px] py-[14px] flex items-center gap-[10px] text-primary-50 text-base font-medium relative
-                            hover:bg-primary-50/10 transition duration-300
-                            before:absolute before:content-[''] before:left-0 before:bottom-0 before:w-[2px] before:h-0 before:bg-accent-600 
-                            before:transition-all before:duration-300 hover:before:h-full hover:before:top-0 hover:before:bottom-auto
-                            ${pathName === item.href ? 'bg-primary-50/10 before:h-full before:top-0 before:bottom-auto' : ''}`}
+                        className={clsx(
+                            'px-[30px] py-[14px] flex items-center gap-[10px] text-primary-50 text-base font-medium relative',
+                            'hover:bg-primary-50/10 transition duration-300',
+                            'before:absolute before:content-[""] before:left-0 before:bottom-0 before:w-[2px] before:h-0 before:bg-accent-600',
+                            'before:transition-all before:duration-300 hover:before:h-full hover:before:top-0 hover:before:bottom-auto',
+                            {
+                                'bg-primary-50/10 before:h-full before:top-0 before:bottom-auto': pathName === item.href
+                            }
+                        )}
+                        aria-current={pathName === item.href ? 'page' : undefined}
                     >
                         <i>{item.icon}</i>
                         <span>{item.title}</span>
