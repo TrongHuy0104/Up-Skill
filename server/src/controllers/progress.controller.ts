@@ -104,140 +104,25 @@ export const updateLessonCompletionStatus = catchAsync(async (req: Request, res:
     });
 });
 
-// export const updateLessonCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     const userId = req.user?._id;
-//     const courseId = req.params.id;
-//     const { lessonId, isCompleted, sectionOrder } = req.body;
-
-//     if (!courseId || !lessonId) {
-//         return next(new ErrorHandler('Course ID and Lesson ID are required', 400));
-//     }
-
-//     const course = await CourseModel.findById(courseId);
-//     if (!course) {
-//         return next(new ErrorHandler('Course not found', 404));
-//     }
-
-//     // Find which section contains the lesson
-//     let sectionName: string | null = null;
-//     let sectionFound: any = null;
-
-//     for (const section of course.courseData) {
-//         if (section._id.toString() === lessonId) {
-//             sectionName = section.videoSection;
-//             sectionFound = section;
-//             break;
-//         }
-//     }
-
-//     if (!sectionName || !sectionFound) {
-//         return next(new ErrorHandler('Lesson not found in course', 404));
-//     }
-
-//     // Check or create progress
-//     let progress = await ProgressModel.findOne({ user: userId, course: courseId });
-
-//     if (!progress) {
-//         // Group courseData by sections
-//         const sectionsMap = new Map<string, any>();
-//         course.courseData.forEach((section: any) => {
-//             if (!sectionsMap.has(section.videoSection)) {
-//                 sectionsMap.set(section.videoSection, {
-//                     name: section.videoSection,
-//                     sectionOrder: section.sectionOrder,
-//                     lessons: []
-//                 });
-//             }
-//         });
-
-//         progress = new ProgressModel({
-//             user: userId,
-//             course: courseId,
-//             totalLessons: course.courseData.length,
-//             totalCompleted: 0,
-//             completedLessons: Array.from(sectionsMap.values()).map((section) => ({
-//                 section: {
-//                     sectionOrder: sectionOrder,
-//                     name: section.name,
-//                     sectionLength: course.courseData.filter((s: any) => s.videoSection === section.name).length,
-//                     lessons: [],
-//                     totalCompletedPerSection: 0
-//                 }
-//             }))
-//         });
-//     }
-
-//     // Find or create section progress
-//     let sectionProgress = progress.completedLessons.find(
-//         (s: { section: { name: string } }) => s.section.name === sectionName
-//     );
-
-//     if (!sectionProgress) {
-//         sectionProgress = {
-//             section: {
-//                 sectionOrder: sectionOrder || 0,
-//                 name: sectionName,
-//                 sectionLength: course.courseData.filter((s: any) => s.videoSection === sectionName).length,
-//                 lessons: [],
-//                 totalCompletedPerSection: 0
-//             }
-//         };
-//         progress.completedLessons.push(sectionProgress);
-//     }
-
-//     // Update lesson completion status
-//     const lessonIndex = sectionProgress.section.lessons.findIndex((l: any) => l.toString() === lessonId);
-
-//     if (isCompleted) {
-//         if (lessonIndex === -1) {
-//             sectionProgress.section.lessons.push(new mongoose.Types.ObjectId(lessonId));
-//         }
-//     } else {
-//         if (lessonIndex !== -1) {
-//             sectionProgress.section.lessons.splice(lessonIndex, 1);
-//         }
-//     }
-
-//     // Update completion counts
-//     sectionProgress.section.totalCompletedPerSection = sectionProgress.section.lessons.length;
-//     progress.totalCompleted = progress.completedLessons.reduce(
-//         (sum: number, sec: { section: { lessons: any[] } }) => sum + sec.section.lessons.length,
-//         0
-//     );
-
-//     await progress.save();
-//     await redis.set(`progress:${userId}:${courseId}`, JSON.stringify(progress));
-
-//     res.status(200).json({
-//         success: true,
-//         message: 'Lesson completion status updated successfully',
-//         data: progress
-//     });
-// });
-
 export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const quizId = req.params.id; // Lấy quizId từ URL
-    const { isCompleted, courseId } = req.body; // Lấy trạng thái hoàn thành và courseId từ request body
-    const userId = req.user?._id; // Lấy userId từ middleware xác thực
+    const quizId = req.params.id;
+    const { isCompleted, courseId } = req.body;
+    const userId = req.user?._id;
 
-    // Kiểm tra quizId và courseId có tồn tại không
     if (!quizId || !courseId) {
         return next(new ErrorHandler('Quiz ID and Course ID are required', 400));
     }
 
-    // Tìm khóa học
     const course = await CourseModel.findById(courseId);
     if (!course) {
         return next(new ErrorHandler('Course not found', 404));
     }
 
-    // Tìm progress của user trong khóa học này
     const progress = await ProgressModel.findOne({ user: userId, course: courseId });
     if (!progress) {
         return next(new ErrorHandler('Progress not found for the user in this course', 404));
     }
 
-    // Tìm section chứa quiz
     let quizSection = null;
     for (const section of course.courseData) {
         if (section.quizzes && section.quizzes.includes(quizId)) {
@@ -250,13 +135,11 @@ export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: R
         return next(new ErrorHandler('Quiz not found in any section of the course', 404));
     }
 
-    // Kiểm tra xem quiz đã tồn tại trong completedQuizzes chưa
     let quizProgress = progress.completedQuizzes.find(
         (quizProgress: any) => quizProgress.section.quizzes.some((q: any) => q.toString() === quizId.toString()) // So sánh đúng kiểu dữ liệu
     );
 
     if (!quizProgress) {
-        // Nếu quiz chưa có, tạo mới mục quiz trong completedQuizzes
         quizProgress = {
             section: {
                 name: quizSection.name,
@@ -267,16 +150,13 @@ export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: R
         progress.completedQuizzes.push(quizProgress);
     }
 
-    // Cập nhật trạng thái hoàn thành của quiz
     quizProgress.section.isCompleted = isCompleted;
 
-    // Cập nhật tổng số quiz đã hoàn thành trong khóa học
     progress.totalCompleted = progress.completedQuizzes.reduce(
         (sum: number, quizProgress: any) => sum + (quizProgress.section.isCompleted ? 1 : 0),
         0
     );
 
-    // Cập nhật lại tổng số quiz hoàn thành trong từng section
     quizSection.totalCompletedPerSection = quizSection.quizzes.reduce((count: number, quizId: any) => {
         const quizItem = progress.completedQuizzes.find(
             (q: any) => q.section.quizzes.includes(quizId) && q.section.isCompleted
@@ -284,17 +164,15 @@ export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: R
         return quizItem ? count + 1 : count;
     }, 0);
 
-    // Lưu vào database
     await progress.save();
 
-    // Cập nhật Redis cache (nếu cần)
     await redis.set(`progress:${userId}:${courseId}`, JSON.stringify(progress));
     console.log('progress', progress);
 
     res.status(200).json({
         success: true,
         message: 'Quiz completion status updated successfully',
-        data: progress // Trả về toàn bộ progress sau khi cập nhật
+        data: progress
     });
 });
 
