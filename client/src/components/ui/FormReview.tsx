@@ -48,7 +48,7 @@ const FormReview = () => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="px-9 py-14 bg-white  border-[1px] rounded-xl mt-14 w-[900px] "
+                className="px-6 py-14 bg-white border-[1px] rounded-xl mt-14 w-full sm:w-[90%] md:w-[80%] lg:w-[900px] mx-auto"
             >
                 <h2 className="text-xl font-semibold">Leave A Reply</h2>
                 <p className="text-primary-800 text-sm mb-4 pt-4">
@@ -142,6 +142,7 @@ const FormReview = () => {
                         )}
                     />
                 </div>
+
                 <FormField
                     control={form.control}
                     name="content"
@@ -149,7 +150,7 @@ const FormReview = () => {
                         <FormItem>
                             <FormControl>
                                 <fieldset className={formStyles.fieldset}>
-                                    <textarea {...field} className={`${formStyles.textInput} p-2  w-full h-24 mb-4`} />
+                                    <textarea {...field} className={`${formStyles.textInput} p-2 w-full h-24 mb-4`} />
                                     <FormLabel
                                         className={`-z-2 ${formStyles.label} ${field.value ? 'top-0 -translate-y-1/2' : 'translate-y-[-60px]'}`}
                                     >

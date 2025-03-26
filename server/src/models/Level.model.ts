@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { ILevel } from '@/interfaces/Level';
+import { ILevel } from '../interfaces/Level';
 
 export const LevelSchema: Schema<ILevel> = new Schema({
     name: {

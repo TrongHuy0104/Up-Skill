@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
-import IncomeModel from '@/models/Income.model';
-import OrderModel from '@/models/Order.model';
-import ErrorHandler from '@/utils/ErrorHandler';
-import { catchAsync } from '@/utils/catchAsync';
+import IncomeModel from '../models/Income.model';
+import OrderModel from '../models/Order.model';
+import ErrorHandler from '../utils/ErrorHandler';
+import { catchAsync } from '../utils/catchAsync';
 
 export const getUserIncome = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.params;

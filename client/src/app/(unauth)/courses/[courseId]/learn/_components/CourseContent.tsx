@@ -1,19 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
+import { redirect } from 'next/navigation';
+
 import CourseContentMedia from './CourseContentMedia';
 import CourseContentList from './CourseContentList';
 import { useGetCourseContentQuery } from '@/lib/redux/features/course/courseApi';
 import Spinner from '@/components/custom/Spinner';
 import { useGetProgressDataQuery } from '@/lib/redux/features/progress/progressApi';
+import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 
 interface CourseContentProps {
     courseId: string;
-    user: any; // Replace `any` with a proper user type if available
 }
 
-export default function CourseContent({ courseId, user }: CourseContentProps) {
+export default function CourseContent({ courseId }: CourseContentProps) {
     const [activeVideo, setActiveVideo] = useState(0);
+
+    // Fetch user data
+    const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
 
     // Fetch course content
     const {
@@ -25,10 +30,18 @@ export default function CourseContent({ courseId, user }: CourseContentProps) {
     // Fetch progress data
     const { data: progressData, refetch: refetchProgress } = useGetProgressDataQuery(courseId);
 
-    if (isCourseLoading) {
+    // Handle loading states
+    if (isLoadingUser || isCourseLoading) {
         return <Spinner />;
     }
 
+    // Check if the user has purchased the course
+    const hasPurchasedCourse = userData?.user?.purchasedCourses?.includes(courseId);
+    if (!hasPurchasedCourse) {
+        redirect('/');
+    }
+
+    // Handle case where no course data is found
     if (!courseContent?.course) {
         return <div>No course data found.</div>;
     }
@@ -44,7 +57,7 @@ export default function CourseContent({ courseId, user }: CourseContentProps) {
                         course={courseContent.course}
                         activeVideo={activeVideo}
                         setActiveVideo={setActiveVideo}
-                        user={user}
+                        user={userData.user}
                         refetch={refetchCourseContent}
                         reload={refetchProgress}
                     />

@@ -21,8 +21,8 @@ const Review: React.FC<ReviewProps> = ({ name, rating, date, content, isLastRevi
     const formattedDate = formatDistanceToNow(date, { addSuffix: true });
 
     return (
-        <div className="bg-white px-6 rounded-lg justify-start text-left col-span-1 w-[900px] leading-9">
-            <div className="flex space-x-6">
+        <div className="bg-white px-6 rounded-lg justify-start text-left col-span-1 leading-9">
+            <div className="flex space-x-6 flex-wrap sm:flex-nowrap">
                 {/* Avatar column */}
                 <div className="w-[46px] h-[46px] bg-primary-100 rounded-full flex items-center justify-center min-w-[46px]">
                     <span className="font-bold text-primary-900 text-2xl">{name.charAt(0)}</span>
@@ -32,7 +32,7 @@ const Review: React.FC<ReviewProps> = ({ name, rating, date, content, isLastRevi
                 <div className="flex flex-col">
                     <div>
                         <p className="text-lg font-semibold text-primary-800">{name}</p>
-                        <div className="flex items-center space-x-1 ">
+                        <div className="flex items-center space-x-1">
                             <div className="pr-2 flex">
                                 <p className="pr-1 flex text-primary-700">{rating}</p>
                                 <Image alt="Star Icon" src={starIcon}></Image>
@@ -40,7 +40,7 @@ const Review: React.FC<ReviewProps> = ({ name, rating, date, content, isLastRevi
                             <p className="text-primary-800 text-sm">{formattedDate}</p>
                         </div>
                     </div>
-                    <p className="text-primary-800 break-words  ">{content}</p>
+                    <p className="text-primary-800 break-words">{content}</p>
 
                     <div className="flex space-x-2 mt-2">
                         <div className="flex gap-2">
@@ -99,18 +99,18 @@ const ReviewSection: React.FC = () => {
     const reversedReviews = allReviews.reverse();
 
     return (
-        <div className="space-y-6 ml-0 w-[900px]   pb-8">
-            <div className="text-left flex justify-between w-[900px]">
+        <div className="space-y-6 ml-0 pb-8 ">
+            <div className="text-left flex justify-between items-center w-full sm:min-w-[375px] sm:max-w[767px] md:min-w-[700px] md:max-w-[900px] mx-auto">
                 <h3 className="text-[24px] font-semibold font-cardo text-primary-800">Reviews</h3>
-                <div className="gap-2 flex right-0">
-                    <span className="text-primary-800">4.9 course rating</span>
-                    <p className="text-[10px] mt-1 text-primary-800">●</p>
-                    <span className="text-primary-800">4K ratings</span>
+                <div className="gap-2 flex right-0 ">
+                    <span className="text-primary-800 hidden sm:inline">4.9 course rating</span>
+                    <p className="text-[10px] mt-1 text-primary-800 hidden sm:inline">●</p>
+                    <span className="text-primary-800 hidden sm:inline">4K ratings</span>
                 </div>
             </div>
 
             {/* Display reviews based on the visibleReviews state */}
-            <div className=" w-[900px] ">
+            <div className="w-full">
                 {reversedReviews
                     .slice(0, visibleReviews) // Get the reviews to display based on `visibleReviews`
                     .map((review, index) => (
@@ -127,10 +127,10 @@ const ReviewSection: React.FC = () => {
 
             {/* View More Reviews button styled like the image */}
             {visibleReviews < reversedReviews.length && (
-                <div className="text-center">
+                <div className="text-center mt-6">
                     <button
                         onClick={loadMoreReviews}
-                        className="flex w-[900px]  justify-center items-center gap-[10px] border border-primary-800 hover:border-accent-600 rounded-lg mt-4  h-[55px]"
+                        className="flex w-full justify-center items-center gap-[10px] border border-primary-800 hover:border-accent-600 rounded-lg mt-4 h-[55px]"
                     >
                         View More Reviews
                         <Image src={MoreSections} alt="more sections" />

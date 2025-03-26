@@ -146,9 +146,9 @@ export default function CourseVerticalCard({
 
 export function CourseHorizontalCard({ course, width = '320px', height = '240px' }: CourseHorizontalCard) {
     return (
-        <div className="group flex gap-5 pb-5 mb-5 border-b border-primary-100">
+        <div className="group flex flex-col sm:flex-row gap-4 sm:gap-5 pb-5 mb-5 border-b border-primary-100">
             {/* Course Image */}
-            <div className="h-[240px] w-[320px] relative rounded-sm overflow-hidden flex-shrink-0">
+            <div className="w-full sm:w-[320px] h-[180px] sm:h-[240px] relative rounded-sm overflow-hidden flex-shrink-0">
                 <Link href={`/courses/${course?._id}`}>
                     <Image
                         src={course?.thumbnail?.url || defaultImage}
@@ -169,22 +169,19 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
             </div>
 
             {/* Course Details */}
-            <div className="w-full">
+            <div className="w-full ">
                 {/* Lessons, Students, Duration */}
-                <div className="flex items-center justify-between flex-wrap mt-[-8px] mb-[6px]">
-                    <div className="text-primary-600 gap-3 flex items-center justify-start flex-wrap">
-                        <div
-                            className='pr-[10px] relative flex items-center justify-start gap-[7px]
-                            after:absolute after:content-[""] after:right-0 after:w-[1px] after:h-4 after:bg-primary-100'
-                        >
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-primary-600 mb-3 justify-between">
+                    <div className="flex flex-wrap w-full">
+                        <div className="flex items-center gap-[7px] pr-4 border-r border-primary-100 last:border-0">
                             <Image src={timeTableIcon} className="relative bottom-[1px]" alt="" />
                             <p>{course?.courseData?.length} Lessons</p>
                         </div>
-                        <div className="pr-[10px] relative flex items-center justify-start gap-[7px] after:absolute after:right-0 after:w-[1px] after:h-4 after:bg-primary-100">
+                        <div className="flex items-center gap-[7px] pr-4 border-r border-primary-100 last:border-0">
                             <Image src={studentsIcon} className="relative bottom-[1px]" alt="Students" />
                             <p>{course?.purchased} Students</p>
                         </div>
-                        <div className="pr-[10px] relative flex items-center justify-start gap-[7px]">
+                        <div className="flex items-center gap-[7px]">
                             <Image src={hourIcon} className="relative bottom-[1px]" alt="Duration" />
                             <p>
                                 {(
@@ -195,11 +192,12 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                             </p>
                         </div>
                     </div>
+
                     <div className="text-accent-600 font-medium text-lg leading-7">${course?.price}</div>
                 </div>
 
                 {/* Course Title */}
-                <h6 className="mb-[10px] line-clamp-2 font-medium text-base leading-7">
+                <h6 className="mb-2 sm:mb-[10px] line-clamp-2 font-medium text-base leading-6 sm:leading-7">
                     <Link
                         href={`/courses/${course?._id}`}
                         className="text-lg bg-no-repeat bg-[length:0_100%] bg-[position-y:0px] bg-gradient-to-b from-transparent 
@@ -209,12 +207,16 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                         {course?.name}
                     </Link>
                 </h6>
-                <p className="mb-[10px] text-sm leading-7 max-w-[80%] break-all">
+
+                {/* Course Description */}
+                <p className="mb-2 sm:mb-[10px] text-sm leading-6 sm:leading-7 line-clamp-2">
                     {course?.description
                         ? course.description.slice(0, 100) + (course.description.length > 100 ? '...' : '')
                         : ''}
                 </p>
-                <div className="mb-[8px] flex items-center gap-[7px]">
+
+                {/* Rating */}
+                <div className="mb-2 sm:mb-[8px] flex items-center gap-[7px]">
                     <span>{course.rating}</span>
                     <div className="flex items-center relative gap-[7px] pb-[2px]">
                         {[...Array(5)].map((_, index) => (
@@ -222,6 +224,8 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                                 key={index}
                                 src={index < Math.round(course?.rating) ? starIcon : starOutlineIcon}
                                 alt={index < Math.round(course?.rating) ? 'Filled Star' : 'Outline Star'}
+                                width={16}
+                                height={16}
                             />
                         ))}
                     </div>
@@ -229,7 +233,7 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                 </div>
 
                 {/* Instructor Name */}
-                <div className="text-primary-600 mb-[13px]">
+                <div className="text-primary-600 mb-3 sm:mb-[13px]">
                     By:{' '}
                     <Link
                         href={`/instructors/${course?.authorId?._id}`}
@@ -240,7 +244,7 @@ export function CourseHorizontalCard({ course, width = '320px', height = '240px'
                 </div>
 
                 {/* Enroll Button */}
-                <div className="flex items-center justify-between border-t border-primary-100 pt-[13px]">
+                <div className="flex items-center justify-between border-t border-primary-100 pt-3 sm:pt-[13px]">
                     <Link
                         href={`/courses/${course?._id}`}
                         className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7

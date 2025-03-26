@@ -15,7 +15,7 @@ export default function CourseListBanner() {
             contentAlignment="left"
             backgroundColor="bg-accent-100"
         >
-            <p className=" text-primary-800 mb-[10px]">
+            <p className=" text-primary-800 mb-[10px] text-sm md:text-base">
                 With one of our online web development courses, you can explore different areas of this in-demand field.
             </p>
         </Banner>

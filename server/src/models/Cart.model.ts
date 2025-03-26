@@ -1,12 +1,12 @@
 import mongoose, { Schema } from 'mongoose';
-import { ICartModel, ICartItem } from '@/interfaces/Cart';
+import { ICartModel, ICartItem } from '../interfaces/Cart';
 
 const CartItemSchema = new Schema<ICartItem>({
     courseId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course',
         required: true
-    },
+    }
 });
 
 const CartSchema = new Schema<ICartModel>({

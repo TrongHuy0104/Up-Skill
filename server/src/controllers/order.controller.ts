@@ -3,18 +3,18 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 import mongoose from 'mongoose';
 import ejs from 'ejs';
 
-import { IOrder } from '@/interfaces/Order';
-import CourseModel from '@/models/Course.model';
-import UserModel from '@/models/User.model';
-import { getAllOrdersService, newOrder } from '@/services/order.service';
-import { catchAsync } from '@/utils/catchAsync';
-import ErrorHandler from '@/utils/ErrorHandler';
+import { IOrder } from '../interfaces/Order';
+import CourseModel from '../models/Course.model';
+import UserModel from '../models/User.model';
+import { getAllOrdersService, newOrder } from '../services/order.service';
+import { catchAsync } from '../utils/catchAsync';
+import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
-import sendMail from '@/utils/sendMail';
-import NotificationModel from '@/models/Notification.model';
-import { redis } from '@/utils/redis';
-import OrderModel from '@/models/Order.model';
+import sendMail from '../utils/sendMail';
+import NotificationModel from '../models/Notification.model';
+import { redis } from '../utils/redis';
+import OrderModel from '../models/Order.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

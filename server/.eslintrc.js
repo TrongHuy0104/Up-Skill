@@ -31,7 +31,7 @@ module.exports = {
         'import/no-extraneous-dependencies': 'off',
         'import/no-named-as-default': 'off',
         'import/no-unresolved': 'off',
-        indent: ['error', 4],
+        indent: 'off',
         'jsx-a11y/label-has-associated-control': 'off',
         'key-spacing': ['error'],
         'linebreak-style': ['off'],
