@@ -130,6 +130,8 @@ export const handleRequestApproval = catchAsync(async (req: Request, res: Respon
             data
         });
 
+        await RequestModel.findByIdAndDelete(requestId);
+
         res.status(200).json({
             success: true,
             message: `Request has been ${request.status} and email notification sent.`

@@ -241,7 +241,7 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
                             className="px-4 py-2 text-sm"
                             disabled={status === 'pending' || isLoadingUnPublish}
                         >
-                            {status === 'pending' && !course?.isPublished ? 'Pending' : course.isPublished ? 'Unpublish' : 'Publish'}
+                            {status === 'pending' && course?.isPublished === false ? 'Pending' : course.isPublished ? 'Unpublish' : 'Publish'}
                         </Button>
                         ;
                         <Dialog>
