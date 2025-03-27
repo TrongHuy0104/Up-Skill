@@ -179,14 +179,27 @@
                     <table class="table-row" style="border-top: 1px solid #00000029">
                         <tr>
                             <td class="col-2">Subtotal:</td>
-                            <td class="col-2">$<%= order.courses.reduce((total, course) => total + course.price, 0).toFixed(2) %></td>
-                        </tr>
+                            <td class="col-2">$<%= order.totalPriceOrigin %></td>                        </tr>
                     </table>
+                    <!-- Coupon code and discount applied -->
+                    <% if (order.couponCode) { %>
+                        <table class="table-row" style="margin-top: -20px">
+                            <tr>
+                                <td class="col-2">Coupon Code:</td>
+                                <td class="col-2"><%= order.couponCode || 'N/A' %></td>
+                            </tr>
+                        </table>
+                        <table class="table-row" style="margin-top: -20px">
+                            <tr>
+                                <td class="col-2">Discount Applied:</td>
+                                <td class="col-2"><%= order.discountPercentage ? order.discountPercentage + '%' : 'N/A' %></td>
+                            </tr>
+                        </table>
+                    <% } %>
                     <table class="table-row" style="margin-top: -20px">
                         <tr>
                             <td class="col-2">Total:</td>
-                            <td class="col-2">$<%= order.courses.reduce((total, course) => total + course.price, 0).toFixed(2) %></td>
-                        </tr>
+                            <td class="col-2">$<%= order.discountedTotal %></td>                        </tr>
                     </table>
                 </div>
                 <div class="footer">

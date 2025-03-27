@@ -67,6 +67,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         try {
             appliedCoupon = await validateCouponCode(couponCode, req.user?._id);
             totalPrice = totalPrice * (1 - appliedCoupon.discountPercentage / 100);
+            await recordCouponUsage(appliedCoupon.code, req.user?._id);
         } catch (error) {
             return next(error);
         }
@@ -93,7 +94,9 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-            })
+            }),
+            couponCode: appliedCoupon?.code || 'N/A',
+            discountedTotal: totalPrice.toFixed(2)
         }
     };
 
@@ -147,10 +150,6 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     await redis.del('allOrders undefined');
     // Create the order
     newOrder(data, next, res);
-
-    if (appliedCoupon) {
-        await recordCouponUsage(appliedCoupon.code, user._id.toString());
-    }
 });
 
 // get all orders -- for admin

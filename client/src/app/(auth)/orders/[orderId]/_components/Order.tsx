@@ -29,12 +29,12 @@ function Order({ orderId }: Props) {
 
     if (!data) return null;
     const { order, position } = data;
-    console.log(order);
 
     const totalPrice = order.courseIds.reduce((total: number, course: Course) => total + course.price, 0);
     const couponCode = couponInfo.discountPercentage > 0 ? "Applied" : "N/A";
     const discountAmount = couponInfo.discountPercentage || 0;
     const discountedTotal = couponInfo.discountedTotal || totalPrice;
+    console.log('Order Data:', order);
 
     return (
         <div className="py-[160px]">
