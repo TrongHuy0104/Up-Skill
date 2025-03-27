@@ -9,7 +9,7 @@ export default function VoiceflowChatWidget() {
         script.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
         script.onload = () => {
             (window as any).voiceflow.chat.load({
-                verify: { projectID: "67e4ba662704774e20b3f33e" },
+                verify: { projectID: process.env.NEXT_PUBLIC_AI_CHATBOX_PROJECT_ID },
                 url: "https://general-runtime.voiceflow.com",
                 versionID: "production",
                 voice: {
@@ -17,6 +17,8 @@ export default function VoiceflowChatWidget() {
                 }
             });
         };
+        console.log('process.env.AI_CHATBOX_PROJECT_ID ', process.env.NEXT_PUBLIC_AI_CHATBOX_PROJECT_ID);
+
         document.body.appendChild(script);
 
         return () => {
