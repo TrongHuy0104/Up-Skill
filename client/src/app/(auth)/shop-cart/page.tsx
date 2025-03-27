@@ -103,7 +103,7 @@ const ShopCart: React.FC = () => {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`,
-        { code: couponCode },
+        { code: couponCode, userId: user?._id },
         { withCredentials: true }
       );
 
