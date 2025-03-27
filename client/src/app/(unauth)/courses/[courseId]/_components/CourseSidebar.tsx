@@ -207,7 +207,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                             ${course?.estimatedPrice?.toFixed(2)}
                         </p>
                         <p className="text-[14px] text-accent-900 bg-accent-100 font-medium py-2 px-4 border border-accent-900 rounded-lg">
-                            ${(computeSalePercent(course.price, course?.estimatedPrice || 0) + discount).toFixed(2)}% OFF
+                            ${(computeSalePercent(coursePrice, course?.estimatedPrice || 0) ).toFixed(2)}% OFF
                         </p>
                     </div>
                     <div>

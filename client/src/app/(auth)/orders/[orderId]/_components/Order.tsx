@@ -31,7 +31,6 @@ function Order({ orderId }: Props) {
     const { order, position } = data;
 
     const totalPrice = order.courseIds.reduce((total: number, course: Course) => total + course.price, 0);
-    const couponCode = couponInfo.discountPercentage > 0 ? "Applied" : "N/A";
     const discountAmount = couponInfo.discountPercentage || 0;
     const discountedTotal = couponInfo.discountedTotal || totalPrice;
     console.log('Order Data:', order);
@@ -91,10 +90,6 @@ function Order({ orderId }: Props) {
                                     <li className="mb-1 flex items-center justify-between pb-[10px] border-b border-primary-100">
                                         <p className="leading-7 font-medium">Total</p>
                                         <p className="leading-7 font-medium">${totalPrice.toFixed(2)}</p>
-                                    </li>
-                                    <li className="mb-1 flex items-center justify-between pb-[10px] border-primary-100 mt-2">
-                                        <p className="leading-7 font-medium">Coupon</p>
-                                        <p className="leading-7 font-medium">{couponCode}</p>
                                     </li>
                                     <li className="mb-1 flex items-center justify-between pb-[10px] border-b border-primary-100 mt-2">
                                         <p className="leading-7 font-medium">Discount Applied</p>
