@@ -11,16 +11,14 @@ import { catchAsync } from '../utils/catchAsync';
 import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
-import sendMail from '@/utils/sendMail';
-import NotificationModel from '@/models/Notification.model';
-import { redis } from '@/utils/redis';
-import OrderModel from '@/models/Order.model';
-import { recordCouponUsage } from '@/utils/coupon';
-import { CouponModel } from '@/models/Coupon.model';
+import sendMail from '../utils/sendMail';
+import NotificationModel from '../models/Notification.model';
+import { redis } from '../utils/redis';
+import OrderModel from '../models/Order.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { courseIds, payment_info, couponCode } = req.body as IOrder;
+    const { courseIds, payment_info } = req.body as IOrder;
 
     // Validate courseIds
     if (!Array.isArray(courseIds)) {
@@ -61,23 +59,11 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         return next(new ErrorHandler('You have already purchased one or more of these courses', 400));
     }
 
-    const totalPrice = courses.reduce((sum, course) => sum + course.price, 0);
-
     // Prepare data for order creation
     const data: any = {
         courseIds: courses.map((course) => course._id),
-        userId: user._id,
-        totalPrice,
-        couponCode
+        userId: user._id
     };
-
-    if (couponCode) {
-        const coupon = await CouponModel.findById(couponCode);
-        if (!coupon) {
-            return next(new ErrorHandler('Coupon not found', 404));
-        }
-        await recordCouponUsage(coupon.code, user._id);
-    }
 
     // Prepare email data
     const mailData = {
@@ -91,9 +77,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-            }),
-            couponCode: couponCode || 'N/A',
-            discountedTotal: totalPrice && !isNaN(totalPrice) ? totalPrice.toFixed(2) : '0.00'
+            })
         }
     };
 

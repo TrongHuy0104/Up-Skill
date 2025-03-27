@@ -19,7 +19,6 @@ interface Course {
 
 export default function PaymentPage() {
     const params = useParams();
-    const { couponInfo } = useSelector((state: any) => state.order);
     const { courses } = useSelector((state: any) => state.order);
 
     if (courses.length === 0) redirect('/');
@@ -30,7 +29,6 @@ export default function PaymentPage() {
     const clientSecret = typeof params.clientSecret === 'string' ? params.clientSecret : undefined;
 
     const totalPrice = courses.reduce((total: number, course: Course) => total + course.price, 0);
-    const discountedTotal = couponInfo.discountedTotal > 0 ? couponInfo.discountedTotal : totalPrice;
 
     useEffect(() => {
         const initializeStripe = async () => {
@@ -104,12 +102,12 @@ export default function PaymentPage() {
                                         </li>
                                         <li className="mb-1 flex items-center justify-between pb-[10px] border-b border-primary-100 mt-2">
                                             <p className="leading-7 font-medium">Coupon</p>
-                                            <p className="leading-7 font-medium">{couponInfo.discountPercentage}%</p>
+                                            <p className="leading-7 font-medium">$0</p>
                                         </li>
                                         <li className="mb-1 flex items-center justify-between pb-[10px] mt-4">
                                             <p className="leading-[30px] font-medium text-accent-900 text-xl">Total</p>
                                             <p className="leading-[30px] font-medium text-accent-900 text-xl">
-                                                ${discountedTotal}
+                                                ${totalPrice}
                                             </p>
                                         </li>
                                     </ul>
