@@ -15,6 +15,7 @@ import { removeCartItem } from '@/lib/redux/features/cart/cartSlice';
 import Link from "next/link";
 import empty from "@/public/assets/icons/empty-cart.svg";
 import { toast } from "@/hooks/use-toast";
+import { setCouponInfo } from '@/lib/redux/features/order/orderSlice';
 
 interface Course {
   _id: string;
@@ -112,6 +113,8 @@ const ShopCart: React.FC = () => {
 
         const newTotalPrice = subtotal * (1 - discountPercentage / 100);
         setDiscountedTotal(newTotalPrice);
+
+        dispatch(setCouponInfo({ discountPercentage, discountedTotal: newTotalPrice }));
 
         const totalDiscountPercent = salePercent + discountPercentage;
         setSalePercent(totalDiscountPercent);

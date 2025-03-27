@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { computeSalePercent } from '@/lib/utils';
 import { Course } from '@/types/Course';
 import { useCreatePaymentIntentMutation } from '@/lib/redux/features/order/orderApi';
-import { orderCreatePaymentIntent } from '@/lib/redux/features/order/orderSlice';
+import { orderCreatePaymentIntent, setCouponInfo } from '@/lib/redux/features/order/orderSlice';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import { CourseSidebarSkeleton } from '@/components/ui/Skeleton';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
@@ -46,9 +46,16 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
         setStripePromise(stripe);
         const amount = Math.round(course.price * 100);
-        await createPaymentIntent(amount);
-        dispatch(orderCreatePaymentIntent({ course }));
-    };
+        dispatch(orderCreatePaymentIntent({
+            course,
+            couponInfo: {
+                discountPercentage: discount,
+                discountedTotal: coursePrice
+            }
+        }));
+        const paymentIntentResult = await createPaymentIntent(amount).unwrap();
+        redirect(`/checkout/${paymentIntentResult?.client_secret}`);
+        };
 
     const checkCourseExistInCart = async () => {
         try {
@@ -135,6 +142,10 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 setDiscount(response.data.discountPercentage);
                 const newPrice = course.price - (course.price * (response.data.discountPercentage / 100));
                 setCoursePrice(newPrice);
+                dispatch(setCouponInfo({
+                    discountPercentage: response.data.discountPercentage,
+                    discountedTotal: newPrice,
+                }));
                 toast({
                     variant: 'success',
                     title: `Coupon applied successfully! ${response.data.discountPercentage}% discount.`,
