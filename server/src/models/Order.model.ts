@@ -18,8 +18,10 @@ const OrderSchema = new Schema<IOrder>(
         payment_info: {
             type: String
         },
-        couponCode: { type: String, default: null },
-        discountPercentage: { type: Number, default: 0 },
+        couponCode: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Coupon',
+        },
         totalPrice: { type: Number, required: true },
     },
     { timestamps: true }

@@ -15,12 +15,12 @@ import sendMail from '@/utils/sendMail';
 import NotificationModel from '@/models/Notification.model';
 import { redis } from '@/utils/redis';
 import OrderModel from '@/models/Order.model';
-import { validateCouponCode, recordCouponUsage } from '@/utils/coupon';
+import { recordCouponUsage } from '@/utils/coupon';
 import { CouponDocument } from '@/models/Coupon.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { courseIds, payment_info, couponCode } = req.body as IOrder & { couponCode?: string };
+    const { courseIds, payment_info, couponCode, totalPrice } = req.body as IOrder & { couponCode?: string; totalPrice: number };
 
     // Validate courseIds
     if (!Array.isArray(courseIds)) {
@@ -61,25 +61,12 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         return next(new ErrorHandler('You have already purchased one or more of these courses', 400));
     }
 
-    let totalPrice = courses.reduce((sum, course) => sum + course.price, 0);
-    let appliedCoupon: CouponDocument | null = null;
-    if (couponCode) {
-        try {
-            appliedCoupon = await validateCouponCode(couponCode, req.user?._id);
-            totalPrice = totalPrice * (1 - appliedCoupon.discountPercentage / 100);
-            await recordCouponUsage(appliedCoupon.code, req.user?._id);
-        } catch (error) {
-            return next(error);
-        }
-    }
-
     // Prepare data for order creation
     const data: any = {
         courseIds: courses.map((course) => course._id),
         userId: user._id,
         totalPrice,
-        couponCode: appliedCoupon?.code,
-        discountPercentage: appliedCoupon?.discountPercentage
+        couponCode
     };
 
     // Prepare email data
@@ -95,7 +82,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
                 month: 'long',
                 day: 'numeric'
             }),
-            couponCode: appliedCoupon?.code || 'N/A',
+            couponCode: couponCode || 'N/A',
             discountedTotal: totalPrice.toFixed(2)
         }
     };
