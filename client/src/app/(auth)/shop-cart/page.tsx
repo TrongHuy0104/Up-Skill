@@ -33,8 +33,6 @@ const ShopCart: React.FC = () => {
   const dispatch = useDispatch();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [filteredCartItems, setFilteredCartItems] = useState<CartItem[]>([]);
-  const [couponCode, setCouponCode] = useState("");
-  const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [createPaymentIntent, { data: paymentIntentData, isLoading }] = useCreatePaymentIntentMutation();
   const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
   const [user, setUser] = useState<any>({});
@@ -49,7 +47,7 @@ const ShopCart: React.FC = () => {
     if (!user) redirect('/');
     const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
     setStripePromise(stripe);
-    const amount = Math.round(discountedTotal * 100);
+    const amount = Math.round(total * 100);
     try {
       const paymentIntentResult = await createPaymentIntent(amount).unwrap();
       dispatch(orderCreatePaymentIntent({ cartItems: filteredCartItems.map(item => item.courseId) })); // Sử dụng filteredCartItems
@@ -92,16 +90,7 @@ const ShopCart: React.FC = () => {
     }
   }, [cartItems, userData?.user]);
 
-  const subtotal = filteredCartItems.reduce((acc, item) => acc + (item.courseId.price || 0), 0);
-  const discountedTotal = isCouponApplied ? subtotal * 0.5 : subtotal;
-
-  const handleApplyCoupon = () => {
-    if (couponCode === "UPSKILL50") {
-      setIsCouponApplied(true);
-    } else {
-      setIsCouponApplied(false);
-    }
-  };
+  const total = filteredCartItems.reduce((acc, item) => acc + (item.courseId.price || 0), 0);
 
   const handleRemoveItem = async (courseId: string) => {
     try {
@@ -199,40 +188,6 @@ const ShopCart: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
-              {/* )} */}
-            </div>
-
-            {/* Coupon Code */}
-            <div className="bg-white py-4 mt-6 w-full">
-              <div className="relative flex items-center gap-4">
-                <div className="relative w-[520px] py-4 -ml-2">
-                  <input
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder=" "
-                    className="w-full ml-2 peer flex-grow border-b-2 border-primary-100 rounded-none pt-4 text-primary-800 text-base focus:outline-none focus:border-primary-800"
-                  />
-                  <label
-                    htmlFor="couponCode"
-                    className="w-full absolute left-2 top-0.5 text-base transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-primary-800 peer-focus:top-1 peer-focus:text-primary-800"
-                  >
-                    Coupon Code
-                  </label>
-                </div>
-                <button
-                  onClick={handleApplyCoupon}
-                  className="w-[220px] bg-primary-800 text-primary-50 px-6 py-4 rounded-md hover:bg-accent-900 flex items-center justify-center gap-2 text-base font-medium"
-                >
-                  Apply Coupon <HiArrowUpRight />
-                </button>
-                <button
-                  onClick={handleApplyCoupon}
-                  className="w-[200px] border border-primary-800 text-primary-800 px-6 py-4 rounded-md hover:bg-primary-800 hover:text-primary-50 flex items-center justify-center gap-2 text-base font-medium"
-                >
-                  Update Cart <HiArrowUpRight />
-                </button>
-              </div>
             </div>
           </div>
 
@@ -240,13 +195,9 @@ const ShopCart: React.FC = () => {
           <div className="w-[400px] -mr-10">
             <div className="bg-primary-50 p-6 border border-primary-100 h-[293px]">
               <h2 className="text-xl mb-6 font-medium">Cart Total</h2>
-              <div className="border-b flex justify-between py-3 text-primary-800">
-                <span>Sub Total</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
               <div className="flex justify-between py-3 text-primary-800">
                 <span>Total</span>
-                <span>${discountedTotal.toFixed(2)}</span>
+                <span>${total.toFixed(2)}</span>
               </div>
               <button
                 onClick={createPayment}

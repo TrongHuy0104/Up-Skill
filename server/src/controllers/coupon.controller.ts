@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CouponModel } from '@/models/Coupon.model';
 import ErrorHandler from '@/utils/ErrorHandler';
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 
 export const createCoupon = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -56,7 +56,8 @@ export const deleteCoupon = async (req: Request, res: Response, next: NextFuncti
 
 export const validateCoupon = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { code, userId } = req.body;
+        const { code } = req.body;
+        const userId = req.user?._id;
 
         const coupon = await CouponModel.findOne({ code, isActive: true });
 
@@ -68,19 +69,17 @@ export const validateCoupon = async (req: Request, res: Response, next: NextFunc
             return next(new ErrorHandler('Coupon code expired', 200));
         }
 
-        if (coupon.usersUsed?.includes(userId)) {
-            return next(new ErrorHandler('You have already used this coupon', 200));
-        }
-
-        if (coupon.usageLimit && coupon.usageLimit <= 0) {
+        if (coupon.usageLimit && coupon.usersUsed && coupon.usersUsed.length >= coupon.usageLimit) {
             return next(new ErrorHandler('Coupon usage limit reached', 200));
         }
 
-        if (coupon.usageLimit) {
-            coupon.usageLimit -= 1;
+        if (userId) {
+            const userIdString = String(userId);
+            const userIdObjectId = new mongoose.Types.ObjectId(userIdString); 
+            if (coupon.usersUsed && coupon.usersUsed.includes(userIdObjectId)) {
+                return next(new ErrorHandler('Coupon already used by you', 200));
+            }
         }
-        coupon.usersUsed = coupon.usersUsed ? [...coupon.usersUsed, new Types.ObjectId(userId)] : [new Types.ObjectId(userId)];
-        await coupon.save();
 
         res.status(200).json({ success: true, coupon, discountPercentage: coupon.discountPercentage, message: 'Coupon valid' });
     } catch (error) {

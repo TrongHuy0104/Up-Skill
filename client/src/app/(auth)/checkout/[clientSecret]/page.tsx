@@ -10,6 +10,8 @@ import CheckoutForm from './_components/CheckoutForm';
 import Banner from '@/components/ui/Banner';
 import { layoutStyles } from '@/styles/styles';
 import Spinner from '@/components/custom/Spinner';
+import { HiArrowUpRight } from 'react-icons/hi2';
+import axios from 'axios';
 
 interface Course {
     _id: string;
@@ -25,6 +27,7 @@ export default function PaymentPage() {
 
     const [stripePromise, setStripePromise] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [couponCode, setCouponCode] = useState('');
 
     const clientSecret = typeof params.clientSecret === 'string' ? params.clientSecret : undefined;
 
@@ -39,6 +42,19 @@ export default function PaymentPage() {
 
         initializeStripe();
     }, []);
+
+    const handleApplyCoupon = async () => {
+        try {
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`,
+            { code: couponCode },
+            { withCredentials: true }
+          );
+
+        } catch (error: any) {
+          console.error(error);
+        }
+      };
 
     if (loading) {
         return <Spinner />;
@@ -112,6 +128,32 @@ export default function PaymentPage() {
                                         </li>
                                     </ul>
                                 </div>
+                            {/* Coupon Code Input */}
+                            <div className="bg-white py-4 max-w-[400px] rounded-xl justify-end">
+                                <div className="relative flex items-center gap-4">
+                                    <div className="relative w-[260px] py-4">
+                                        <input
+                                            type="text"
+                                            value={couponCode}
+                                            onChange={(e) => setCouponCode(e.target.value)}
+                                            placeholder=" "
+                                            className="w-full ml-2 peer flex-grow border-b-2 border-primary-100 rounded-none pt-4 text-primary-800 text-base focus:outline-none focus:border-primary-800"
+                                        />
+                                        <label
+                                            htmlFor="couponCode"
+                                            className="w-full absolute left-2 top-0.5 text-base transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-primary-800 peer-focus:top-1 peer-focus:text-primary-800"
+                                        >
+                                            Coupon Code
+                                        </label>
+                                    </div>
+                                    <button
+                                        onClick={handleApplyCoupon}
+                                        className="w-[140px] bg-primary-800 text-primary-50 px-6 py-4 rounded-md hover:bg-accent-900 flex items-center justify-center gap-2 text-base font-medium"
+                                    >
+                                        Apply <HiArrowUpRight />
+                                    </button>
+                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>
