@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Course Approval Notification</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+                min-width: 100%;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                line-height: 1.5;
+                background-color: #fafafa;
+                color: #222;
+            }
+            a {
+                color: #000;
+                text-decoration: none;
+            }
+            h1 {
+                font-size: 24px;
+                font-weight: 700;
+                line-height: 1.25;
+                margin-top: 0;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+            p {
+                margin-top: 0;
+                margin-bottom: 24px;
+            }
+            .email-wrapper {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .email-header {
+                background-color: #e27447;
+                padding: 24px;
+                color: #fff;
+                text-align: center;
+            }
+            .email-body {
+                padding: 24px;
+                background-color: #fff;
+            }
+            .email-footer {
+                background-color: #f6f6f6;
+                padding: 24px;
+                text-align: center;
+            }
+            .button {
+                display: inline-block;
+                background-color: #e27447;
+                color: #fff !important;
+                font-size: 16px;
+                font-weight: 700;
+                text-align: center;
+                text-decoration: none;
+                padding: 12px 24px;
+                border-radius: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="email-wrapper">
+            <div class="email-header">
+                <h1>Course Approved</h1>
+            </div>
+            <div class="email-body">
+                <p>Hello <%= user.name %>,</p>
+                <p>Congratulations! Your course "<strong><%= courseName %></strong>" has been approved and is now published on UpSkill.</p>
+                <p>You can now view your course and start attracting students.</p>
+                <p><a class="button" href="<%= courseUrl %>">View Course</a></p>
+                <p>Thanks for your waiting.</p>
+            </div>
+            <div class="email-footer">
+                <p>If you have any questions, please contact us at <a href="mailto:support@upskill.com">support@upskill.com</a></p>
+            </div>
+        </div>
+    </body>
+</html>

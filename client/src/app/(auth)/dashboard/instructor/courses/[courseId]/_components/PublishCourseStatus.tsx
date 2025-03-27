@@ -1,7 +1,7 @@
 'use client';
 
 import { Trash, TriangleAlert } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
@@ -9,20 +9,17 @@ import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTr
 import { Button } from '@/components/ui/Button';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import { toast } from '@/hooks/use-toast';
-import {
-    useDeleteCourseMutation,
-    usePublishCourseMutation,
-    useUnpublishCourseMutation
-} from '@/lib/redux/features/course/courseApi';
+import { useDeleteCourseMutation, useUnpublishCourseMutation } from '@/lib/redux/features/course/courseApi';
+import { useSelector } from 'react-redux';
 
 type Props = { course: any; refetchCourse: any };
 
 function PublishCourseStatus({ course, refetchCourse }: Props) {
     const router = useRouter();
+    const [status, setStatus] = useState('');
+    const { user } = useSelector((state: any) => state.auth);
 
     // Mutation + Query
-    const [publishCourse, { isLoading: isLoadingPublish, isSuccess: isSuccessPublish, error: errorPublish }] =
-        usePublishCourseMutation();
     const [unpublishCourse, { isLoading: isLoadingUnPublish, isSuccess: isSuccessUnPublish, error: errorUnPublish }] =
         useUnpublishCourseMutation();
     const [deleteCourse, { isLoading: isLoadingDelete, isSuccess: isSuccessDelete, error: errorDelete }] =
@@ -88,13 +85,32 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
             return response.data; // Return the response data
         } catch (error) {
             console.error('Error deleting video:', error);
-            return null; // Return null if there's an error
+            return null;
         }
     };
 
-    const handlePublishCourse = async () => {
-        await publishCourse({ id: course._id }).unwrap();
-    };
+        const handlePublishCourse = async () => {
+            try {
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/create-request`, {
+                    courseId: course._id,
+                    instructorId: user._id
+                },
+                { withCredentials: true });
+                setStatus(response?.data?.data?.status);
+
+                toast({
+                    variant: 'success',
+                    title: 'Publish request sent successfully. Waiting for admin approval.'
+                });
+
+                refetchCourse();
+            } catch {
+                toast({
+                    variant: 'destructive',
+                    title: 'Failed to send publish request'
+                });
+            }
+        };
 
     const handleUnPublishCourse = async () => {
         await unpublishCourse({ id: course._id }).unwrap();
@@ -139,27 +155,21 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
         // Finally, delete the course
         await deleteCourse(course._id);
     };
-
-    // Effect
+    const fetchRequestStatus = async () => {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/request/get-request/${course._id}`,
+                { withCredentials: true });
+            setStatus(response.data?.data?.status || '');
+        } catch (error) {
+            console.error('Error fetching request status:', error);
+        }
+    };
     useEffect(() => {
-        if (isSuccessPublish) {
-            toast({
-                variant: 'success',
-                title: 'Course publish successfully'
-            });
-            refetchCourse();
+        if (course?._id) {
+            fetchRequestStatus();
         }
-        if (errorPublish) {
-            if ('data' in errorPublish) {
-                const errorData = errorPublish as any;
-                toast({
-                    variant: 'destructive',
-                    title: 'Uh oh! Something went wrong.',
-                    description: errorData.data.message
-                });
-            }
-        }
-    }, [isSuccessPublish, errorPublish, isLoadingPublish, refetchCourse]);
+    }, [course?._id]);
+    
 
     useEffect(() => {
         if (isSuccessUnPublish) {
@@ -214,7 +224,9 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
                     </div>
                 )}
                 <div className="flex justify-between items-center">
-                    {checkIsValidCourse() ? (
+                    {status === 'pending' ? (
+                        <p className="text-yellow-600">Your request has been sent. Please wait for admin approval.</p>
+                    ) : checkIsValidCourse() ? (
                         <p>Your course is available to publish</p>
                     ) : (
                         <p>
@@ -222,14 +234,16 @@ function PublishCourseStatus({ course, refetchCourse }: Props) {
                             <strong>{getPublishCourseStatusMessage()}</strong> part
                         </p>
                     )}
+
                     <div className="flex gap-2">
                         <Button
                             onClick={() => (course.isPublished ? handleUnPublishCourse() : handlePublishCourse())}
                             className="px-4 py-2 text-sm"
-                            disabled={!checkIsValidCourse() || isLoadingPublish || isLoadingUnPublish}
+                            disabled={status === 'pending' || isLoadingUnPublish}
                         >
-                            {course.isPublished ? 'Unpublish' : 'Publish'}
+                            {status === 'pending' && course?.isPublished === false ? 'Pending' : course.isPublished ? 'Unpublish' : 'Publish'}
                         </Button>
+                        ;
                         <Dialog>
                             <DialogTrigger
                                 disabled={isLoadingDelete}

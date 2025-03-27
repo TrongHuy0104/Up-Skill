@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/Button';
 import arrowIcon from '@/public/assets/icons/arrow-top-right.svg';
 import useUserRedirect from '@/hooks/useUserRedirect';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
+import Link from 'next/link';
 
 const InstructorDashboardBanner = () => {
     const { userData, isLoadingUser } = useUserRedirect();
@@ -77,10 +78,12 @@ const InstructorDashboardBanner = () => {
                     )}
                     {user?.role === 'user' && (
                         <div className="w-1/3">
+                            <Link href="/become-a-teacher">
                             <Button variant="secondary" size="lg">
                                 Become a teacher
                                 <Image src={arrowIcon} alt=""></Image>
                             </Button>
+                            </Link>
                         </div>
                     )}
                 </div>
