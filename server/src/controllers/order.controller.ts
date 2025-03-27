@@ -16,11 +16,11 @@ import NotificationModel from '@/models/Notification.model';
 import { redis } from '@/utils/redis';
 import OrderModel from '@/models/Order.model';
 import { recordCouponUsage } from '@/utils/coupon';
-import { CouponDocument } from '@/models/Coupon.model';
+import { CouponModel } from '@/models/Coupon.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { courseIds, payment_info, couponCode, totalPrice } = req.body as IOrder & { couponCode?: string; totalPrice: number };
+    const { courseIds, payment_info, couponCode } = req.body as IOrder;
 
     // Validate courseIds
     if (!Array.isArray(courseIds)) {
@@ -61,6 +61,8 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         return next(new ErrorHandler('You have already purchased one or more of these courses', 400));
     }
 
+    const totalPrice = courses.reduce((sum, course) => sum + course.price, 0);
+
     // Prepare data for order creation
     const data: any = {
         courseIds: courses.map((course) => course._id),
@@ -68,6 +70,14 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         totalPrice,
         couponCode
     };
+
+    if (couponCode) {
+        const coupon = await CouponModel.findById(couponCode);
+        if (!coupon) {
+            return next(new ErrorHandler('Coupon not found', 404));
+        }
+        await recordCouponUsage(coupon.code, user._id);
+    }
 
     // Prepare email data
     const mailData = {
@@ -83,7 +93,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
                 day: 'numeric'
             }),
             couponCode: couponCode || 'N/A',
-            discountedTotal: totalPrice.toFixed(2)
+            discountedTotal: totalPrice && !isNaN(totalPrice) ? totalPrice.toFixed(2) : '0.00'
         }
     };
 

@@ -62,9 +62,11 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`, {
                 withCredentials: true
             });
-            const cartItems = response.data.cart.items;
-            const courseExists = cartItems.some((items: any) => items.courseId === course._id);
-            return courseExists;
+            if (response.data.cart && response.data.cart.items) {
+                const cartItems = response.data.cart.items;
+                const courseExists = cartItems.some((items: any) => items.courseId === course._id);
+                return courseExists;
+            } 
         } catch (error) {
             console.error('Error checking if course is in cart:', error);
             return false;
@@ -207,7 +209,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                             ${course?.estimatedPrice?.toFixed(2)}
                         </p>
                         <p className="text-[14px] text-accent-900 bg-accent-100 font-medium py-2 px-4 border border-accent-900 rounded-lg">
-                            ${(computeSalePercent(coursePrice, course?.estimatedPrice || 0) ).toFixed(2)}% OFF
+                            ${(computeSalePercent(course.price, course?.estimatedPrice || 0) + discount).toFixed(2)}% OFF
                         </p>
                     </div>
                     <div>

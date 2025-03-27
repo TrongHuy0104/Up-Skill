@@ -26,7 +26,7 @@ const orderSlice = createSlice({
             } else if (action.payload.cartItems) {
                 state.courses = action.payload.cartItems;
             } if (action.payload.couponInfo) {
-                state.couponInfo = action.payload.couponInfo;
+                state.couponInfo = action.payload.couponInfo;  // Update coupon info in state
             }
         },
         setCouponInfo: (state, action: PayloadAction<{ discountPercentage: number, discountedTotal: number }>) => {
