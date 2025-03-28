@@ -11,11 +11,11 @@ import { catchAsync } from '../utils/catchAsync';
 import ErrorHandler from '../utils/ErrorHandler';
 import { NextFunction, Request, Response } from 'express';
 import path from 'path';
-import sendMail from '@/utils/sendMail';
-import NotificationModel from '@/models/Notification.model';
-import { redis } from '@/utils/redis';
-import OrderModel from '@/models/Order.model';
-import { CouponModel } from '@/models/Coupon.model';
+import sendMail from '../utils/sendMail';
+import NotificationModel from '../models/Notification.model';
+import { redis } from '../utils/redis';
+import OrderModel from '../models/Order.model';
+import { CouponModel } from '../models/Coupon.model';
 import IncomeModel from '../models/Income.model';
 
 // create order
@@ -74,7 +74,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     };
 
     if (couponCode) {
-        const coupon: any = await CouponModel.findOne({ code: couponCode }); // Use findOne instead of find
+        const coupon: any = await CouponModel.findOne({ code: couponCode });
         if (!coupon) {
             return next(new ErrorHandler('Coupon not found', 404));
         }
@@ -112,7 +112,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
                 month: 'long',
                 day: 'numeric'
             }),
-            couponCode: couponCode || 'N/A',
+            couponCode: couponCode ?? 'N/A',
             discountedTotal: (totalPrice - couponDiscount).toFixed(2)
         }
     };

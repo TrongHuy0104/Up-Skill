@@ -13,11 +13,8 @@ export const store = configureStore({
         auth: authSlice,
         order: orderSlice,
         cart: cartReducer,
-<<<<<<< HEAD
-        coupon: couponReducer
-=======
+        coupon: couponReducer,
         income: incomeSlice
->>>>>>> fda1546ea3b7aec4bded8e37c06f06be85fe3223
     },
     devTools: true,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware)

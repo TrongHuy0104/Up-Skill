@@ -9,13 +9,12 @@ import { redirect } from "next/navigation";
 import { useCreatePaymentIntentMutation } from "@/lib/redux/features/order/orderApi";
 import { useLoadUserQuery } from "@/lib/redux/features/api/apiSlice";
 import { loadStripe } from "@stripe/stripe-js/pure";
-import { orderCreatePaymentIntent } from "@/lib/redux/features/order/orderSlice";
+import { orderCreatePaymentIntent, setCouponInfo } from "@/lib/redux/features/order/orderSlice";
 import { useDispatch } from "react-redux";
 import { removeCartItem } from '@/lib/redux/features/cart/cartSlice';
 import Link from "next/link";
 import empty from "@/public/assets/icons/empty-cart.svg";
 import { toast } from "@/hooks/use-toast";
-import { setCouponInfo } from '@/lib/redux/features/order/orderSlice';
 
 interface Course {
   _id: string;

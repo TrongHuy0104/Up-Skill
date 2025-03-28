@@ -25,10 +25,12 @@ const orderSlice = createSlice({
         orderCreatePaymentIntent: (state, action: PayloadAction<{ course?: any, cartItems?: any[], couponInfo?: { discountPercentage: number, discountedTotal: number, couponCode: string } }>) => {
             if (action.payload.course) {
                 state.courses = [action.payload.course];
-            } else if (action.payload.cartItems) {
+            } 
+            else if (action.payload.cartItems) {
                 state.courses = action.payload.cartItems;
-            } if (action.payload.couponInfo) {
-                state.couponInfo = action.payload.couponInfo;  // Update coupon info in state
+            } 
+            if (action.payload.couponInfo) {
+                state.couponInfo = action.payload.couponInfo;
             }
         },
         setCouponInfo: (state, action: PayloadAction<{ discountPercentage: number, discountedTotal: number, couponCode: string }>) => {
