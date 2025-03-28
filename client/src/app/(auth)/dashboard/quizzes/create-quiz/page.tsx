@@ -1,18 +1,18 @@
+'use client';
+
 import React, { Suspense } from 'react';
-import { cookies } from 'next/headers';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { DashboardSkeleton } from '@/components/ui/Skeleton';
 import CreateQuiz from './_components/CreateQuiz';
+import { useGetUserCoursesQuery } from '@/lib/redux/features/course/courseApi';
+import Spinner from '@/components/custom/Spinner';
 
-export default async function Page() {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.toString();
+export default function Page() {
+    const { data, isLoading } = useGetUserCoursesQuery({});
 
-    const courses = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/courses/user-courses`, {
-        credentials: 'include',
-        headers: { Cookie: cookie },
-        cache: 'no-store'
-    }).then((res) => res.json());
+    if (isLoading) return <Spinner />;
+
+    const { data: courses } = data;
 
     return (
         <div className="pt-8 px-10 pb-10 ml-auto max-w-[1000px] border border-primary-100 rounded-xl">
@@ -22,7 +22,7 @@ export default async function Page() {
                 </TabsList>
                 <TabsContent value="create-quiz">
                     <Suspense fallback={<DashboardSkeleton />}>
-                        <CreateQuiz courses={courses.data} />
+                        <CreateQuiz courses={courses} />
                     </Suspense>
                 </TabsContent>
             </Tabs>
