@@ -8,7 +8,7 @@ export default function QuizThumb({ quiz }: QuizThumbProps) {
     return (
         <div className="flex items-baseline max-w-102">
             {/* Title, Course, and Section Links */}
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-1 pl-3">
                 {' '}
                 {/* Use flex-col and space-y-1 for vertical spacing */}
                 {/* Quiz Title */}
