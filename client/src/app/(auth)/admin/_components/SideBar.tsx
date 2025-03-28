@@ -45,7 +45,7 @@ const Sidebar = () => {
         <div className="bg-white w-full">
             {/* Logo */}
             <div className="flex items-center p-4 gap-4">
-                <Image src="/assets/images/logo/favicon.png" alt="Logo" width={50} height={50} />
+                <Image src="/assets/images/logo/favicon.png" alt="Logo" width={36} height={36} />
                 <div className="text-black text-2xl font-bold">UpSkill</div>
             </div>
 
@@ -59,7 +59,6 @@ const Sidebar = () => {
                     className="rounded-full"
                 />
                 <div className="text-2xl">{user?.name}</div>
-                <div>{user?.role}</div>
             </div>
 
             {/* Menu */}

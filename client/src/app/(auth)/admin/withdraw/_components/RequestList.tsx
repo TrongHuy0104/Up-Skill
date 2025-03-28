@@ -94,7 +94,7 @@ export default function RequestList() {
                     <TableBody>
                         {requests.map((request: any, index: number) => (
                             <Fragment key={request._id}>
-                                <TableRow className="hover:bg-gray-200 transition-all">
+                                <TableRow>
                                     <TableCell className="font-semibold text-black">{index + 1}</TableCell>
                                     <TableCell className="text-gray-600">{request.user.name}</TableCell>
                                     <TableCell className="text-gray-600">{request.user.email}</TableCell>
