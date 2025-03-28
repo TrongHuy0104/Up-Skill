@@ -99,6 +99,10 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                     dispatch(addCartItem({ courseId: course._id }));
                 }
             }
+            toast({
+                      variant: 'success',
+                      title: `Add to Cart successfully.`,
+                    });
         } catch (error) {
             console.error('Error adding to cart:', error);
         }

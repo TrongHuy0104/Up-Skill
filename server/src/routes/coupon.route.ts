@@ -5,10 +5,10 @@ import {
     updateCoupon,
     deleteCoupon,
     validateCoupon
-} from '@/controllers/coupon.controller';
-import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
-import { authorizeRoles } from '@/middlewares/auth/authorizeRoles';
-import { updateAccessToken } from '@/controllers/user.controller';
+} from '../controllers/coupon.controller';
+import { isAuthenticated } from '../middlewares/auth/isAuthenticated';
+import { authorizeRoles } from '../middlewares/auth/authorizeRoles';
+import { updateAccessToken } from '../controllers/user.controller';
 
 const router = express.Router();
 
