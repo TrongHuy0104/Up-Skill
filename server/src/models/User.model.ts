@@ -103,6 +103,10 @@ export const UserSchema: Schema<UserT> = new Schema(
             twitter: { type: String, default: '' },
             linkedin: { type: String, default: '' },
             instagram: { type: String, default: '' }
+        },
+        stripeAccountId: {
+            type: String,
+            select: false // Hide from API responses
         }
     },
     {

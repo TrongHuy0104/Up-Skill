@@ -1,5 +1,8 @@
 import { RedisKey } from 'ioredis';
 import cloudinary from 'cloudinary';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import dotenv from 'dotenv';
@@ -803,39 +806,87 @@ export const getRevenueStatistics = catchAsync(async (req: Request, res: Respons
     });
 });
 
-export const updateInstructorInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { introduce, phoneNumber, address, age, profession } = req.body as {
-        introduce: string;
-        phoneNumber: string;
-        address: string;
-        age: number;
-        profession: string;
-    };
+// export const updateInstructorInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const { introduce, phoneNumber, address, age, profession } = req.body as {
+//         introduce: string;
+//         phoneNumber: string;
+//         address: string;
+//         age: number;
+//         profession: string;
+//     };
 
+//     if (!introduce || !phoneNumber || !address || !age || !profession) {
+//         return next(new ErrorHandler('All fields are required', 400));
+//     }
+
+//     const user = await UserModel.findById(req.user?._id);
+
+//     if (!user) {
+//         return next(new ErrorHandler('User not found', 404));
+//     }
+
+//     user.introduce = introduce;
+//     user.phoneNumber = phoneNumber;
+//     user.address = address;
+//     user.age = age;
+//     user.profession = profession;
+//     user.role = 'instructor';
+
+//     await user.save();
+
+//     redis.set(req.user?._id as RedisKey, JSON.stringify(user));
+
+//     res.status(200).json({
+//         success: true,
+//         message: 'User information updated successfully',
+//         user
+//     });
+// });
+
+export const updateInstructorInfo = catchAsync(async (req, res, next) => {
+    const { introduce, phoneNumber, address, age, profession } = req.body;
+
+    // Basic validation
     if (!introduce || !phoneNumber || !address || !age || !profession) {
         return next(new ErrorHandler('All fields are required', 400));
     }
 
     const user = await UserModel.findById(req.user?._id);
+    if (!user) return next(new ErrorHandler('User not found', 404));
 
-    if (!user) {
-        return next(new ErrorHandler('User not found', 404));
+    // Create Stripe account only if becoming instructor
+    if (user.role !== 'instructor') {
+        try {
+            const account = await stripe.accounts.create({
+                type: 'express',
+                email: user.email,
+                capabilities: {
+                    transfers: { requested: true }
+                }
+            });
+            user.stripeAccountId = account.id;
+        } catch (error) {
+            console.log('Stripe account creation failed (will try later)');
+            console.log(error);
+            // Continue without failing - you can create the account later
+        }
     }
 
-    user.introduce = introduce;
-    user.phoneNumber = phoneNumber;
-    user.address = address;
-    user.age = age;
-    user.profession = profession;
-    user.role = 'instructor';
+    // Update user fields
+    Object.assign(user, {
+        role: 'instructor',
+        introduce,
+        phoneNumber,
+        address,
+        age,
+        profession
+    });
 
     await user.save();
-
-    redis.set(req.user?._id as RedisKey, JSON.stringify(user));
+    redis.set(user._id.toString(), JSON.stringify(user));
 
     res.status(200).json({
         success: true,
-        message: 'User information updated successfully',
-        user
+        message: 'Instructor profile updated'
     });
 });
