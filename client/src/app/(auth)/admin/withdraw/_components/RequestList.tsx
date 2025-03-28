@@ -1,5 +1,6 @@
 'use client';
 
+import Spinner from '@/components/custom/Spinner';
 import SpinnerMini from '@/components/custom/SpinnerMini';
 import { Button } from '@/components/ui/Button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/Table';
@@ -64,7 +65,7 @@ export default function RequestList() {
     }, [paymentIntentData, stripePromise, isLoading]);
 
     if (isLoadingRequestsData) {
-        return <SpinnerMini />;
+        return <Spinner />;
     }
 
     const { data: requests } = requestsRes;
