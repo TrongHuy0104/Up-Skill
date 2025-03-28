@@ -26,7 +26,7 @@ import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
-import { LucideSquareUserRound } from 'lucide-react';
+import { CircleDollarSign } from 'lucide-react';
 
 export function UserDropdown() {
     const [logout, setLogout] = useState(false);
@@ -86,6 +86,11 @@ export function UserDropdown() {
             title: 'Quizzes',
             href: '/dashboard/quizzes',
             icon: <FaRegCircleQuestion className="text-[20px]" />
+        },
+        {
+            title: 'Income',
+            href: '/dashboard/income',
+            icon: <CircleDollarSign className="text-[16px]" />
         }
     ];
 
@@ -97,10 +102,26 @@ export function UserDropdown() {
         }
     ];
 
+    const adminNavbarItems = [
+        {
+            title: 'Dashboard',
+            href: '/admin/dashboard',
+            icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+        },
+        {
+            title: 'Settings',
+            href: '/dashboard/settings',
+            icon: <IoSettingsOutline className="text-[20px]" />
+        }
+    ];
+
     const dropdownList =
         user.role === 'instructor'
             ? [...instructorNavbarItems, ...commonNavbarItems]
-            : [...userNavbarItems, ...commonNavbarItems];
+            : user.role === 'user'
+                ? [...userNavbarItems, ...commonNavbarItems]
+                : [...adminNavbarItems];
+
 
     return (
         <DropdownMenu>
@@ -117,37 +138,10 @@ export function UserDropdown() {
                     <span className="font-medium">{user.name}</span>
                 </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
+            <DropdownMenuContent className="w-60">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href={`/dashboard/${user.role}`}>
-                        <DropdownMenuItem>
-                            Profile
-                            <DropdownMenuShortcut>
-                                <LucideSquareUserRound className="text-xl" />
-                            </DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                    </Link>
-                    <Link href="/dashboard/instructor/reviews">
-                        <DropdownMenuItem>
-                            Settings
-                            <DropdownMenuShortcut>
-                                <IoSettingsOutline className="text-lg" />
-                            </DropdownMenuShortcut>
-                        </DropdownMenuItem>
-                    </Link>
-                    {/* Check if user is admin */}
-                    {user.role === 'admin' && (
-                        <Link href="/admin/dashboard" target="_blank" rel="noopener noreferrer">
-                            <DropdownMenuItem>
-                                Manage Admin
-                                <DropdownMenuShortcut>
-                                    <IoSettingsOutline className="text-lg" />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                        </Link>
-                    )}
                     {dropdownList.map((item) => (
                         <Link href={`${item.href}`} key={item.href}>
                             <DropdownMenuItem>
