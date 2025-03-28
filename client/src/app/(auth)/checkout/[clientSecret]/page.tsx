@@ -10,8 +10,6 @@ import CheckoutForm from './_components/CheckoutForm';
 import Banner from '@/components/ui/Banner';
 import { layoutStyles } from '@/styles/styles';
 import Spinner from '@/components/custom/Spinner';
-import { HiArrowUpRight } from 'react-icons/hi2';
-import axios from 'axios';
 
 interface Course {
     _id: string;
@@ -21,17 +19,18 @@ interface Course {
 
 export default function PaymentPage() {
     const params = useParams();
+    const { couponInfo } = useSelector((state: any) => state.order);
     const { courses } = useSelector((state: any) => state.order);
 
     if (courses.length === 0) redirect('/');
 
     const [stripePromise, setStripePromise] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-    const [couponCode, setCouponCode] = useState('');
 
     const clientSecret = typeof params.clientSecret === 'string' ? params.clientSecret : undefined;
 
     const totalPrice = courses.reduce((total: number, course: Course) => total + course.price, 0);
+    const discountedTotal = couponInfo.discountedTotal > 0 ? couponInfo.discountedTotal : totalPrice;
 
     useEffect(() => {
         const initializeStripe = async () => {
@@ -42,19 +41,6 @@ export default function PaymentPage() {
 
         initializeStripe();
     }, []);
-
-    const handleApplyCoupon = async () => {
-        try {
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`,
-            { code: couponCode },
-            { withCredentials: true }
-          );
-
-        } catch (error: any) {
-          console.error(error);
-        }
-      };
 
     if (loading) {
         return <Spinner />;
@@ -118,42 +104,16 @@ export default function PaymentPage() {
                                         </li>
                                         <li className="mb-1 flex items-center justify-between pb-[10px] border-b border-primary-100 mt-2">
                                             <p className="leading-7 font-medium">Coupon</p>
-                                            <p className="leading-7 font-medium">$0</p>
+                                            <p className="leading-7 font-medium">{couponInfo.discountPercentage}%</p>
                                         </li>
                                         <li className="mb-1 flex items-center justify-between pb-[10px] mt-4">
                                             <p className="leading-[30px] font-medium text-accent-900 text-xl">Total</p>
                                             <p className="leading-[30px] font-medium text-accent-900 text-xl">
-                                                ${totalPrice}
+                                                ${discountedTotal}
                                             </p>
                                         </li>
                                     </ul>
                                 </div>
-                            {/* Coupon Code Input */}
-                            <div className="bg-white py-4 max-w-[400px] rounded-xl justify-end">
-                                <div className="relative flex items-center gap-4">
-                                    <div className="relative w-[260px] py-4">
-                                        <input
-                                            type="text"
-                                            value={couponCode}
-                                            onChange={(e) => setCouponCode(e.target.value)}
-                                            placeholder=" "
-                                            className="w-full ml-2 peer flex-grow border-b-2 border-primary-100 rounded-none pt-4 text-primary-800 text-base focus:outline-none focus:border-primary-800"
-                                        />
-                                        <label
-                                            htmlFor="couponCode"
-                                            className="w-full absolute left-2 top-0.5 text-base transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-primary-800 peer-focus:top-1 peer-focus:text-primary-800"
-                                        >
-                                            Coupon Code
-                                        </label>
-                                    </div>
-                                    <button
-                                        onClick={handleApplyCoupon}
-                                        className="w-[140px] bg-primary-800 text-primary-50 px-6 py-4 rounded-md hover:bg-accent-900 flex items-center justify-center gap-2 text-base font-medium"
-                                    >
-                                        Apply <HiArrowUpRight />
-                                    </button>
-                                </div>
-                            </div>
                             </div>
                         </div>
                     </div>

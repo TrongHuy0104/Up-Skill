@@ -13,12 +13,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { computeSalePercent } from '@/lib/utils';
 import { Course } from '@/types/Course';
 import { useCreatePaymentIntentMutation } from '@/lib/redux/features/order/orderApi';
-import { orderCreatePaymentIntent } from '@/lib/redux/features/order/orderSlice';
+import { orderCreatePaymentIntent, setCouponInfo } from '@/lib/redux/features/order/orderSlice';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import { CourseSidebarSkeleton } from '@/components/ui/Skeleton';
 import VideoPlayer from '@/app/(auth)/dashboard/instructor/courses/[courseId]/_components/VideoPlayer';
 import axios from 'axios';
 import { addCartItem } from '@/lib/redux/features/cart/cartSlice';
+import { toast } from '@/hooks/use-toast';
 
 interface CourseSidebarProps {
     course: Course;
@@ -30,6 +31,9 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
     const [createPaymentIntent, { data: paymentIntentData, isLoading }] = useCreatePaymentIntentMutation();
     const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
     const [user, setUser] = useState<any>({});
+    const [couponCode, setCouponCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [coursePrice, setCoursePrice] = useState(course.price);
 
     useEffect(() => {
         setUser(userData?.user);
@@ -42,9 +46,16 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
         setStripePromise(stripe);
         const amount = Math.round(course.price * 100);
-        await createPaymentIntent(amount);
-        dispatch(orderCreatePaymentIntent({ course }));
-    };
+        dispatch(orderCreatePaymentIntent({
+            course,
+            couponInfo: {
+                discountPercentage: discount,
+                discountedTotal: coursePrice
+            }
+        }));
+        const paymentIntentResult = await createPaymentIntent(amount).unwrap();
+        redirect(`/checkout/${paymentIntentResult?.client_secret}`);
+        };
 
     const checkCourseExistInCart = async () => {
         try {
@@ -55,7 +66,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 const cartItems = response.data.cart.items;
                 const courseExists = cartItems.some((items: any) => items.courseId === course._id);
                 return courseExists;
-            }
+            } 
         } catch (error) {
             console.error('Error checking if course is in cart:', error);
             return false;
@@ -112,6 +123,46 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
         }
     }, [paymentIntentData, stripePromise, isLoading]);
 
+    const handleApplyCoupon = async () => {
+        if (!couponCode.trim()) {
+            setCoursePrice(course.price);
+            setDiscount(0);
+            toast({
+                variant: 'destructive',
+                title: 'Please enter a coupon code',
+            });
+            return;
+        }
+        try {
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`,
+                { code: couponCode },
+                { withCredentials: true }
+            );
+    
+            if (response.data.success) {
+                setDiscount(response.data.discountPercentage);
+                const newPrice = course.price - (course.price * (response.data.discountPercentage / 100));
+                setCoursePrice(newPrice);
+                dispatch(setCouponInfo({
+                    discountPercentage: response.data.discountPercentage,
+                    discountedTotal: newPrice,
+                }));
+                toast({
+                    variant: 'success',
+                    title: `Coupon applied successfully! ${response.data.discountPercentage}% discount.`,
+                });
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: response.data.message || 'Invalid or expired.'
+                });
+            }
+        } catch (error: any) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="w-full rounded-2xl shadow-lg bg-primary-50 border min-w-[330px] max-w-4xl  lg:w-[400px]">
             <div className="relative w-full h-[260px] flex justify-center items-center">
@@ -152,13 +203,13 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 <>
                     <div className="p-6 flex justify-center items-center">
                         <p className="text-[26px] font-base text-accent-900 font-semibold mr-4">
-                            ${course?.price?.toFixed(2)}
+                            ${coursePrice.toFixed(2)}
                         </p>
                         <p className="text-[15px] text-primary-800 line-through mr-12">
                             ${course?.estimatedPrice?.toFixed(2)}
                         </p>
                         <p className="text-[14px] text-accent-900 bg-accent-100 font-medium py-2 px-4 border border-accent-900 rounded-lg">
-                            ${computeSalePercent(course.price, course?.estimatedPrice || 0).toFixed(2)}% OFF
+                            ${(computeSalePercent(course.price, course?.estimatedPrice || 0) + discount).toFixed(2)}% OFF
                         </p>
                     </div>
                     <div>
@@ -187,7 +238,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                         )}
                     </div>
                     <p className="text-center text-sm text-primary-800">30-Day Money-Back Guarantee</p>
-                    <div className="p-6 space-y-4 text-sm border-b">
+                    <div className="p-6 space-y-4 text-sm">
                         <p className="text-[18px] font-medium text-primary-800 py-2">This course includes:</p>
                         <p className="text-[15px] text-primary-800 flex items-center gap-2">
                             <Image
@@ -219,36 +270,55 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                             Certificate of completion
                         </p>
                     </div>
-                    <div className="text-center mt-6">
-                        <p className="text-[16px] font-medium text-primary-800">Share this course</p>
-                        <div className="flex justify-center gap-4 mt-4 mb-4">
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaFacebookF />
-                            </a>
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaXTwitter />
-                            </a>
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaInstagram />
-                            </a>
-                            <a
-                                href="#"
-                                className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
-                            >
-                                <FaLinkedinIn />
-                            </a>
-                        </div>
-                    </div>
-                </>
+                    {!checkCourseExist() && (
+                    <div className="px-6">
+                                <div className="flex items-center justify-between">
+                                    <input
+                                        type="text"
+                                        placeholder="Coupon Code"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        className="w-[250px] p-2 border border-gray-300 rounded-lg" />
+                                    <button
+                                        onClick={handleApplyCoupon}
+                                        className="bg-primary-800 text-primary-50 px-6 py-2 rounded-md hover:bg-accent-900 transition-colors duration-300 flex items-center justify-center"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                                {discount > 0 && <p className="text-green-500 text-sm mt-2">Discount: {discount}%</p>}
+                        
+                            </div>
+                        )}
+                        <div className="text-center mt-6 pt-6 border-t">
+                                    <p className="text-[16px] font-medium text-primary-800">Share this course</p>
+                                    <div className="flex justify-center gap-4 mt-4 mb-4">
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaFacebookF />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaXTwitter />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaInstagram />
+                                        </a>
+                                        <a
+                                            href="#"
+                                            className="cursor-pointer text-primary-800 border rounded-full p-3 hover:text-accent-500 text-sm"
+                                        >
+                                            <FaLinkedinIn />
+                                        </a>
+                                    </div>
+                                </div></>
             )}
         </div>
     );

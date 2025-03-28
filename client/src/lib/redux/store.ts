@@ -4,6 +4,7 @@ import { apiSlice } from './features/api/apiSlice';
 import authSlice from './features/auth/authSlice';
 import orderSlice from './features/order/orderSlice';
 import cartReducer from './features/cart/cartSlice';
+import couponReducer from './features/coupon/couponSlice';
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         auth: authSlice,
         order: orderSlice,
         cart: cartReducer,
+        coupon: couponReducer
     },
     devTools: true,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware)
