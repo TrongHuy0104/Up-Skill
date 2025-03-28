@@ -5,7 +5,7 @@ import Quiz from '../models/Quiz.model'; // Adjust the import path as needed
 import Course from '../models/Course.model'; // Import Course model
 import ErrorHandler from '../utils/ErrorHandler';
 import mongoose from 'mongoose';
-import UserModel from '@/models/User.model';
+import UserModel from '../models/User.model';
 
 // GET /api/quizzes/:quizId - Fetch a quiz by ID
 export const getQuizbyId = catchAsync(async (req, res, next) => {
