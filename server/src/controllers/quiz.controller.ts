@@ -5,6 +5,7 @@ import Quiz from '../models/Quiz.model'; // Adjust the import path as needed
 import Course from '../models/Course.model'; // Import Course model
 import ErrorHandler from '../utils/ErrorHandler';
 import mongoose from 'mongoose';
+import UserModel from '@/models/User.model';
 
 // GET /api/quizzes/:quizId - Fetch a quiz by ID
 export const getQuizbyId = catchAsync(async (req, res, next) => {
@@ -197,21 +198,36 @@ export const createQuiz = catchAsync(async (req: Request, res: Response, next: N
 // GET /api/quizzes - Fetch all quizzes (without pagination)
 export const getAllQuizzes = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { difficulty, courseId } = req.query;
+    const userId = req?.user?._id;
 
-    // Build the query
-    const query: any = {};
+    if (!userId) {
+        return next(new ErrorHandler('User not authenticated', 401));
+    }
+
+    // Lấy thông tin người dùng
+    const user = await UserModel.findById(userId).select('role');
+
+    if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+    }
+
+    // Kiểm tra xem user có phải là instructor không
+    if (user.role !== 'instructor') {
+        return next(new ErrorHandler('Access denied: only instructors can view their quizzes', 403));
+    }
+
+    // Xây dựng query
+    const query: any = {
+        instructorId: userId
+    };
+
     if (difficulty) query.difficulty = difficulty;
     if (courseId) query.courseId = courseId;
 
-    // Fetch all quizzes
-    const quizzes = await Quiz.find(query).populate('instructorId', 'name email').populate('courseId', 'tags');
+    // Lấy danh sách quiz của instructor
+    const quizzes = await Quiz.find(query).populate('instructorId', 'name email').populate('courseId', 'name');
 
-    // Cache the result in Redis
-    const cacheKey = `quizzes:${JSON.stringify(req.query)}`;
-    await redis.set(cacheKey, JSON.stringify(quizzes), 'EX', 3600); // Cache for 1 hour
-
-    // Return the quizzes
-    res.status(200).json({
+    return res.status(200).json({
         success: true,
         quizzes
     });

@@ -14,11 +14,13 @@ import {
     getQuestionById,
     updateQuestionInQuiz
 } from '../controllers/quiz.controller';
+import { updateAccessToken } from '@/controllers/user.controller';
+import { isAuthenticated } from '@/middlewares/auth/isAuthenticated';
 
 const router = express.Router();
 
 // GET /api/quizzes - Fetch all quizzes (without pagination)
-router.get('/', getAllQuizzes);
+router.get('/', updateAccessToken, isAuthenticated, getAllQuizzes);
 
 // GET /api/quizzes/:quizId - Fetch a quiz by ID
 router.get('/:id', getQuizbyId);
