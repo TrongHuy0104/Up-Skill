@@ -41,11 +41,11 @@ import {
     getAllPurchasedCoursesOfUser,
     getCoursesWithSort
 } from '../controllers/course.controller';
-import { getUserInfo, updateAccessToken } from '../controllers/user.controller';
+import { updateAccessToken } from '../controllers/user.controller';
 
 const router = express.Router();
 
-router.get('/user-courses', updateAccessToken, isAuthenticated, getCoursesByUser, getUserInfo);
+router.get('/user-courses', updateAccessToken, isAuthenticated, getCoursesByUser);
 
 router.get('/sort', getCoursesWithSort as RequestHandler);
 
