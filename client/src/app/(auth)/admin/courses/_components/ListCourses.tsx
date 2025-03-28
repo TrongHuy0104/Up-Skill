@@ -34,7 +34,6 @@ export default function CourseList() {
                 if (!response.ok) throw new Error('Lỗi khi lấy danh sách khóa học.');
 
                 const data = await response.json();
-                console.log('Courses data:', data.courses); // Log dữ liệu khóa học
                 setCourses(data.courses);
             } catch (error: any) {
                 setError(error.message || 'Không thể lấy dữ liệu khóa học.');
@@ -92,9 +91,9 @@ export default function CourseList() {
                                         <Image
                                             src={starIcon}
                                             alt="Star Icon"
-                                            width={20} 
+                                            width={20}
                                             height={20}
-                                            className="inline-block" 
+                                            className="inline-block"
                                         />
                                         <span className="text-lg font-bold text-black">{course.rating.toFixed(1)}</span>
                                     </div>

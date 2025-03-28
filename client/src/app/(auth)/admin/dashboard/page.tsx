@@ -1,37 +1,37 @@
+'use client';
+
 import React from 'react';
 import UserAnalyticsChart from './_components/UserAnalyticsChart';
 import CountUserChart from './_components/CountUserChart';
 import CountInstructorChart from './_components/CountInstructorChart';
 import CourseChart from './_components/CourseChart';
-import { cookies } from 'next/headers';
 import CountStudentChart from './_components/CountStudentChart';
 import RevenueChart from './_components/RevenueChart';
+import { useGetUserAnalysisQuery } from '@/lib/redux/features/user/userApi';
+import Spinner from '@/components/custom/Spinner';
 
-export default async function Page() {
-    const cookieStore = await cookies();
-    const cookie = cookieStore.toString();
+export default function Page() {
+    const { data: res, isLoading } = useGetUserAnalysisQuery({});
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/user-analysis`, {
-        credentials: 'include',
-        headers: {
-            Cookie: cookie
-        }
-    });
+    if (isLoading) return <Spinner />;
 
-    const { 
-        totalUser, 
-        totalInstructor, 
-        totalStudent, 
-        totalCourse, 
-        growthRates,  // Lấy dữ liệu growthRates từ API
-        data 
-    } = await res.json();
+    const {
+        totalUser,
+        totalInstructor,
+        totalStudent,
+        totalCourse,
+        growthRates, // Lấy dữ liệu growthRates từ API
+        data
+    } = res;
 
     return (
         <div>
-            <div className='flex gap-4'>
+            <div className="flex gap-4">
                 <CountStudentChart totalStudent={totalStudent} growthRate={parseFloat(growthRates.studentGrowthRate)} />
-                <CountInstructorChart totalInstructor={totalInstructor} growthRate={parseFloat(growthRates.instructorGrowthRate)} />
+                <CountInstructorChart
+                    totalInstructor={totalInstructor}
+                    growthRate={parseFloat(growthRates.instructorGrowthRate)}
+                />
                 <CountUserChart totalUser={totalUser} growthRate={parseFloat(growthRates.userGrowthRate)} />
                 <CourseChart totalCourse={totalCourse} growthRate={parseFloat(growthRates.courseGrowthRate)} />
             </div>

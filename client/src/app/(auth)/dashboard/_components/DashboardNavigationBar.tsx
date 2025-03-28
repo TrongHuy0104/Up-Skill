@@ -11,6 +11,7 @@ import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
 import { DashboardNavigationSkeleton } from '@/components/ui/Skeleton';
+import { CircleDollarSign } from 'lucide-react';
 
 const commonNavbarItems = [
     {
@@ -50,6 +51,11 @@ const instructorNavbarItems = [
         title: 'Quizzes',
         href: '/dashboard/quizzes',
         icon: <FaRegCircleQuestion className="text-[20px]" />
+    },
+    {
+        title: 'Income',
+        href: '/dashboard/income',
+        icon: <CircleDollarSign className="text-[16px]" />
     }
 ];
 

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { catchAsync } from '../utils/catchAsync';
 import ErrorHandler from '../utils/ErrorHandler';
+import UserModel from '../models/User.model';
 import ProgressModel from '../models/Progress.model';
 import CourseModel from '../models/Course.model';
 import { redis } from '../utils/redis';
@@ -167,7 +168,6 @@ export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: R
     await progress.save();
 
     await redis.set(`progress:${userId}:${courseId}`, JSON.stringify(progress));
-    console.log('progress', progress);
 
     res.status(200).json({
         success: true,
@@ -227,50 +227,55 @@ export const getProgressData = catchAsync(async (req: Request, res: Response, ne
 
 // Get my purchased course progress data
 export const getAllCoursesProgress = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?._id; // Get userId from authentication middleware
+    const userId = req.user?._id;
 
     if (!userId) {
         return next(new ErrorHandler('User ID is required', 400));
     }
 
-    // Fetch all courses associated with the user
-    const userCourses = await CourseModel.find({ users: userId }); // Assuming `users` is the field in CourseModel that stores enrolled users
+    // ✅ Lấy thông tin user + populate các khóa học đã mua
+    const user = await UserModel.findById(userId).populate('purchasedCourses');
 
-    if (!userCourses || userCourses.length === 0) {
+    if (!user || !user.purchasedCourses || user.purchasedCourses.length === 0) {
         return res.status(200).json({
             success: true,
-            message: 'No courses found for this user.',
+            message: 'No purchased courses found for this user.',
             data: []
         });
     }
 
-    // Fetch progress for each course
+    const purchasedCourses = user.purchasedCourses;
+
     const progressData = await Promise.all(
-        userCourses.map(async (course) => {
+        purchasedCourses.map(async (course: any) => {
             const courseId = course._id;
 
-            // Find progress of the user in this course
+            // Lấy tiến độ học nếu có
             const progress = await ProgressModel.findOne({ user: userId, course: courseId });
 
-            // Calculate completion percentage
-            const totalLessons = course.courseData.length;
+            const totalLessons = course.courseData?.length || 0;
             const totalCompleted = progress ? progress.totalCompleted : 0;
             const completionPercentage = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
             return {
                 courseId: course._id,
-                courseName: course.name, // Assuming `name` is a field in CourseModel
+                courseName: course.name,
                 totalLessons,
                 totalCompleted,
                 completionPercentage,
-                completedLessons: progress ? progress.completedLessons : []
+                completedLessons: progress?.completedLessons || [],
+                rating: course.rating || 0,
+                thumbnail: course.thumbnail?.url || '',
+                createdAt: course.createdAt,
+                price: course.price || 0,
+                authorId: course.authorId || null
             };
         })
     );
 
     res.status(200).json({
         success: true,
-        message: 'Progress data for all courses retrieved successfully',
+        message: 'Progress data for all purchased courses retrieved successfully',
         data: progressData
     });
 });

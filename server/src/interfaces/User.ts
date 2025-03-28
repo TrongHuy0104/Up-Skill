@@ -30,4 +30,6 @@ export interface UserT extends Document {
     confirmPassword: (password: string) => Promise<boolean>;
     signAccessToken: () => string;
     signRefreshToken: () => string;
+
+    stripeAccountId?: string;
 }
