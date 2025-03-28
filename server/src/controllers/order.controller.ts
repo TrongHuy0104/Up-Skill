@@ -15,6 +15,7 @@ import sendMail from '../utils/sendMail';
 import NotificationModel from '../models/Notification.model';
 import { redis } from '../utils/redis';
 import OrderModel from '../models/Order.model';
+import IncomeModel from '../models/Income.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -100,6 +101,30 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
 
     // Update user's purchased courses
     user.purchasedCourses.push(...courses.map((course) => course._id));
+
+    // Compute income
+    IncomeModel.findOne({ isAdmin: true })
+        .populate({
+            path: 'userId',
+            match: {
+                role: 'admin'
+            }
+        })
+        .then(async (income) => {
+            if (income && income.userId) {
+                const totalIncome = courses.reduce((acc, course) => (acc += course.price), 0);
+                // Found a document where the populated user has isAdmin and role === 'admin'
+                income.totalIncome += totalIncome;
+                income.balance += totalIncome * (1 - income.commissionRate);
+                await income.save();
+            } else {
+                // No matching document found
+                return next(new ErrorHandler('No matching income document found', 500));
+            }
+        })
+        .catch((error) => {
+            return next(new ErrorHandler(`Failed: ${error.message}`, 500));
+        });
 
     await user.save();
     // Update Redis cache

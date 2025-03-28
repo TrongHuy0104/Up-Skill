@@ -11,7 +11,7 @@ import {
     DialogDescription,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
+    DialogTitle
 } from '@/components/ui/Dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Input } from '@/components/custom/Input';
@@ -30,9 +30,8 @@ const formSchema = z.object({
         .regex(/^\+?\d{10,15}$/, { message: 'Phone number must contain only numbers.' })
 });
 
-
 interface IntroduceFormProps {
-    onClose: () => void; 
+    onClose: () => void;
 }
 
 function IntroduceForm({ onClose }: IntroduceFormProps) {
@@ -52,24 +51,30 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+            // Parse age to ensure it's a number
+            const parsedValues = {
+                ...values,
+                age: values.age ? Number(values.age) : undefined // Convert to number
+            };
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/update-instructor-infor`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: JSON.stringify(values),
+                body: JSON.stringify(parsedValues) // Use parsed values
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to update instructor information.');
             }
-    
+
             toast({
                 variant: 'success',
-                title: 'Information updated successfully',
+                title: 'Information updated successfully'
             });
-    
+
             form.reset();
             onClose();
             router.push('/');
@@ -78,7 +83,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
             toast({
                 variant: 'destructive',
                 title: 'Error updating information',
-                description: 'Please try again later.',
+                description: 'Please try again later.'
             });
         }
     }
@@ -93,7 +98,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4">
+                    <form className="space-y-8 mt-4">
                         <FormField
                             control={form.control}
                             name="introduce"
@@ -140,7 +145,12 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
                                 <FormItem>
                                     <FormLabel>Age</FormLabel>
                                     <FormControl>
-                                        <Input {...field} type="number" disabled={isSubmitting} />
+                                        <Input
+                                            {...field}
+                                            type="number"
+                                            disabled={isSubmitting}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -160,7 +170,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
                             )}
                         />
                         <DialogFooter>
-                            <Button type="submit" disabled={isSubmitting}>
+                            <Button type="submit" onClick={() => onSubmit(form.getValues())}>
                                 Submit
                             </Button>
                         </DialogFooter>

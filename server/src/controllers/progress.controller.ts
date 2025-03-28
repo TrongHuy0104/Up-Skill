@@ -167,7 +167,6 @@ export const updateQuizCompletionStatus = catchAsync(async (req: Request, res: R
     await progress.save();
 
     await redis.set(`progress:${userId}:${courseId}`, JSON.stringify(progress));
-    console.log('progress', progress);
 
     res.status(200).json({
         success: true,

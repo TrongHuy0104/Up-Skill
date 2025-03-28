@@ -11,11 +11,9 @@ export default function FirstBanner() {
     const [showForm, setShowForm] = useState(false);
     const { user } = useSelector((state: any) => state.auth);
 
-
-
     const handleUpgradeRole = async () => {
         if (user?.role === 'instructor') {
-            alert('Bạn đã là Instructor từ trước!');
+            alert('You are already becoming an instructor');
             return;
         }
         setShowForm(true);
