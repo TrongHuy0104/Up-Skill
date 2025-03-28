@@ -21,7 +21,6 @@ import { ICoupon } from '@/interfaces/Coupon';
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { courseIds, payment_info, couponCode } = req.body as IOrder;
-    console.log(couponCode);
 
     // Validate courseIds
     if (!Array.isArray(courseIds)) {
@@ -95,7 +94,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
             coupon.usageLimit -= 1;
         }
     
-        await coupon.save(); // Now save will work because coupon is a Mongoose document
+        await coupon.save();
     }
     
 

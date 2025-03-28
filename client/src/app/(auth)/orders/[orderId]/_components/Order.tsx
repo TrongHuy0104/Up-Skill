@@ -29,7 +29,6 @@ function Order({ orderId }: Props) {
 
     if (!data) return null;
     const { order, position } = data;
-    console.log(couponInfo);
 
     const totalPrice = order.courseIds.reduce((total: number, course: Course) => total + course.price, 0);
     const discountAmount = couponInfo.discountPercentage || 0;
