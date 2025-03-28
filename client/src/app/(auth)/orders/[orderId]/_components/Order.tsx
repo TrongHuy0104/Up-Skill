@@ -10,6 +10,7 @@ import { layoutStyles } from '@/styles/styles';
 import { Button } from '@/components/ui/Button';
 import completeIcon from '@/public/assets/icons/order-completed.svg';
 import useUserRedirect from '@/hooks/useUserRedirect';
+import { useSelector } from 'react-redux';
 
 type Props = { orderId: string };
 
@@ -22,6 +23,7 @@ interface Course {
 function Order({ orderId }: Props) {
     const { isLoadingUser } = useUserRedirect();
     const { data, isLoading } = useGetOrderQuery(orderId);
+    const { couponInfo } = useSelector((state: any) => state.order);
 
     if (isLoadingUser || isLoading) return <Spinner />;
 
@@ -29,6 +31,8 @@ function Order({ orderId }: Props) {
     const { order, position } = data;
 
     const totalPrice = order.courseIds.reduce((total: number, course: Course) => total + course.price, 0);
+    const discountAmount = couponInfo.discountPercentage || 0;
+    const discountedTotal = couponInfo.discountedTotal || totalPrice;
 
     return (
         <div className="py-[160px]">
@@ -61,7 +65,7 @@ function Order({ orderId }: Props) {
                             </div>
                             <div>
                                 <p className="font-medium leading-7">Total</p>
-                                <p className="leading-7">${totalPrice.toFixed(2)}</p>
+                                <p className="leading-7">${discountedTotal.toFixed(2)}</p>
                             </div>
                         </div>
 
@@ -87,13 +91,13 @@ function Order({ orderId }: Props) {
                                         <p className="leading-7 font-medium">${totalPrice.toFixed(2)}</p>
                                     </li>
                                     <li className="mb-1 flex items-center justify-between pb-[10px] border-b border-primary-100 mt-2">
-                                        <p className="leading-7 font-medium">Coupon</p>
-                                        <p className="leading-7 font-medium">$0.00</p>
+                                        <p className="leading-7 font-medium">Discount Applied</p>
+                                        <p className="leading-7 font-medium">{discountAmount.toFixed(2)}%</p>
                                     </li>
                                     <li className="mb-1 flex items-center justify-between pb-[10px] mt-4">
                                         <p className="leading-[30px] font-medium text-accent-900 text-xl">Total</p>
                                         <p className="leading-[30px] font-medium text-accent-900 text-xl">
-                                            ${totalPrice.toFixed(2)}
+                                            ${discountedTotal.toFixed(2)}
                                         </p>
                                     </li>
                                 </ul>

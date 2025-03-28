@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 import { Badge } from '@/components/ui/Badge';
 import PaginationComponent from '@/components/custom/PaginationComponent';
@@ -80,6 +80,10 @@ const DashboardClient = () => {
     const handlePageChange = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
+
+    if (userData?.user && userData.user.role !== 'instructor') {
+        redirect('/');
+    }
 
     if (isLoading) return <DashboardSkeleton />;
 

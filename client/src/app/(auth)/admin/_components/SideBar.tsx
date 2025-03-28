@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import manageInstructor from '@/public/assets/icons/instructor.svg';
 import logoutIcon from '@/public/assets/icons/logout.svg';
 import courseRequest from '@/public/assets/icons/request.svg';
+import manageCoupon from '@/public/assets/icons/article.svg';
 
 const menuItems = [
     {
@@ -21,7 +22,8 @@ const menuItems = [
         items: [
             { icon: manageUser, label: 'User', path: '/admin/users' },
             { icon: manageInstructor, label: 'Instructors', path: '/admin/instructors' },
-            { icon: manageCourse, label: 'Manage Course', path: '/admin/courses' }
+            { icon: manageCourse, label: 'Manage Course', path: '/admin/courses' },
+            { icon: manageCoupon, label: 'Manage Coupon', path: '/admin/coupon' },
         ]
     },
     {

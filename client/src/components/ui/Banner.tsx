@@ -60,7 +60,7 @@ export default function Banner({
                                 {title}
                             </h2>
                         )}
-                        <div className="text-sm sm:text-base">{children}</div>
+                        <div className="text-sm sm:text-base text-center">{children}</div>
                     </div>
 
                     {/* Button section */}
