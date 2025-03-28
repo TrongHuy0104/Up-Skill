@@ -1,4 +1,4 @@
-import { ICoupon } from '@/interfaces/Coupon';
+import { ICoupon } from '../interfaces/Coupon';
 import mongoose, { Schema } from 'mongoose';
 
 const CouponSchema: Schema = new Schema(

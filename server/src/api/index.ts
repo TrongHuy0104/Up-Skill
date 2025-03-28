@@ -1,4 +1,5 @@
 import express from 'express';
+import requestRoutes from '../routes/request.router';
 import userRoutes from '../routes/user.route';
 import courseRoutes from '../routes/course.route';
 import orderRoutes from '../routes/order.route';
@@ -11,7 +12,6 @@ import progressRoutes from '../routes/progress.route';
 import incomeRoutes from '../routes/income.route';
 import cartRoutes from '../routes/cart.route';
 import couponRoutes from '../routes/coupon.route';
-import requestRoutes from '../routes/request.router';
 
 const router = express.Router();
 
