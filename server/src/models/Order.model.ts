@@ -20,8 +20,8 @@ const OrderSchema = new Schema<IOrder>(
         },
         couponCode: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Coupon',
-        },
+            ref: 'Coupon'
+        }
     },
     { timestamps: true }
 );
