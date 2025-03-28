@@ -26,7 +26,7 @@ export default function Page() {
 
     return (
         <div>
-            <div className="flex gap-4">
+            <div className="flex gap-6">
                 <CountStudentChart totalStudent={totalStudent} growthRate={parseFloat(growthRates.studentGrowthRate)} />
                 <CountInstructorChart
                     totalInstructor={totalInstructor}

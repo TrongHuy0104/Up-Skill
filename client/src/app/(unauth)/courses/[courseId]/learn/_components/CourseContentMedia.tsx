@@ -568,7 +568,7 @@ const CommentReply = ({
 }: any) => {
     return (
         <div className="w-full my-3">
-            {content[activeVideo].questions.map((item: any, index: number) => (
+            {content[activeVideo.index].questions.map((item: any, index: number) => (
                 <CommentItem
                     key={index + item?._id}
                     item={item}
@@ -593,7 +593,8 @@ const CommentItem = ({ item, answer, setAnswer, handleAnswerSubmit, setQuestionI
                     <h5 className="pl-3 text-lg font-medium">{item?.user?.name}</h5>
                     <p className="pl-3">{item?.question}</p>
                     <small className="pl-3 text-primary-500">
-                        {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')}
+                        {/* {format(new Date(item?.createdAt), 'hh:mm-MM/dd/yyyy')} */}
+                        {item?.createdAt}
                     </small>
                 </div>
             </div>
