@@ -7,6 +7,7 @@ export default function VoiceflowChatWidget() {
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+        script.async = true;
         script.onload = () => {
             (window as any).voiceflow.chat.load({
                 verify: { projectID: process.env.NEXT_PUBLIC_AI_CHATBOX_PROJECT_ID },
