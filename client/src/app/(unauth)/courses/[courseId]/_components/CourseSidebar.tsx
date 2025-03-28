@@ -50,7 +50,8 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             course,
             couponInfo: {
                 discountPercentage: discount,
-                discountedTotal: coursePrice
+                discountedTotal: coursePrice,
+                couponCode: couponCode,
             }
         }));
         const paymentIntentResult = await createPaymentIntent(amount).unwrap();
@@ -62,7 +63,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URI}/cart/cart-items`, {
                 withCredentials: true
             });
-            if (response.data.cart && response.data.cart.items) {
+            if (response.data.cart?.items) {
                 const cartItems = response.data.cart.items;
                 const courseExists = cartItems.some((items: any) => items.courseId === course._id);
                 return courseExists;
@@ -147,6 +148,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 dispatch(setCouponInfo({
                     discountPercentage: response.data.discountPercentage,
                     discountedTotal: newPrice,
+                    couponCode: couponCode,
                 }));
                 toast({
                     variant: 'success',

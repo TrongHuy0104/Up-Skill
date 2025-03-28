@@ -19,7 +19,7 @@ const OrderSchema = new Schema<IOrder>(
             type: String
         },
         couponCode: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: String,
             ref: 'Coupon'
         }
     },

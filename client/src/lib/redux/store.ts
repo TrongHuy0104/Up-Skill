@@ -5,6 +5,7 @@ import authSlice from './features/auth/authSlice';
 import orderSlice from './features/order/orderSlice';
 import incomeSlice from './features/income/incomeSlice';
 import cartReducer from './features/cart/cartSlice';
+import couponReducer from './features/coupon/couponSlice';
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
         auth: authSlice,
         order: orderSlice,
         cart: cartReducer,
+        coupon: couponReducer,
         income: incomeSlice
     },
     devTools: true,

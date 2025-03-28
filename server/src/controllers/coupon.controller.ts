@@ -79,7 +79,7 @@ export const validateCoupon = async (req: Request, res: Response, next: NextFunc
         if (userId) {
             const userIdString = String(userId);
             const userIdObjectId = new mongoose.Types.ObjectId(userIdString);
-            if (coupon.usersUsed && coupon.usersUsed.includes(userIdObjectId)) {
+            if (coupon.usersUsed?.includes(userIdObjectId)) {
                 return next(new ErrorHandler('Coupon already used by you', 200));
             }
         }

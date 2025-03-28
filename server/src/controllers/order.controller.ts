@@ -15,9 +15,8 @@ import sendMail from '../utils/sendMail';
 import NotificationModel from '../models/Notification.model';
 import { redis } from '../utils/redis';
 import OrderModel from '../models/Order.model';
-import IncomeModel from '../models/Income.model';
-import { recordCouponUsage } from '../utils/coupon';
 import { CouponModel } from '../models/Coupon.model';
+import IncomeModel from '../models/Income.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -63,6 +62,7 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     }
 
     const totalPrice = courses.reduce((sum, course) => sum + course.price, 0);
+    let couponDiscount = 0;
 
     // Prepare data for order creation
     const data: any = {
@@ -73,11 +73,27 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     };
 
     if (couponCode) {
-        const coupon = await CouponModel.findById(couponCode);
+        const coupon: any = await CouponModel.findOne({ code: couponCode });
         if (!coupon) {
             return next(new ErrorHandler('Coupon not found', 404));
         }
-        await recordCouponUsage(coupon.code, user._id);
+        const usersUsed = coupon.usersUsed ?? [];
+        if (coupon.usageLimit && usersUsed.length >= coupon.usageLimit) {
+            return next(new ErrorHandler('Coupon usage limit reached', 400));
+        }
+
+        if (usersUsed.includes(user._id.toString())) {
+            return next(new ErrorHandler('Coupon already used by this user', 400));
+        }
+
+        couponDiscount = (totalPrice * coupon.discountPercentage) / 100;
+
+        usersUsed.push(user._id);
+        if (coupon.usageLimit) {
+            coupon.usageLimit -= 1;
+        }
+
+        await coupon.save();
     }
 
     // Prepare email data
@@ -93,8 +109,8 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
                 month: 'long',
                 day: 'numeric'
             }),
-            couponCode: couponCode || 'N/A',
-            discountedTotal: totalPrice && !isNaN(totalPrice) ? totalPrice.toFixed(2) : '0.00'
+            couponCode: couponCode ?? 'N/A',
+            discountedTotal: (totalPrice - couponDiscount).toFixed(2)
         }
     };
 
