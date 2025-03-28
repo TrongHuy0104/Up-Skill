@@ -26,6 +26,7 @@ import defaultAvatar from '@/public/assets/images/avatar/user-4.png';
 import { signOutAction } from '@/lib/actions/auth';
 import { useLogoutQuery } from '@/lib/redux/features/auth/authApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
+import { LucideSquareUserRound } from 'lucide-react';
 
 export function UserDropdown() {
     const [logout, setLogout] = useState(false);
@@ -120,6 +121,33 @@ export function UserDropdown() {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
+                    <Link href={`/dashboard/${user.role}`}>
+                        <DropdownMenuItem>
+                            Profile
+                            <DropdownMenuShortcut>
+                                <LucideSquareUserRound className="text-xl" />
+                            </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </Link>
+                    <Link href="/dashboard/instructor/reviews">
+                        <DropdownMenuItem>
+                            Settings
+                            <DropdownMenuShortcut>
+                                <IoSettingsOutline className="text-lg" />
+                            </DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </Link>
+                    {/* Check if user is admin */}
+                    {user.role === 'admin' && (
+                        <Link href="/admin/dashboard" target="_blank" rel="noopener noreferrer">
+                            <DropdownMenuItem>
+                                Manage Admin
+                                <DropdownMenuShortcut>
+                                    <IoSettingsOutline className="text-lg" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </Link>
+                    )}
                     {dropdownList.map((item) => (
                         <Link href={`${item.href}`} key={item.href}>
                             <DropdownMenuItem>

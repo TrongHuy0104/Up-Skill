@@ -5,7 +5,31 @@ export interface IIncome extends Document {
     totalIncome: number;
     totalPurchased: number;
     total: number[];
+    totalWithdraw: number;
+    isAdmin: boolean;
+    requests: IRequest[];
+    balance: number;
+    commissionRate?: number;
 }
+
+interface IRequest extends Document {
+    amount: number;
+    status: 1 | 0 | -1;
+}
+
+const RequestSchema = new Schema<IRequest>(
+    {
+        amount: {
+            type: Number,
+            default: 0
+        },
+        status: {
+            type: Number,
+            default: 0
+        }
+    },
+    { timestamps: true }
+);
 
 const IncomeSchema = new Schema<IIncome>(
     {
@@ -25,7 +49,21 @@ const IncomeSchema = new Schema<IIncome>(
         total: {
             type: [Number],
             default: Array(12).fill(0)
-        }
+        },
+        totalWithdraw: {
+            type: Number,
+            default: 0
+        },
+        balance: {
+            type: Number,
+            default: 0
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false
+        },
+        requests: [RequestSchema],
+        commissionRate: Number
     },
     { timestamps: true }
 );

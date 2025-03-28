@@ -1,5 +1,5 @@
-import { CouponModel, CouponDocument } from '@/models/Coupon.model';
 import mongoose from 'mongoose';
+import { CouponModel } from '../models/Coupon.model';
 
 export const recordCouponUsage = async (couponCode: string, userId?: string) => {
     if (!userId) return;

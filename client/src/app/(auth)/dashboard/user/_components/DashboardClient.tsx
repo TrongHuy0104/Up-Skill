@@ -2,9 +2,9 @@
 
 import React, { useMemo } from 'react';
 import Image from 'next/image';
-import MyCourses from './MyCourses';
 import { useGetCourseStatsQuery } from '@/lib/redux/features/course/courseApi';
 import { useLoadUserQuery } from '@/lib/redux/features/api/apiSlice';
+import ClientCourseTabs from '../../instructor/my-course/_components/ClientCourseTabs ';
 
 interface Stats {
     totalCourses: number;
@@ -74,7 +74,7 @@ const DashboardClient = () => {
                     <StatCard key={stat.title} title={stat.title} value={stat.value} icon={stat.icon} />
                 ))}
             </div>
-            <MyCourses />
+            <ClientCourseTabs />
         </div>
     );
 };

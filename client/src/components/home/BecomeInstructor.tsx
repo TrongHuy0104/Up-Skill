@@ -40,7 +40,7 @@ function BecomeInstructor() {
                             </ul>
                         </div>
                         <div className="my-auto">
-                            <Link href="/become-instructor">
+                            <Link href="/become-a-teacher">
                                 <Button className="text-base">
                                     Start Teaching Today <TfiArrowTopRight className="relative top-[1px]" />
                                 </Button>

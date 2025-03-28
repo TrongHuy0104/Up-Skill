@@ -1,4 +1,4 @@
-import { ICoupon } from '@/interfaces/Coupon';
+import { ICoupon } from '../interfaces/Coupon';
 import mongoose, { Schema } from 'mongoose';
 
 const CouponSchema: Schema = new Schema(
@@ -14,4 +14,3 @@ const CouponSchema: Schema = new Schema(
 );
 
 export const CouponModel = mongoose.model<ICoupon>('Coupon', CouponSchema);
-export type CouponDocument = ICoupon;

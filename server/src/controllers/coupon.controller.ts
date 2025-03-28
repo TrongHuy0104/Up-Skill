@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { CouponModel } from '@/models/Coupon.model';
-import ErrorHandler from '@/utils/ErrorHandler';
+import { CouponModel } from '../models/Coupon.model';
+import ErrorHandler from '../utils/ErrorHandler';
 import mongoose from 'mongoose';
 
 export const createCoupon = async (req: Request, res: Response, next: NextFunction) => {
@@ -31,7 +31,10 @@ export const updateCoupon = async (req: Request, res: Response, next: NextFuncti
     try {
         const couponId = req.params.id;
         const updates = req.body;
-        const updatedCoupon = await CouponModel.findByIdAndUpdate(couponId, updates, { new: true, runValidators: true });
+        const updatedCoupon = await CouponModel.findByIdAndUpdate(couponId, updates, {
+            new: true,
+            runValidators: true
+        });
         if (!updatedCoupon) {
             return next(new ErrorHandler('Coupon not found', 404));
         }
@@ -75,15 +78,19 @@ export const validateCoupon = async (req: Request, res: Response, next: NextFunc
 
         if (userId) {
             const userIdString = String(userId);
-            const userIdObjectId = new mongoose.Types.ObjectId(userIdString); 
+            const userIdObjectId = new mongoose.Types.ObjectId(userIdString);
             if (coupon.usersUsed && coupon.usersUsed.includes(userIdObjectId)) {
                 return next(new ErrorHandler('Coupon already used by you', 200));
             }
         }
 
-        res.status(200).json({ success: true, coupon, discountPercentage: coupon.discountPercentage, message: 'Coupon valid' });
+        res.status(200).json({
+            success: true,
+            coupon,
+            discountPercentage: coupon.discountPercentage,
+            message: 'Coupon valid'
+        });
     } catch (error) {
         next(error);
     }
 };
-
