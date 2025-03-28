@@ -6,9 +6,10 @@ import { useState, useRef, useEffect } from "react";
 interface SortByProps {
     readonly options: readonly { value: string; label: string }[];
     readonly defaultValue?: string;
+    readonly onChange?: (value: string) => void;
 }
 
-export default function SortBy({ options, defaultValue }: SortByProps) {
+export default function SortBy({ options, defaultValue, onChange }: SortByProps) {
     const [selected, setSelected] = useState(defaultValue ?? options[0]?.label);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -19,7 +20,6 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                 setIsOpen(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -39,15 +39,14 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                 ? (currentIndex + 1) % options.length
                 : (currentIndex - 1 + options.length) % options.length;
             setSelected(options[nextIndex].label);
+            onChange?.(options[nextIndex].value);
         }
     };
 
     return (
         <div className="relative flex justify-end" ref={dropdownRef}>
-            <div className="flex items-center gap-2 flex-wrap"> 
-                <p className="text-primary-600 text-[15px] min-w-20 text-right">
-                    Sort by
-                </p>
+            <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-primary-600 text-[15px] min-w-20 text-right">Sort by</p>
                 <button
                     className="flex items-center justify-between gap-2 text-primary-800 min-w-30"
                     onClick={() => setIsOpen(!isOpen)}
@@ -55,17 +54,17 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                     aria-haspopup="listbox"
                     aria-expanded={isOpen}
                 >
-                    <span className="truncate">{selected}</span> 
-                    <Image 
-                        src={arrowDownIcon} 
-                        alt="arrow down icon" 
+                    <span className="truncate ">{selected}</span>
+                    <Image
+                        src={arrowDownIcon}
+                        alt="arrow down icon"
                         className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}
                     />
                 </button>
             </div>
 
             {isOpen && (
-                <ul className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[192px]">
+                <ul className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[192px] animate-dropdown">
                     {options.map((option) => (
                         <li key={option.value}>
                             <button
@@ -73,6 +72,7 @@ export default function SortBy({ options, defaultValue }: SortByProps) {
                                 onClick={() => {
                                     setSelected(option.label);
                                     setIsOpen(false);
+                                    onChange?.(option.value); // 👈 callback khi chọn
                                 }}
                             >
                                 {option.label}

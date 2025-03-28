@@ -6,6 +6,7 @@ import TestimonialCarousel from '@/components/home/TestimonialCarousel';
 import TopInstructors from '@/components/home/TopInstructors';
 import BecomeInstructor from '@/components/home/BecomeInstructor';
 import MyCourses from '@/components/home/MyCourses';
+import VoiceflowChatWidget from '@/components/custom/VoiceflowChatWidget';
 
 const fetchData = async (url: string) => {
     const response = await fetch(url, {
@@ -36,6 +37,7 @@ const Page = async () => {
                 <TestimonialCarousel />
                 <TopInstructors instructors={topInstructorsData.topInstructors} />
                 <BecomeInstructor />
+                <VoiceflowChatWidget />
             </div>
         );
     } catch (error) {
