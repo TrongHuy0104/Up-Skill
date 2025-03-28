@@ -30,6 +30,7 @@ const menuItems = [
         title: 'CONTENT',
         items: [
             { icon: courseRequest, label: 'Courses Request', path: '/admin/course-request' },
+            { icon: courseRequest, label: 'Withdraw Request', path: '/admin/withdraw' }
         ]
     },
     {

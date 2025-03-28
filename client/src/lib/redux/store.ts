@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { apiSlice } from './features/api/apiSlice';
 import authSlice from './features/auth/authSlice';
 import orderSlice from './features/order/orderSlice';
+import incomeSlice from './features/income/incomeSlice';
 import cartReducer from './features/cart/cartSlice';
 import couponReducer from './features/coupon/couponSlice';
 
@@ -12,7 +13,11 @@ export const store = configureStore({
         auth: authSlice,
         order: orderSlice,
         cart: cartReducer,
+<<<<<<< HEAD
         coupon: couponReducer
+=======
+        income: incomeSlice
+>>>>>>> fda1546ea3b7aec4bded8e37c06f06be85fe3223
     },
     devTools: true,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware)

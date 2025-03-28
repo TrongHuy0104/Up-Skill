@@ -4,7 +4,7 @@ export interface IIncome extends Document {
     userId: mongoose.Schema.Types.ObjectId;
     totalIncome: number;
     totalPurchased: number;
-    total: number[];
+    total: number[]; // Mảng 12 phần tử tương ứng với thu nhập mỗi tháng
 }
 
 const IncomeSchema = new Schema<IIncome>(
@@ -24,7 +24,7 @@ const IncomeSchema = new Schema<IIncome>(
         },
         total: {
             type: [Number],
-            default: Array(12).fill(0)
+            default: Array(12).fill(0) // 12 tháng, mỗi tháng khởi tạo 0
         }
     },
     { timestamps: true }
