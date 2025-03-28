@@ -15,9 +15,10 @@ export default function QuizList({ onQuizClick }: Readonly<{ onQuizClick: (quizI
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                const baseURL = process.env.NEXT_PUBLIC_SERVER_URI || 'http://localhost:8000';
-                const response = await fetch(`${baseURL}/quizzes`);
-
+                const baseURL = process.env.NEXT_PUBLIC_SERVER_URI || 'http://localhost:8000/api';
+                const response = await fetch(`${baseURL}/quizzes`, {
+                    credentials: 'include', // gửi cookie kèm theo
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch quizzes');
                 }
@@ -38,7 +39,7 @@ export default function QuizList({ onQuizClick }: Readonly<{ onQuizClick: (quizI
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const baseURL = process.env.NEXT_PUBLIC_SERVER_URI || 'http://localhost:8000';
+                const baseURL = process.env.NEXT_PUBLIC_SERVER_URI || 'http://localhost:8000/api';
                 const response = await fetch(`${baseURL}/courses/user-courses`, {
                     credentials: 'include', // gửi cookie kèm theo
                 });
