@@ -144,7 +144,7 @@ export default function CourseContentList({
                                     {totalSectionLength < 60
                                         ? totalSectionLength?.toFixed(0)
                                         : sectionContentHours.toFixed(2)}{' '}
-                                    {totalSectionLength > 60 ? 'hours' : 'minutes'}
+                                    {totalSectionLength > 60 ? 'minutes' : 'seconds'}
                                 </span>
                             </div>
                         </button>

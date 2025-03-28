@@ -7,7 +7,7 @@ const CouponSchema: Schema = new Schema(
         discountPercentage: { type: Number, required: true, min: 1, max: 100 },
         isActive: { type: Boolean, default: true },
         expiryDate: { type: Date, default: null },
-        usageLimit: { type: Number, default: null, min: 1 },
+        usageLimit: { type: Number, default: null, min: 0 },
         usersUsed: [{ type: Schema.Types.ObjectId, ref: 'User' }]
     },
     { timestamps: true }

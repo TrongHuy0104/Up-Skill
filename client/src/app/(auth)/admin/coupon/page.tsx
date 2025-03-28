@@ -132,80 +132,83 @@ const CouponManagementPage = () => {
         <h2 className="text-xl font-semibold mb-4">
           {editingId ? 'Update Coupon' : 'Create New Coupon'}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Coupon Code</label>
-            <input
-              type="text"
-              name="code"
-              className="w-full p-2 border rounded"
-              value={couponForm.code}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Discount Percentage</label>
-            <input
-              type="number"
-              name="discountPercentage"
-              className="w-full p-2 border rounded"
-              min="1"
-              max="100"
-              value={couponForm.discountPercentage}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-            <input
-              type="date"
-              name="expiryDate"
-              className="w-full p-2 border rounded"
-              value={couponForm.expiryDate}
-              onChange={handleInputChange}
-              min={format(new Date(), 'yyyy-MM-dd')}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Usage Limit</label>
-            <input
-              type="number"
-              name="usageLimit"
-              className="w-full p-2 border rounded"
-              min="1"
-              value={couponForm.usageLimit}
-              onChange={handleInputChange}
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Coupon Code</label>
+                <input
+                type="text"
+                name="code"
+                className="w-full p-2 border rounded"
+                value={couponForm.code}
+                onChange={handleInputChange}
+                />
+            </div>
+            
+            <div className="md:col-span-1 md:col-start-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Discount Percentage</label>
+                <input
+                type="number"
+                name="discountPercentage"
+                className="w-full p-2 border rounded"
+                min="1"
+                max="100"
+                value={couponForm.discountPercentage}
+                onChange={handleInputChange}
+                />
+            </div>
 
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select
+            <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                <input
+                type="date"
+                name="expiryDate"
+                className="w-full p-2 border rounded"
+                value={couponForm.expiryDate}
+                onChange={handleInputChange}
+                min={format(new Date(), 'yyyy-MM-dd')}
+                />
+            </div>
+            
+            <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Usage Limit</label>
+                <input
+                type="number"
+                name="usageLimit"
+                className="w-full p-2 border rounded"
+                min="1"
+                value={couponForm.usageLimit}
+                onChange={handleInputChange}
+                />
+            </div>
+            
+            <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
                 name="isActive"
                 value={couponForm.isActive ? 'true' : 'false'}
                 onChange={(e) => setCouponForm({...couponForm, isActive: e.target.value === 'true'})}
                 className="w-full p-2 border rounded"
-            >
+                >
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
-            </select>
-          </div>  
-        </div>
-        <div className="flex justify-end mt-4 space-x-2">
-          {editingId && (
-            <button
-              onClick={handleCancelEdit}
-              className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          )}
+                </select>
+            </div>
+            </div>
+            <div className="flex justify-end mt-4 space-x-2">
+                {editingId && (
+                    <button
+                    onClick={handleCancelEdit}
+                    className="px-4 py-2 border rounded text-gray-700 hover:bg-gray-50"
+                    >
+                    Cancel
+                    </button>
+            )}
           <button
             onClick={editingId ? handleUpdateCoupon : handleCreateCoupon}
             disabled={isCreating || isUpdating || !couponForm.code}
             className={`px-4 py-2 rounded text-white ${editingId ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-500 hover:bg-blue-600'} disabled:opacity-50`}
           >
-            {isCreating || isUpdating ? 'Processing...' : editingId ? 'Update Coupon' : 'Create Coupon'}
+            {isCreating || isUpdating ? 'Processing...' : editingId ? 'Update' : 'Create'}
           </button>
         </div>
       </div>
@@ -219,22 +222,22 @@ const CouponManagementPage = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Limit</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-10 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                  <th className="px-10 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                  <th className="px-14 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry</th>
+                  <th className="px-10 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Limit</th>
+                  <th className="px-10 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-14 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {coupons?.coupons?.map((coupon: Coupon) => (
                   <tr key={coupon._id}>
                     <td className="px-6 py-4 whitespace-nowrap font-medium">{coupon.code}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{coupon.discountPercentage}%</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{format(new Date(coupon.expiryDate), 'MMM dd, yyyy')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{coupon.usageLimit}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-12 py-4 whitespace-nowrap">{coupon.discountPercentage}%</td>
+                    <td className="px-10 py-4 whitespace-nowrap">{format(new Date(coupon.expiryDate), 'MMM dd, yyyy')}</td>
+                    <td className="px-12 py-4 whitespace-nowrap">{coupon.usageLimit}</td>
+                    <td className="px-10 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 rounded-full text-xs ${coupon.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                         {coupon.isActive ? 'Active' : 'Inactive'}
                       </span>
@@ -242,14 +245,14 @@ const CouponManagementPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap space-x-2">
                       <button
                         onClick={() => handleEditCoupon(coupon)}
-                        className="text-yellow-600 hover:text-yellow-900"
+                        className="text-yellow-600 py-1 px-4 rounded-lg bg-orange-100 hover:text-yellow-900"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDeleteCoupon(coupon._id)}
                         disabled={isDeleting}
-                        className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                        className="text-red-600 py-1 px-2 rounded-lg bg-red-100 hover:text-red-900 disabled:opacity-50"
                       >
                         {isDeleting ? 'Deleting...' : 'Delete'}
                       </button>
