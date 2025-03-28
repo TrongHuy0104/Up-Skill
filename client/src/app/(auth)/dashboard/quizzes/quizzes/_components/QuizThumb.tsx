@@ -23,9 +23,9 @@ export default function QuizThumb({ quiz }: QuizThumbProps) {
                 <a
                     href="#"
                     className="text-[10px] text-gray-600 hover:text-orange-500 transition-colors truncate"
-                    title={quiz.courseId?.tags} // Show full course tag on hover
+                    title={quiz.courseId?.name} // Show full course tag on hover
                 >
-                    Course: {quiz.courseId?.tags}
+                    Course: {quiz.courseId?.name}
                 </a>
                 {/* Section Tag */}
                 <a
