@@ -107,50 +107,46 @@ const MyCourses = () => {
     if (courses.length === 0) return null;
 
     return (
-        <section className="border-t border-primary-100 pb-[64px] pt-[80px]">
-    <div className={layoutStyles.container}>
-        <div className={layoutStyles.row}>
-            <div className="w-full">
-                <div className="mb-8 text-primary-800">
-                    <h2 className="mb-2 font-bold font-cardo text-[36px] leading-[50px]">Your Courses</h2>
-                    <div className="flex items-center justify-between gap-[10px] flex-wrap">
-                        <span>Good learn good skill!</span>
-                        <Link
-                            href="/courses"
-                            className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7 transition-all duration-300 ease-in-out hover:text-accent-900"
-                        >
-                            Show More Courses <TfiArrowTopRight className="relative top-[1px]" />
-                        </Link>
-                    </div>
-
-                    {/* Carousel Wrapper */}
-                    <div className="relative mt-6">
-                        <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                            {courses.map((course) => (
-                                <div
-                                    key={course._id}
-                                    className="snap-start shrink-0 w-[80%] sm:w-[60%] md:w-[45%] lg:w-[20%] px-2"
+        <section className="border-t border-primary-100 pb-[64px] pt-[80px] sm:px-4">
+            <div className={layoutStyles.container}>
+                <div className={layoutStyles.row}>
+                    <div className="w-full">
+                        <div className="mb-8 text-primary-800">
+                            <h2 className="mb-2 font-bold font-cardo text-[36px] leading-[50px]">Your Courses</h2>
+                            <div className="flex items-center justify-between gap-[10px] flex-wrap">
+                                <span>Good learn good skill!</span>
+                                <Link
+                                    href="/courses"
+                                    className="flex items-center justify-center w-max gap-[10px] font-medium text-base leading-7 transition-all duration-300 ease-in-out hover:text-accent-900"
                                 >
-                                    <CourseVerticalCard
-                                        course={course}
-                                        isProgress={true}
-                                        progress={progressData[course._id] || 0}
-                                    />
-                                </div>
-                            ))}
-                        </div>
+                                    Show More Courses <TfiArrowTopRight className="relative top-[1px]" />
+                                </Link>
+                            </div>
 
-                        {/* Optional: Custom Navigation Buttons */}
-                        <CarouselPrevious />
-                        <CarouselNext />
+                            <Carousel className="relative mt-6">
+                                <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                                    {courses.map((course) => (
+                                        <div
+                                            key={course._id}
+                                            className="snap-start shrink-0 w-[80%] sm:w-[60%] md:w-[45%] lg:w-[20%] px-2"
+                                        >
+                                            <CourseVerticalCard
+                                                course={course}
+                                                isProgress={true}
+                                                progress={progressData[course._id] || 0}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-
+        </section>
     );
 };
 
