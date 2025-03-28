@@ -20,8 +20,8 @@ const OrderSchema = new Schema<IOrder>(
         },
         couponCode: {
             type: String,
-            ref: 'Coupon',
-        },
+            ref: 'Coupon'
+        }
     },
     { timestamps: true }
 );

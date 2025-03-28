@@ -64,7 +64,6 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
     const totalPrice = courses.reduce((sum, course) => sum + course.price, 0);
     let couponDiscount = 0;
 
-
     // Prepare data for order creation
     const data: any = {
         courseIds: courses.map((course) => course._id),
@@ -82,22 +81,20 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         if (coupon.usageLimit && usersUsed.length >= coupon.usageLimit) {
             return next(new ErrorHandler('Coupon usage limit reached', 400));
         }
-    
+
         if (usersUsed.includes(user._id.toString())) {
             return next(new ErrorHandler('Coupon already used by this user', 400));
         }
-    
+
         couponDiscount = (totalPrice * coupon.discountPercentage) / 100;
-    
+
         usersUsed.push(user._id);
         if (coupon.usageLimit) {
             coupon.usageLimit -= 1;
         }
-    
+
         await coupon.save();
     }
-    
-
 
     // Prepare email data
     const mailData = {

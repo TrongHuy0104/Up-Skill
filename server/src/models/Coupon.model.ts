@@ -14,4 +14,3 @@ const CouponSchema: Schema = new Schema(
 );
 
 export const CouponModel = mongoose.model<ICoupon>('Coupon', CouponSchema);
-export type CouponDocument = ICoupon;
