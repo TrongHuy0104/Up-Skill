@@ -16,12 +16,10 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Input } from '@/components/custom/Input';
 import { toast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 const formSchema = z.object({
-    name: z.string().min(1, { message: 'This field has to be filled.' }),
     profession: z.string().min(1, { message: 'This field has to be filled.' }),
     introduce: z.string().optional(),
-    age: z.number().min(0, { message: 'Age must be a positive number' }).optional(),
+    age: z.coerce.number().min(0, { message: 'Age must be a positive number' }).optional(),
     address: z.string().min(1, { message: 'This field has to be filled.' }),
     phoneNumber: z
         .string()
@@ -31,11 +29,10 @@ const formSchema = z.object({
 });
 
 interface IntroduceFormProps {
-    onClose: () => void;
+    onClose: () => void; // Nhận prop onClose từ FirstBanner
 }
 
 function IntroduceForm({ onClose }: IntroduceFormProps) {
-    const router = useRouter();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -47,23 +44,17 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
         }
     });
 
-    const { isSubmitting } = form.formState;
+    const { isSubmitting, isValid } = form.formState;
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            // Parse age to ensure it's a number
-            const parsedValues = {
-                ...values,
-                age: values.age ? Number(values.age) : undefined // Convert to number
-            };
-
             const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/user/update-instructor-infor`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: JSON.stringify(parsedValues) // Use parsed values
+                body: JSON.stringify(values)
             });
 
             if (!response.ok) {
@@ -77,7 +68,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
 
             form.reset();
             onClose();
-            router.push('/');
+            window.location.reload();
         } catch (error) {
             console.error(error);
             toast({
@@ -98,7 +89,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form className="space-y-8 mt-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4">
                         <FormField
                             control={form.control}
                             name="introduce"
@@ -145,12 +136,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
                                 <FormItem>
                                     <FormLabel>Age</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            type="number"
-                                            disabled={isSubmitting}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                        />
+                                        <Input {...field} type="number" disabled={isSubmitting} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -170,7 +156,7 @@ function IntroduceForm({ onClose }: IntroduceFormProps) {
                             )}
                         />
                         <DialogFooter>
-                            <Button type="submit" onClick={() => onSubmit(form.getValues())}>
+                            <Button type="submit" disabled={!isValid || isSubmitting}>
                                 Submit
                             </Button>
                         </DialogFooter>

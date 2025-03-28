@@ -67,52 +67,55 @@ const TestimonialCarousel = () => {
     };
 
     return (
-        <section className={`${layoutStyles.container} pb-[140px] relative`}>
-            <div className={layoutStyles.row}>
-                <div className="w-full">
-                    <div className="mb-6 text-center text-primary-800">
-                        <h2 className="mb-2 font-bold font-cardo text-4xl leading-[50px]">What Clients Are Saying</h2>
-                        <p>Lorem ipsum dolor sit amet elit</p>
-                    </div>
-                </div>
+        <section className={`${layoutStyles.container} pb-20 md:pb-[140px] relative px-4 sm:px-6`}>
+  <div className={layoutStyles.row}>
+    <div className="w-full">
+      <div className="mb-6 md:mb-10 text-center text-primary-800">
+        <h2 className="mb-2 font-bold font-cardo text-2xl sm:text-3xl md:text-4xl leading-[1.3] md:leading-[50px]">
+          What Clients Are Saying
+        </h2>
+        <p className="text-sm md:text-base">Lorem ipsum dolor sit amet elit</p>
+      </div>
+    </div>
+  </div>
+  
+  <div className="w-full md:w-10/12 mx-auto">
+    <Slider {...settings}>
+      {testimonials.map((testimonial) => (
+        <div key={testimonial.id} className="p-4 sm:p-6">
+          <Image
+            src={testimonial.image}
+            width={80}
+            height={80}
+            alt={testimonial.name}
+            className="mx-auto rounded-full h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] md:h-[120px] md:w-[120px]"
+          />
+          
+          <div className="mx-auto mt-6 sm:mt-8 w-full max-w-[922px] flex items-center justify-center flex-col">
+            <div className="flex items-center justify-center flex-col">
+              <Link
+                href="#!"
+                className="text-base sm:text-lg text-primary-800 cursor-pointer transition duration-300 hover:text-accent-600"
+              >
+                {testimonial.name}
+              </Link>
+              <span className="text-xs sm:text-sm leading-6 -mt-1 mb-3 sm:mb-4">{testimonial.role}</span>
+              <div className="flex items-center gap-1 sm:gap-2">
+                {[...Array(5)].map((_, i) => (
+                  <FaStar key={i} size={12} className="sm:w-[14px] sm:h-[14px] w-[12px] h-[12px]" />
+                ))}
+              </div>
             </div>
-            <div className="w-10/12 mx-auto">
-                <Slider {...settings}>
-                    {testimonials.map((testimonial) => (
-                        <div key={testimonial.id} className="p-6">
-                            <Image
-                                src={testimonial.image}
-                                width={120}
-                                height={120}
-                                alt={testimonial.name}
-                                className="mx-auto rounded-[40px] h-[120px]"
-                            />
-                            <div className="mx-auto mt-8 w-[922px] flex items-center justify-center flex-col">
-                                <div className="flex items-center justify-center flex-col">
-                                    <Link
-                                        href="#!"
-                                        className="text-lg text-primary-800 cursor-pointer transition duration-300 hover:text-accent-600"
-                                    >
-                                        {testimonial.name}
-                                    </Link>
-                                    <span className="text-sm leading-7 -mt-1 mb-4">{testimonial.role}</span>
-                                    <div className="flex items-center gap-2">
-                                        <FaStar size={14} />
-                                        <FaStar size={14} />
-                                        <FaStar size={14} />
-                                        <FaStar size={14} />
-                                        <FaStar size={14} />
-                                    </div>
-                                </div>
-                                <p className="mt-[18px] text-[26px] leading-[46px] font-medium text-center text-primary-800">
-                                    {testimonial.text}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </Slider>
-            </div>
-        </section>
+            
+            <p className="mt-4 sm:mt-[18px] text-base sm:text-xl md:text-[26px] leading-[1.5] sm:leading-[1.8] md:leading-[46px] font-medium text-center text-primary-800 px-2 sm:px-0">
+              {testimonial.text}
+            </p>
+          </div>
+        </div>
+      ))}
+    </Slider>
+  </div>
+</section>
     );
 };
 

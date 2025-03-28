@@ -67,6 +67,19 @@ const userNavbarItems = [
     }
 ];
 
+const adminNavbarItems = [
+    {
+        title: 'Dashboard',
+        href: '/admin/dashboard',
+        icon: <MdOutlineDashboardCustomize className="text-[20px]" />
+    },
+    {
+        title: 'Settings',
+        href: '/dashboard/settings',
+        icon: <IoSettingsOutline className="text-[20px]" />
+    }
+];
+
 const DashboardNavigationBar = () => {
     const { data: userData, isLoading: isLoadingUser } = useLoadUserQuery(undefined);
     const pathName = usePathname();
@@ -80,13 +93,15 @@ const DashboardNavigationBar = () => {
     const currentNavbarList =
         user.role === 'instructor'
             ? [...instructorNavbarItems, ...commonNavbarItems]
-            : [...userNavbarItems, ...commonNavbarItems];
+            : user.role === 'user'
+                ? [...userNavbarItems, ...commonNavbarItems]
+                : [...adminNavbarItems]
 
     return (
         <div>
             <div className="bg-primary-800 rounded-xl pb-5">
                 <div className="text-primary-50 opacity-50 pt-[21px] px-[30px] pb-[11px]">
-                    {user.role === 'instructor' ? 'INSTRUCTOR DASHBOARD' : 'USER DASHBOARD'}
+                    {user.role === 'instructor' ? 'INSTRUCTOR DASHBOARD' : user.role === 'user' ? 'USER DASHBOARD' : 'ADMIN DASHBOARD'}
                 </div>
                 {currentNavbarList.map((item) => (
                     <Link

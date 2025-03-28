@@ -34,7 +34,7 @@ export default function QuizItem({ quiz, courses, isFirst, isLast, onClick, onUp
                 role="button"
                 onClick={onClick}
                 className={`group grid grid-cols-10 gap-4 items-baseline cursor-pointer hover:bg-gray-100 transition ${isFirst ? 'pt-6' : ''
-                    } ${isLast ? 'border-none' : 'border-b border-gray-200'} my-4 py-4`}
+                    } ${isLast ? 'border-none' : 'border-b border-gray-200 rounded-lg'} my-4 py-4`}
                 aria-label="Quiz item"
                 tabIndex={0}
                 onKeyPress={(e) => e.key === 'Enter' && onClick()}

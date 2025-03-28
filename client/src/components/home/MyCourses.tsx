@@ -107,7 +107,7 @@ const MyCourses = () => {
     if (courses.length === 0) return null;
 
     return (
-        <section className="border-top border-primary-100 pb-[64px] pt-[80px]">
+        <section className="border-t border-primary-100 pb-[64px] pt-[80px] sm:px-4">
             <div className={layoutStyles.container}>
                 <div className={layoutStyles.row}>
                     <div className="w-full">
@@ -122,25 +122,26 @@ const MyCourses = () => {
                                     Show More Courses <TfiArrowTopRight className="relative top-[1px]" />
                                 </Link>
                             </div>
-                            <div className="mt-6">
-                                <Carousel className="w-full">
-                                    <CarouselContent className="-ml-1">
-                                        {courses.map((course) => (
-                                            <CarouselItem key={course._id} className="pl-1 md:basis-1/2 lg:basis-1/5">
-                                                <div className="p-1">
-                                                    <CourseVerticalCard
-                                                        course={course}
-                                                        isProgress={true}
-                                                        progress={progressData[course._id] || 0}
-                                                    />
-                                                </div>
-                                            </CarouselItem>
-                                        ))}
-                                    </CarouselContent>
-                                    <CarouselPrevious />
-                                    <CarouselNext />
-                                </Carousel>
-                            </div>
+
+                            <Carousel className="relative mt-6">
+                                <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                                    {courses.map((course) => (
+                                        <div
+                                            key={course._id}
+                                            className="snap-start shrink-0 w-[80%] sm:w-[60%] md:w-[45%] lg:w-[20%] px-2"
+                                        >
+                                            <CourseVerticalCard
+                                                course={course}
+                                                isProgress={true}
+                                                progress={progressData[course._id] || 0}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
                         </div>
                     </div>
                 </div>
