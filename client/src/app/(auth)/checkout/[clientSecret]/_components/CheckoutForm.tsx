@@ -1,5 +1,3 @@
-'use client';
-
 import { LinkAuthenticationElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -15,6 +13,7 @@ function CheckoutForm() {
     const elements = useElements();
     const { courses } = useSelector((state: any) => state.order);
     const { user } = useSelector((state: any) => state.auth);
+    const { couponInfo } = useSelector((state: any) => state.order)
     const dispatch = useDispatch();
 
     const [message, setMessage] = useState<string>('');
@@ -36,7 +35,7 @@ function CheckoutForm() {
         } else if (paymentIntent && paymentIntent.status === 'succeeded') {
             setIsLoading(false);
             const courseIds = courses.map((course: any) => course._id);
-            await createOrder({ courseIds, payment_info: paymentIntent });
+            await createOrder({ courseIds, payment_info: paymentIntent, couponCode: couponInfo.couponCode });
         }
     };
 

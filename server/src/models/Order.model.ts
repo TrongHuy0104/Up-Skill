@@ -17,6 +17,10 @@ const OrderSchema = new Schema<IOrder>(
         },
         payment_info: {
             type: String
+        },
+        couponCode: {
+            type: String,
+            ref: 'Coupon'
         }
     },
     { timestamps: true }

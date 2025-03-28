@@ -31,41 +31,38 @@ const RequestSchema = new Schema<IRequest>(
     { timestamps: true }
 );
 
-const IncomeSchema = new Schema<IIncome>(
-    {
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
-        },
-        totalIncome: {
-            type: Number,
-            default: 0
-        },
-        totalPurchased: {
-            type: Number,
-            default: 0
-        },
-        total: {
-            type: [Number],
-            default: Array(12).fill(0) // 12 tháng, mỗi tháng khởi tạo 0
-        },
-        totalWithdraw: {
-            type: Number,
-            default: 0
-        },
-        balance: {
-            type: Number,
-            default: 0
-        },
-        isAdmin: {
-            type: Boolean,
-            default: false
-        },
-        requests: [RequestSchema],
-        commissionRate: Number
+const IncomeSchema = new Schema<IIncome>({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
-    { timestamps: true }
-);
+    totalIncome: {
+        type: Number,
+        default: 0
+    },
+    totalPurchased: {
+        type: Number,
+        default: 0
+    },
+    total: {
+        type: [Number],
+        default: Array(12).fill(0) // 12 tháng, mỗi tháng khởi tạo 0
+    },
+    totalWithdraw: {
+        type: Number,
+        default: 0
+    },
+    balance: {
+        type: Number,
+        default: 0
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
+    requests: [RequestSchema],
+    commissionRate: Number
+});
 
-export default mongoose.models.Income || mongoose.model<IIncome>('Income', IncomeSchema);
+export default mongoose.models.Order || mongoose.model<IIncome>('Income', IncomeSchema);

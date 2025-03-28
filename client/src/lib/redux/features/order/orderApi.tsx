@@ -34,12 +34,13 @@ export const orderApi = apiSlice.injectEndpoints({
             })
         }),
         createOrder: builder.mutation({
-            query: ({ courseIds, payment_info }) => ({
+            query: ({ courseIds, payment_info, couponCode }) => ({
                 url: 'orders/create-order',
                 method: 'POST',
                 body: {
                     courseIds,
-                    payment_info
+                    payment_info,
+                    couponCode,
                 },
                 credentials: 'include' as const
             })

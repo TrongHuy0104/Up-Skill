@@ -15,11 +15,12 @@ import sendMail from '../utils/sendMail';
 import NotificationModel from '../models/Notification.model';
 import { redis } from '../utils/redis';
 import OrderModel from '../models/Order.model';
+import { CouponModel } from '../models/Coupon.model';
 import IncomeModel from '../models/Income.model';
 
 // create order
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { courseIds, payment_info } = req.body as IOrder;
+    const { courseIds, payment_info, couponCode } = req.body as IOrder;
 
     // Validate courseIds
     if (!Array.isArray(courseIds)) {
@@ -60,11 +61,40 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
         return next(new ErrorHandler('You have already purchased one or more of these courses', 400));
     }
 
+    const totalPrice = courses.reduce((sum, course) => sum + course.price, 0);
+    let couponDiscount = 0;
+
     // Prepare data for order creation
     const data: any = {
         courseIds: courses.map((course) => course._id),
-        userId: user._id
+        userId: user._id,
+        totalPrice,
+        couponCode
     };
+
+    if (couponCode) {
+        const coupon: any = await CouponModel.findOne({ code: couponCode });
+        if (!coupon) {
+            return next(new ErrorHandler('Coupon not found', 404));
+        }
+        const usersUsed = coupon.usersUsed ?? [];
+        if (coupon.usageLimit && usersUsed.length >= coupon.usageLimit) {
+            return next(new ErrorHandler('Coupon usage limit reached', 400));
+        }
+
+        if (usersUsed.includes(user._id.toString())) {
+            return next(new ErrorHandler('Coupon already used by this user', 400));
+        }
+
+        couponDiscount = (totalPrice * coupon.discountPercentage) / 100;
+
+        usersUsed.push(user._id);
+        if (coupon.usageLimit) {
+            coupon.usageLimit -= 1;
+        }
+
+        await coupon.save();
+    }
 
     // Prepare email data
     const mailData = {
@@ -78,7 +108,9 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-            })
+            }),
+            couponCode: couponCode ?? 'N/A',
+            discountedTotal: (totalPrice - couponDiscount).toFixed(2)
         }
     };
 
