@@ -100,6 +100,17 @@ const ShopCart: React.FC = () => {
   const subtotal = filteredCartItems.reduce((acc, item) => acc + (item.courseId.price || 0), 0);
 
   const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponCode('');
+      dispatch(setCouponInfo({ discountPercentage: 0, discountedTotal: subtotal, couponCode: '' }));
+      setIsCouponApplied(false);
+      setDiscountedTotal(subtotal);
+      toast({
+          variant: 'destructive',
+          title: 'Please input your Coupon Code!',
+      });
+      return;
+  }
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URI}/coupon/validate`,
@@ -114,7 +125,7 @@ const ShopCart: React.FC = () => {
         const newTotalPrice = subtotal * (1 - discountPercentage / 100);
         setDiscountedTotal(newTotalPrice);
 
-        dispatch(setCouponInfo({ discountPercentage, discountedTotal: newTotalPrice }));
+        dispatch(setCouponInfo({ discountPercentage, discountedTotal: newTotalPrice, couponCode: couponCode }));
 
         const totalDiscountPercent = salePercent + discountPercentage;
         setSalePercent(totalDiscountPercent);
@@ -233,54 +244,47 @@ const ShopCart: React.FC = () => {
                 </table>
               {/* )} */}
             </div>
-
-            {/* Coupon Code */}
-            <div className="bg-white py-4 mt-6 w-full">
-              <div className="relative flex items-center gap-4">
-                <div className="relative w-[370px] py-4 -ml-2">
-                  <input
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder=" "
-                    className="w-full ml-2 peer flex-grow border-b-2 border-primary-100 rounded-none pt-4 text-primary-800 text-base focus:outline-none focus:border-primary-800"
-                  />
-                  <label
-                    htmlFor="couponCode"
-                    className="w-full absolute left-2 top-0.5 text-base transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-primary-800 peer-focus:top-1 peer-focus:text-primary-800"
-                  >
-                    Coupon Code
-                  </label>
-                </div>
-                <button
-                  onClick={handleApplyCoupon}
-                  className="w-[220px] bg-primary-800 text-primary-50 px-6 py-4 rounded-md hover:bg-accent-900 flex items-center justify-center gap-2 text-base font-medium"
-                >
-                  Apply Coupon <HiArrowUpRight />
-                </button>
-              </div>
-            </div>
           </div>
 
           {/* Cart Total */}
           <div className="w-[400px] -mr-10">
-            <div className="bg-primary-50 p-6 border border-primary-100 h-[293px]">
+            <div className="bg-primary-50 p-6 border border-primary-100 max-h-auto">
               <h2 className="text-xl mb-6 font-medium">Cart Total</h2>
               <div className="flex justify-between py-3 text-primary-800">
                 <span>Sub Total</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              <div className="border-b flex justify-between py-3 text-primary-800">
+              <div className="flex justify-between py-3 text-primary-800">
                 <span>Coupon Code</span>
                 <span>{isCouponApplied ? `${discount}%` : "N/A"}</span>
               </div>
-              <div className="flex justify-between py-3 text-primary-800">
+              
+
+              <div className="mb-6">
+                  <div className="flex items-center justify-between">
+                      <input
+                          type="text"
+                          placeholder="Coupon Code"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-lg mr-4" />
+                      <button
+                          onClick={handleApplyCoupon}
+                          className="bg-primary-800 text-primary-50 px-6 py-2 rounded-md hover:bg-accent-900 transition-colors duration-300 flex items-center justify-center"
+                      >
+                          Apply
+                      </button>
+                  </div>
+              </div>
+
+              <div className="flex justify-between py-3 text-primary-800 border-t">
                 <span>Total</span>
                 <span>${discountedTotal.toFixed(2)}</span>
               </div>
+
               <button
                 onClick={createPayment}
-                className="w-full bg-accent-900 text-primary-50 py-3 rounded mt-6 hover:bg-accent-900 flex justify-center items-center gap-2 text-base">
+                className="w-full bg-accent-900 text-primary-50 py-3 rounded mt-2 hover:bg-accent-900 flex justify-center items-center gap-2 text-base">
                 Proceed to Checkout <HiArrowUpRight />
               </button>
             </div>

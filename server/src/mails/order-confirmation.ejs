@@ -159,7 +159,7 @@
                         <td class="first-td">Cost</td>
                     </tr>
                 </table>
-                Loop through each course in the order
+
                 <table style="width: 90%; margin: auto; display: block">
                     <% if (order && order.courses) { %>
                         <% order.courses.forEach((course) => { %>
@@ -175,6 +175,7 @@
                         </tr>
                     <% } %>
                 </table>
+                
                 <!-- Calculate subtotal and total -->
                 <table class="table-row" style="border-top: 1px solid #00000029">
                     <tr>
@@ -184,8 +185,14 @@
                 </table>
                 <table class="table-row" style="margin-top: -20px">
                     <tr>
-                        <td class="col-2">Total:</td>
-                        <td class="col-2">$<%= order.courses.reduce((total, course) => total + course.price, 0).toFixed(2) %></td>
+                        <td class="col-2">Coupon Applied:</td>
+                        <td class="col-2"><%= order.couponCode %></td>
+                    </tr>
+                </table>
+                <table class="table-row" style="margin-top: -20px">
+                    <tr>
+                        <td class="col-2">Total After Discount:</td>
+                        <td class="col-2">$<%= order.discountedTotal %></td>
                     </tr>
                 </table>
             </div>

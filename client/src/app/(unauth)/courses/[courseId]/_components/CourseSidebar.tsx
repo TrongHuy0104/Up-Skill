@@ -50,7 +50,8 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
             course,
             couponInfo: {
                 discountPercentage: discount,
-                discountedTotal: coursePrice
+                discountedTotal: coursePrice,
+                couponCode: couponCode,
             }
         }));
         const paymentIntentResult = await createPaymentIntent(amount).unwrap();
@@ -147,6 +148,7 @@ const CourseSidebar: React.FC<CourseSidebarProps> = ({ course }) => {
                 dispatch(setCouponInfo({
                     discountPercentage: response.data.discountPercentage,
                     discountedTotal: newPrice,
+                    couponCode: couponCode,
                 }));
                 toast({
                     variant: 'success',

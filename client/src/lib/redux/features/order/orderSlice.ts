@@ -5,6 +5,7 @@ interface OrderState {
     couponInfo: {
         discountPercentage: number;
         discountedTotal: number;
+        couponCode: string;
     };
 }
 
@@ -13,6 +14,7 @@ const initialState: OrderState = {
     couponInfo: {
         discountPercentage: 0,
         discountedTotal: 0,
+        couponCode: ''
     },
 };
 
@@ -20,7 +22,7 @@ const orderSlice = createSlice({
     name: 'order',
     initialState,
     reducers: {
-        orderCreatePaymentIntent: (state, action: PayloadAction<{ course?: any, cartItems?: any[], couponInfo?: { discountPercentage: number, discountedTotal: number } }>) => {
+        orderCreatePaymentIntent: (state, action: PayloadAction<{ course?: any, cartItems?: any[], couponInfo?: { discountPercentage: number, discountedTotal: number, couponCode: string } }>) => {
             if (action.payload.course) {
                 state.courses = [action.payload.course];
             } else if (action.payload.cartItems) {
@@ -29,7 +31,7 @@ const orderSlice = createSlice({
                 state.couponInfo = action.payload.couponInfo;  // Update coupon info in state
             }
         },
-        setCouponInfo: (state, action: PayloadAction<{ discountPercentage: number, discountedTotal: number }>) => {
+        setCouponInfo: (state, action: PayloadAction<{ discountPercentage: number, discountedTotal: number, couponCode: string }>) => {
             state.couponInfo = action.payload;
         },
     }
