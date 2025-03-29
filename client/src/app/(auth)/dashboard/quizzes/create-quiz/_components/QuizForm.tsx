@@ -109,7 +109,7 @@ export const QuizForm = ({ courses }: QuizFormProps) => {
 
             if (!response.ok) throw new Error('Failed to create quiz');
 
-            router.push('/dashboard/quizzes/create-quiz');
+            router.push('/dashboard/quizzes');
             toast({ variant: 'success', title: 'Quiz created!' });
         } catch (error) {
             console.error('Error creating quiz:', error);

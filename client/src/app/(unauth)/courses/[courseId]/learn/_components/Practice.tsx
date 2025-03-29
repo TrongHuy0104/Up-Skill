@@ -75,7 +75,7 @@ export default function Practice({
 
         const userScores = Array.isArray(currentQuestion.userScores) ? currentQuestion.userScores : [];
 
-        const res = await fetch(`http://localhost:8000/api/quizzes/${quizId}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/quizzes/${quizId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

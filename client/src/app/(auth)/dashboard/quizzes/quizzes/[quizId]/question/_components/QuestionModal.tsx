@@ -73,8 +73,8 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
         }
 
         const url = question?._id
-            ? `http://localhost:8000/api/quizzes/${quizId}/questions/${question._id}`
-            : `http://localhost:8000/api/quizzes/${quizId}/questions`;
+            ? `${process.env.NEXT_PUBLIC_SERVER_URI}/quizzes/${quizId}/questions/${question._id}`
+            : `${process.env.NEXT_PUBLIC_SERVER_URI}/quizzes/${quizId}/questions`;
 
         const method = question?._id ? 'PUT' : 'POST';
 
@@ -98,7 +98,7 @@ const QuestionModal: React.FC<QuestionModalProps> = ({ isOpen, onClose, question
     };
 
     return isOpen ? (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-1000">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
             <div className="bg-white p-6 rounded-lg shadow-lg w-[480px]">
                 <h2 className="text-lg font-bold mb-4">{question ? 'Update Question' : 'Add Question'}</h2>
 

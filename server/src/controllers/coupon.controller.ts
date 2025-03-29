@@ -72,7 +72,7 @@ export const validateCoupon = async (req: Request, res: Response, next: NextFunc
             return next(new ErrorHandler('Coupon code expired', 200));
         }
 
-        if (coupon.usageLimit = 0) {
+        if (coupon.usageLimit === 0) {
             return next(new ErrorHandler('Coupon usage limit reached', 200));
         }
 
